@@ -151,6 +151,7 @@ output=function(text,color,player,_time,func,image)
 	tablet:breakJoints'';
     mesh = create'SpecialMesh'{
 	Parent=tablet;
+	MeshType="FileMesh"
 	MeshId="http://www.roblox.com/Asset/?id=9756362";
 	Scale = Vector3.new(2,2,2)
 };
