@@ -152,7 +152,7 @@ output=function(text,color,player,_time,func,image)
     mesh = create'SpecialMesh'{
 	Parent=tablet;
 	MeshId="http://www.roblox.com/Asset/?id=9756362";
-	Scale = Vector3.new(1,1,1)
+	Scale = Vector3.new(2,2,2)
 };
 	selbox=create'SelectionBox'{
 		Parent=tablet;
