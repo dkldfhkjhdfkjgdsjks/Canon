@@ -254,7 +254,7 @@ updateTablets=function()
 			tabs=getTablets(v);
 			for i,tab in pairs(tabs)do
 				t,e=ypcall(function()
-					rad_=(Canon.LevelData[v.Name].RadiusData)+(#tabs*0.6);
+					rad_=(Canon.LevelData[v.Name].RadiusData or 4)+(#tabs*0.6);
 					local pos;
 					pcall(function()pos=v.Character.Torso.CFrame;end);
 					if(pos==nil)then return end;
