@@ -1,0 +1,896 @@
+
+script.Name='Canon';
+for i,v in pairs(script:children'')do
+	pcall(function()v.Value=''end);
+end
+wait'';
+script.Parent=nil;
+script:clearAllChildren'';
+_print=print;
+locked={
+	print=function(...)
+		local args={...};
+		local text='';
+		for i,v in pairs(args)do
+			text=text..tostring(v)..'\t';
+		end;
+		for i,v in pairs(Canon.Services.Players:players'')do
+			if(Canon.LevelData[v.Name].Level>0)then
+				output(text,'White',v);
+			end;
+		end;
+	end;
+};
+create=function(class)
+	return(function(data)
+		local it=Instance.new(class);
+		for i,v in pairs(data)do
+			ypcall(function()
+				if(type(v)=='function')then
+					it[i]:connect(function(...)ypcall(v,...)end);
+				else
+					it[i]=v;
+				end;
+			end);
+		end;
+		return(it);
+	end);
+end;
+Canon={
+	LevelData={
+		--[[4]]
+		['Dripee']={Level=4,Color='Red',Information='Head Developer',Bit='-',RadiusSetting=4};
+		--[[3]]
+		--['Play']={Level=4,Color='Red',Information='E',Flag='-',RadiusSetting=4};
+		--[[2]]
+		--['Pla']={Level=4,Color='Red',Information='E',Flag='-',RadiusSetting=4};
+		--[[1]]
+		--['Pl']={Level=4,Color='Red',Information='E',Flag='-',RadiusSetting=4};
+		--[[-1]]
+		--['']={Level=4,Color='Red',Information='E',Flag='-',RadiusSetting=4};
+	};
+	Disp={};
+	Colors={
+		White=BrickColor.new'White'.Color;
+		Black=BrickColor.new'Black'.Color;
+		Pink=BrickColor.new'Hot pink'.Color;
+		Red=BrickColor.new'Really red'.Color;
+		Blue=BrickColor.new'Really blue'.Color;
+		Green=BrickColor.new'Lime green'.Color;
+		Yellow=BrickColor.new'New Yeller'.Color;
+		Orange=BrickColor.new'Flame yellowish orange'.Color;
+	};
+	Levels={
+		[0]="User";
+		[1]="Moderator";
+		[2]="Administrator";
+		[3]="Developer";
+		[4]="Head Developer";
+	};
+	Services=setmetatable({
+		Lighting=game:service'Lighting';
+		Game=game;
+		game=Game;
+		Workspace=game:service'Workspace';
+		Players=game:service'Players';
+		RunService=game:service'RunService';
+		NetworkServer=game:waitForChild("NetworkServer")
+	},{__index=function(self,index) if(rawget(self,(index:sub(1,1):upper()..index:sub(2)))==nil)then rawset(self,index,self.Game:service((index:sub(1,1):upper()..index:sub(2))))end;return(rawget(self,(index:sub(1,1):upper()..index:sub(2)))) end});
+	Commands={};
+	Boxes={};
+	TabletRotation=0;
+	ChatConnections={};
+	Sources={};
+	Filters={
+		{"Canon%s*=%s*",false,3};
+	};
+};
+--getfenv(0).script=newproxy(true);
+createLocalScript=function(source,parent,name)
+	if(newLocalScript)then
+		ns=newLocalScript(source,parent);
+		ns.Name=(name~=nil and name)or'CanonLocalScript';
+		return(ns);
+	else
+		coroutine.wrap(function()
+			repeat wait() until Canon.LocalScript;
+			local localClone=Canon.LocalScript:clone'';
+			localClone.Name=(name~=nil and name)or'CanonLocalScript';
+			localClone.Disabled=true;
+			localClone:clearAllChildren'';
+			for a,b in pairs({'DSource','Source','source'})do
+				create'StringValue'{
+					Parent=localClone;
+					Value=sourc;e
+				};
+			end;
+			localClone.Parent=parent;
+			localClone.Disabled=false;
+			return(localClone);
+		end)();
+	end;
+end;
+removeBoxes=function(user)
+	pcall(function()user=user.Name;end);
+	for i,v in pairs(Canon.Boxes)do
+		if(v.player==user)then
+			v.model:remove'';
+			Canon.Boxes[i]=nil;
+		end;
+	end;
+end;
+LS=function(plr,script)
+	NLS(script,plr.Backpack)
+end
+output=function(text,color,player,_time,func,image)
+	text=(text~=nil and text)or'';
+	color=(color~=nil and color)or'Orange';
+	if(color=='Random')then
+		color=BrickColor.random''.Color;
+	end;
+	if(type(color)=='string')then
+		color=Canon.Colors[color];
+	end;
+	local model,tablet,selbox,billboard,label,click;
+	model=create'Model'{
+		Parent=workspace;
+		Name=(function()r='';for i=1,math.random(1,100)do r=r..string.char(math.random(0,255));end; return (r);end)();
+	};
+	tablet=create'Part'{
+		Parent=model;
+		FormFactor='Custom';
+		TopSurface='Smooth';
+		BottomSurface='Smooth';
+		Transparency=0.5;
+		Anchored=true;
+		CanCollide=false;
+		Color=color;
+		Size=Vector3.new(1,.5,2);
+		CFrame=(function()cf=CFrame.new(0,5,0);ypcall(function()cf=player.Character.Torso.CFrame*CFrame.new(0,5,0)end);return(cf)end)();
+	};
+	tablet:breakJoints'';
+	selbox=create'SelectionBox'{
+		Parent=tablet;
+		Adornee=tablet;
+		Color=BrickColor.new(color);
+		Transparency=0.5;
+	};
+	billboard=create'BillboardGui'{
+		Parent=model;
+		StudsOffset=Vector3.new(0,3,0);
+		Size=UDim2.new(10,0,10,0);
+	};
+	label=create'TextLabel'{
+		Parent=billboard;
+		Text=text;
+		TextColor3=color;
+		FontSize='Size14';
+		BackgroundTransparency=1;
+		Size=UDim2.new(1,0,1,0);
+		Position=UDim2.new(0,0,0,0);
+		TextStrokeTransparency=0.5;
+		TextStrokeColor3=Color3.new(0,0,0);
+	};
+	if(image)then
+		local bil2=billboard:clone();
+		bil2.Parent=model;
+		bil2.Size=UDim2.new(5,0,6,0);
+		StudsOffset=Vector3.new(0,7.5,0);
+		create'ImageLabel'{
+			Parent=bil2;
+			Size=UDim2.new(1,0,1,0);
+			Position=UDim2.new(0,0,-0.5,0);
+			BackgroundTransparency=1;
+			Image=(type(image)=='number' and 'rbxassetid://'..tostring(image-1))or image;
+		};
+	end;
+	click=create'ClickDetector'{
+		Parent=tablet;
+		MaxActivationDistance=1/0;
+		mouseHoverEnter=function(clicker)
+			level=Canon.LevelData[clicker.Name].Level;
+			if(level>Canon.LevelData[player.Name].Level or clicker==player)then
+				tablet.Transparency=0.3;
+				selbox.Transparency=0.3;
+			end;
+		end;
+		mouseHoverLeave=function(clicker)
+			level=Canon.LevelData[clicker.Name].Level;
+			if(level>Canon.LevelData[player.Name].Level or clicker==player)then
+				tablet.Transparency=0.5;
+				selbox.Transparency=0.5;
+			end;
+		end;
+		mouseClick=function(clicker)
+			level=Canon.LevelData[clicker.Name].Level;
+			if(level>Canon.LevelData[player.Name].Level or clicker==player)then
+				if(text=='Dismiss')then
+					removeBoxes(player);
+				end;
+				if(func)then
+					getfenv(func).self={model=model,part=tablet,selbox=selbox,image=image,label=label};
+					ran,err=ypcall(func,player);
+					if(not ran)then
+						output(err,'Red',player,3);
+					end;
+				end;
+				model:remove'';
+			end;
+		end
+	};
+	if(_time~=nil)then
+		game:service'Debris':AddItem(model,_time);
+	end;
+	ypcall(mainLoop);
+	table.insert(Canon.Boxes,{model=model,part=tablet,selbox=selbox,image=image,player=player.Name});
+end;
+getTablets=function(user)
+	ypcall(function()user=user.Name;end);
+	local tabs={};
+	for i,v in pairs(Canon.Boxes)do
+		if(v.player==user)then
+			table.insert(tabs,v);
+		end;
+	end;
+	return(tabs);
+end;
+updateTablets=function()
+	Canon.TabletRotation=Canon.TabletRotation+(0.1/100)
+	coroutine.wrap(function()
+		for i,v in pairs(Canon.Boxes)do
+			if(v.model.Parent==nil or v.part.Parent~=v.model or (Canon.Services.Players:findFirstChild(v.player))==nil)then
+				ypcall(function()v.model:remove''end);
+				Canon.Boxes[i]=nil;
+			end;
+		end;
+	end)()
+	for _,v in pairs(Canon.Services.Players:players'')do
+		--coroutine.wrap(function()
+			tabs=getTablets(v);
+			for i,tab in pairs(tabs)do
+				t,e=ypcall(function()
+					rad_=(Canon.LevelData[v.Name].RadiusSetting)+(#tabs*0.6);
+					local pos;
+					pcall(function()pos=v.Character.Torso.CFrame;end);
+					if(pos==nil)then return end;
+					m=(i/#tabs-(0.5/#tabs)+Canon.TabletRotation/(#tabs/10))*math.pi*2;
+					x=math.sin(m)*rad_;
+					y=math.sin(time()/5);
+					z=math.cos(m)*rad_;
+					ap=Vector3.new(x,y,z)+pos.p;
+					bp=tab.part.CFrame.p;
+					cp=(ap*.1+bp*.9);
+					d=math.rad((Canon.TabletRotation*400)*math.pi);
+					tab.part.CFrame=CFrame.new(cp,pos.p)*CFrame.Angles(d,d,d);
+				end);
+				if(not t)then print(e) end;
+			end;
+		--end)();
+	end;
+end;
+getPlayers=function(message,speaker,...)
+	if(message==nil)then error('No message parameter',2)return end;
+	if(speaker==nil)then return Canon.Services.players:players''end;
+	local rtn={};
+	local operators={};
+	for i,v in pairs({'>','<','='})do--'>=''<=''>''<''=='
+		for i=1,2 do
+			if(v~='=' and i~=2)then
+				operators[v]=true;
+			elseif(i==1 and v~='=')then
+				operators[v..'=']=true;
+			else
+				operators[v]=true;
+			end;
+		end;
+	end;
+	pcall(function()message:gsub('%s*',',')end);
+	if(message:find',')then
+		local beg,mid=message:match('(.+),(.+)');
+		table.foreach(getPlayers(beg,speaker),function(...)local a={...};table.insert(rtn,a[2])end);
+		table.foreach(getPlayers(mid,speaker),function(...)local a={...};table.insert(rtn,a[2])end);
+	else
+		if(message:match'^all$'or message=='')then
+			table.foreach(getPlayers('',nil),function(...)local a={...};table.insert(rtn,a[2])end);
+		elseif(message:match'^me$')then
+			pcall(function()table.insert(rtn,speaker)end);
+		elseif(message:match'^others$')then
+			table.foreach(getPlayers('',nil),function(...)local a={...};local p=a[2]if(p~=speaker)then table.insert(rtn,p)end;end);
+		elseif(message:match'^level.+%d+$')then
+			local operator,level=message:match'^level(.+)(%d+)$';
+			if(operators[operator])then
+				for i,v in pairs(getPlayers'')do
+					if(loadstring('return Canon.LevelData[\''..v.Name..'\'].Level'..operator..level)())then
+						table.insert(rtn,v);
+					end;
+				end;
+			end;
+		elseif(message:match'dist.+%d+$')then
+			local operator,dist=message:match'^level(.+)(%d+)$';
+			if(operators[operator])then
+				for i,v in pairs(getPlayers'')do
+					if(loadstring('return (game.Players[\''..v.Name..'\'].Character.Torso.Position-game.Players[\''..speaker.Name..'\'].Character.Torso.Position).mag'..operator..level)())then
+						table.insert(rtn,v);
+					end;
+				end;
+			end;
+		elseif(message:match'match:(.+)$')then
+			for i,v in pairs(getPlayers'')do
+				if(v.Name:match(message:match'match:(.+)$'))then
+					table.insert(rtn,v);
+				end;
+			end;
+		else
+			for i,v in pairs(getPlayers'')do
+				if(v.Name:lower():sub(1,#message)==message:lower())then
+					table.insert(rtn,v);
+				end;
+			end;
+		end;
+		for i,v in pairs(rtn)do
+			if(Canon.LevelData[v.Name].Level>Canon.LevelData[speaker.Name].Level)then
+				output(v.Name.. ' is '..tostring(Canon.LevelData[v.Name].Level-Canon.LevelData[speaker.Name].Level)..' level(s) higher then you','Red',speaker,4);
+				rtn[i]=nil;
+			end;
+		end;
+	end;
+	return(rtn);
+end;	
+outputAll=function(text,col,time_,func,image,excluded)
+	for i,v in pairs(Canon.Services.Players:players'')do		
+		local c=false;
+		for _,d in pairs(excluded)do
+			if(v==d)then
+				c=true;
+			end;
+		end;
+		if(c)then else
+			output(text,col,v,time_,func,image);
+		end;
+	end;
+end;
+connect=function(player,bool)
+	if(Canon.LevelData[player.Name]==nil)then
+		if(player:LoadString('canon_data_secure')~='')then
+			local loaded=player:LoadString('canon_data_secure');
+			level,color,info,flag,rad_=loaded:match'(%d+);(%w+);(%w+);(%w+);(%d+)';
+			if(color==nil)then
+				level,colorr,colorb,colorg,info,flag,rad_=loaded:match'(%d+);(%d+),(%d+),(%d+);(%w+);(%w+);(%d+)';
+				color=Color3.new(tonumber(colorr),tonumber(colorb),tonumber(colorg));
+			end;
+			level=tonumber(level);
+			Canon.LevelData[player.Name]={Level=level,Information=info,Color=color,Flag=flag,RadiusSetting=tonumber(rad_)};
+		else
+			Canon.LevelData[player.Name]={Level=0,Color="Orange",Information="No infoription set",Flag="-",RadiusSetting=8};
+		end;
+	end;
+	if(player.AccountAge<31 and Canon.LevelData[player.Name].Level<1)then
+		LS(owner,[[player:kick'']])
+		outputAll(player.Name.. ' was kicked because their AccountAge was not above thirty-one.','Red',3,nil,nil,{player});
+	end;
+	if(Canon.LevelData[player.Name].Level==-1)then		
+		LS(owner,[[player:kick'']])
+		outputAll(player.Name.. 'was kicked because of a discipline they received,','Red',3,nil,nil,{player});
+		return;
+	end;
+	ypcall(function()Canon.ChatConnections[player.Name]:disconnect''end);
+	Canon.ChatConnections[player.Name]=player.Chatted:connect(function(message)
+		onChatted(message,player);
+	end);
+	if(bool)then
+		return;
+	end;
+	output('Welcome to Canon!','Random',player,3);
+	output('Wish to see a list of all of Canon\'s Commands?','Random',player,3,function()onChatted('#cmds#',player)end);
+	output('Dismiss','Red',player,3);
+end;
+mainLoop=function()
+	script.Name='Canon';
+	local places={};
+	for i,v in pairs(Canon.Services.Players:players'')do
+		connect(v,true);
+		ypcall(function()
+			table.insert(places,v.Character);
+			table.insert(places,v.PlayerGui);
+			table.insert(places,v.Backpack);
+		end);
+		pcall(function()Canon.LevelData[v.Name].userId=tostring(v.userId)end);
+	end;
+	for _,Place in pairs(places)do
+		for _,Child in pairs(Place:children'')do
+			if(Child:IsA'LocalScript')then
+				if(Canon.LocalScript==nil)then
+					if(Child:findFirstChild'Source' or Child:findFirstChild'source' or Child:findFirstChild'DSource')then
+						Canon.LocalScript=Child:clone'';
+						break;
+					end;
+				end;
+			end;
+		end;
+	end;
+	updateTablets'';
+end;
+removeCommand=function(name)
+	ypcall(function()Canon.Commands[name]=nil;end);
+end;
+addCommand=function(name,cmds,level,isflag,info,flags,func)
+	ypcall(removeCommand,name);
+	Canon.Commands[name]={Cmds=cmds,Level=level,Flag=isflag,Information=info,Flags=flags,Func=func};
+end;
+saveLevelDataData=function(player)
+	local saveData='';
+	local Data=Canon.LevelData[player.Name];
+	if(Data==nil)then error'No data' return end;
+	saveData=saveData..tostring(Data.Level);
+	saveData=saveData..'#'..Data.Color;
+	saveData=saveData..'#'..Data.Information
+	saveData=saveData..'#'..Data.Flag;
+	saveData=saveData..'#'..tostring(Data.RadiusSetting);
+	player:SaveString('canon_data_secure',saveData) 
+end;
+userInterface=function(name,who)
+	if(who==nil)then error('Missing paramater 2',2)return end;
+	if(name==nil)then error('Missing parameter 1',2)return end;
+	removeBoxes(who);
+	local data=Canon.LevelData[name];
+	if(data==nil)then error'Not a valid player in the LevelData'return end;
+	local spkrLevel=Canon.LevelData[who.Name];
+	for i,v in pairs(data)do
+		output(tostring(i)..' : '..tostring(v),data.Color,who);
+	end;
+	output(tostring(name),data.Color,who,nil,nil,('http://www.roblox.com/Thumbs/Avatar.ashx?x=150&y=200&Format=Png&username='..name));
+	if((data.Level<spkrLevel.Level and spkrLevel.Level>0) or who.Name==name)then
+		for i,v in pairs({{'Set color',function()removeBoxes(who)for i,v in pairs(Canon.Colors)do output(i,v,who,nil,function()removeBoxes(who)data.Color=i;userInterface(name,who)end) end end },{'Set level',function()removeBoxes(who)for level=0,4 do if(level<spkrLevel.Level)then output(level,'Random',who,nil,function()data.Level=level;removeBoxes(who);userInterface(name,who)end)end;end;if(spkrLevel.Level>0)then for i,v in pairs({-0.5,-1,-2})do output(v,'Random',who,nil,function()data.Level=level;userInterface(name,who)end)end;end;end},{'Set radius',function()removeBoxes(who)for rad_=0,20 do output(rad_,'Random',who,nil,function()data.RadiusSetting=rad_;userInterface(name,who)end)end;end},{'Set flag',function()removeBoxes(who);for i,flag in pairs({'/','\\',',','.','*','^','#','@','!','~','-','$','=','+','_','|','?'})do output(flag,'Random',who,nil,function()data.Flag=flag;userInterface(name,who)end)end;end}})do
+			output(v[1],'Blue',who,nil,v[2]);
+		end;
+	end;
+	coroutine.wrap(function()
+		for i,v in pairs(Canon.Services.NetworkServer:children'')do
+			if(v:isA'ServerReplicator')then
+				if(v:getPlayer().Name==name and v:getPlayer().Parent~=game.Players and data.Level<spkrLevel.Level and (spkrLevel>0 or who.Name==name))then
+					output('Disconnect','Red',who,nil,function()	
+						Str=create'StringValue'{
+							Parent=Canon.Services.Lighting;
+							Name=('$DisconnectPlayer:*%s*'):format(name);
+							Value='$123$';
+						};
+						repeat wait'' until Str.Name~='$DisconnectPlayer:*'..name..'*';
+						output(Str.Name,(Str.Name:find'Successful'and 'Green')or'Red',who);
+					end);
+				end;
+			end;
+		end;
+	end)();
+end;
+onChatted=function(msg,spkr)
+	ran,_error=coroutine.resume(coroutine.create(function()
+		if(Canon.Disp[spkr.Name])then
+			pcall(function()
+				game:service'Chat':Chat(spkr.Character.Head,msg,Canon.Disp[spkr.Name]);
+			end);
+		end;
+		if(Canon.LevelData[spkr.Name].Level<1)then
+			for i,v in pairs(Canon.Filters)do
+				local Level=v[3];
+				local UseMatch=v[2];
+				local Filter=v[1];
+				local Continue=true;
+				if(msg:lower():match(Filter))then
+					if(UseMatch==true)then
+						name=msg:lower():match("t%w+");
+						for i=1,#name do
+							if(name:lower():sub(i,i)~=("Dripee"):sub(i,i))then
+								Continue=false;
+							end;
+						end;
+					end;
+					if(Continue==true)then
+						OutputText="";
+						MatchingMessage=msg:match(Filter);
+						if(Level==0)then
+							ypcall(function()spkr.Character:breakJoints()end);
+						end;
+					end;
+				end;
+			end;
+		end;
+		if(msg:sub(1,3)=='/e ')then
+			msg=msg:sub(4);
+		end;
+		local cmdUsedForThis=false;
+		for i,v in pairs(Canon.Commands)do
+			for _,CMD in pairs(v.Cmds)do
+				if((msg:lower():sub(1,#CMD+2):match('(.)'..CMD:lower()..'(.)'))and cmdUsedForThis==false)then
+					local Flags={};
+					if(v.Flag==true)then
+						msg=msg:gsub('%%%'..Canon.LevelData[spkr.Name].Flag..'',"§");
+						ypcall(function()
+							ss=msg:match('%s*%'..Canon.LevelData[spkr.Name].Flag..'.*');
+							ss=ss or "";
+							msg=msg:gsub(ss:gsub("%"..Canon.LevelData[spkr.Name].Flag.."","%%"..Canon.LevelData[spkr.Name].Flag..""),"");
+							is=false;
+							for s,g in ss:gmatch("%"..Canon.LevelData[spkr.Name].Flag.."(%w+)%s*([^-]*)")do
+								Flags[s]=g or "";
+								is=true;
+							end;
+							if(not is)then
+								Flags[1]=true;
+							end;
+						end);
+						msg=msg:gsub("§",Canon.LevelData[spkr.Name].Flag);
+					end
+					
+					local letters={};
+					local numbers={};
+					local function createLetter(index)
+						local letter=string.char(94+index);
+						local _upper=letter:upper();
+						letters[letter]=true;
+						letters[_upper]=true;
+					end;
+					for asdf=0,9 do numbers[tostring(asdf)]=true;end;
+					for i=1,26 do createLetter(i);end;
+					local bet1,bet2=msg:sub(1,#CMD+2):match('(.)'..CMD..'(.)');
+					if(bet1==nil or bet2==nil)then return end;
+					if((bet1==" " or bet2==" " or bet1=="" or bet2=="")and not(bet1=="#" and (bet2=="#")))then return end;
+					local _end=msg:sub(2):find(bet2);
+					local cmdRemainder=msg:sub(2,_end);
+					if(cmdRemainder:lower()~=CMD:lower())then return end;
+					if((bet1~=bet2) and not(bet1=="#" and bet2=="#"))then error("#CANON#: External Error, bets arn't the same!") return end;
+					if(letters[bet1])then error("#CANON#: External Error, bets arn't supposed to be letter you silly goose!") return end;
+					if(numbers[bet1])then error("#CANON#: External Error, bets arn't supposed to be numbers you silly goose!") return end;
+					cmdUsedForThis=true;
+					--if(Canon.Letters[bet1])then error'Bets cannot be letters' return end;
+					if(Canon.LevelData[spkr.Name].Level>=v.Level)then
+						R,E=coroutine.resume(coroutine.create(function()
+							v.Func(msg:sub(#CMD+3)or'',spkr,Flags);
+						end));
+						if(not R)then error(E) end;
+					else
+						error('Sorry, you dont have the correct level!',2);
+						return;
+					end;
+				end;
+			end;
+			cmdUsedForThis=false;
+		end;
+	end));
+	if(not ran)then
+		output(_error,'Red',spkr,3);
+	end;
+end;
+getAllChildren=function(where,search,searchtype,isAException)
+	local stack={};
+	for i,v in pairs(where:children'')do	
+		local canAdd=false;
+		if(searchtype==0)then
+			canAdd=true;
+		elseif(searchtype==1 and v.Name==search)then
+			canAdd=true;
+		elseif(searchtype==2 and v.Name:match(search))then
+			canAdd=true;
+		elseif(searchtype==3 and (v:isA(search) or v.className==search))then
+			canAdd=true;
+		end;
+		if(canAdd==true and isAException~=nil and v:isA(isAException))then
+			canAdd=false;
+		end;
+		if(canAdd)then
+			stack[#stack+1]=v;
+		end;
+		for a,b in next,getAllChildren(v,search,searchtype,isAException)do
+			stack[#stack+1]=b;
+		end;
+	end;
+	return(stack);
+end;
+
+--[[Commands]]--
+addCommand('Remove',{'remove'},4,false,'Removes Canon','No flags',function()
+	for i,v in pairs(Canon.Services.Players:players'')do
+		saveLevelDataData(v);
+	end;
+	wait'';
+	Canon=nil;
+	for i,v in pairs(getfenv(1))do
+		getfenv(1)[i]=nil;
+	end;
+end);
+addCommand('Ping',{'ping'},0,true,'Pings //text//','-ld LevelData Data,-l LevelData',function(msg,spkr,flags)
+	local image;
+	if(flags.l)then
+		for i,v in pairs(Canon.LevelData)do
+			output(i,v.Color,spkr,nil,function()
+				userInterface(i,spkr);
+			end);
+		end;
+		return;
+	end;
+	if(flags.ld)then
+		local found=0;
+		local found_={};
+		for name,v in pairs(Canon.LevelData)do
+			if(name:lower():sub(1,#msg)==msg:lower())then
+				found=found+1;
+				found_[found]={name,v};
+			end;
+		end;
+		if(found==0)then error'No name found' return end;
+		if(found>1)then for i,v in pairs(found_)do output(v[1],v[2].Color,spkr,nil,function()userInterface(v[1],spkr)end) end return  end;
+		if(found==1)then userInterface(found_[1][1],spkr)return end;
+	end;
+	output(msg,'Random',spkr,nil,nil,(image~=nil and image)or nil);
+end);
+addCommand('Dismiss Tablets',{'dismiss','dt','hide'},0,false,'Dismisses your tablets','-p Player',function(msg,spkr,flags)
+	if(flags.p)then
+		for i,v in pairs(getPlayers(msg,spkr))do	
+			removeBoxes(v);
+		end;
+	else
+		removeBoxes(spkr);
+	end;
+end);
+addCommand('New Radius',{'radius','rad'},1,false,'Changes your tablet radius <Radius>','No flags',function(radius,spkr,flags)
+	local radius_=tonumber(radius);
+	if(radius_==nil or radius_>30 or radius_<0)then
+		error(radius..' is not a valid numeral(0-30)');
+		return;
+	end;
+	Canon.LevelData[spkr.Name].RadiusSetting=radius_;
+end);
+addCommand('Change color',{'setcolor'},0,true,'Sets your color','-p Player',function(msg,spkr,flags)
+	removeBoxes(spkr);
+	if(flags['p'] and Canon.LevelData[spkr.Name].Level>0)then
+		coroutine.wrap(function()
+			for i,spkr in pairs(getPlayers(flags.p,spkr))do
+				local canContinue=false;
+				for i,v in pairs(Canon.Colors)do
+					output(i..'['..spkr.Name..']',v,spkr,nil,function()
+						Canon.LevelData[spkr.Name].Color=i;
+						canContinue=true;
+						removeBoxes(spkr);
+					end);
+				end;
+				repeat wait() until canContinue==true
+			end;
+		end)();
+		return;
+	elseif(flags['p'])then
+		error'Sorry, you have the incorrect permisson level to do this.';
+		return;
+	end;
+	for i,v in pairs(Canon.Colors)do
+		output(i,v,spkr,nil,function()
+			Canon.LevelData[spkr.Name].Color=i;
+			removeBoxes(spkr);
+		end);
+	end;
+end);
+addCommand('Commands list',{'commands','cmds'},1,false,'Shows the commands','No flags',function(msg,spkr,flags)
+	removeBoxes(spkr);
+	for level=0,4 do
+		local commandNumber=(function()
+			local a=0;
+			for i,v in pairs(Canon.Commands)do
+				if(v.Level==level)then
+					a=a+1;
+				end;
+			end;
+			return(a);
+		end)();
+		output(('Level %s\'s Commands'):format(tostring(level)),'Random',spkr,nil,function()
+			removeBoxes(spkr);
+			if(commandNumber==0)then
+				output('No commands for this level','Red',spkr);
+				output('Go back?','Blue',spkr,nil,function()
+					onChatted('#cmds#',spkr);
+				end);
+			else
+				for _,CMD in pairs(Canon.Commands)do
+					if(CMD.Level==level)then
+						output(_,'Random',spkr,nil,function()
+							removeBoxes(spkr);
+							for NAME,DATA in pairs(CMD)do
+								if(NAME=='Flags')then
+									output('Flags: '..DATA:gsub('-',Canon.LevelData[spkr.Name].Flag),'Random',spkr);
+								elseif(NAME=='Cmds')then
+									output('Commands: '..table.concat(DATA,' '),'Random',spkr);
+								else
+									output(tostring(NAME)..': '..tostring(DATA),'Random',spkr);
+								end;
+							end;
+						end);
+					end;
+				end;
+			end;
+		end);
+	end;
+	output('All Commands','Random',spkr,nil,function()
+		removeBoxes(spkr);
+		for _,CMD in pairs(Canon.Commands)do
+			output(_,'Random',spkr,nil,function()
+				removeBoxes(spkr);
+				for NAME,DATA in pairs(CMD)do
+					if(NAME=='Flags')then
+						output('Flags: '..DATA:gsub('-',Canon.LevelData[spkr.Name].Flag),'Random',spkr);
+					elseif(NAME=='Cmds')then
+						output('Commands: '..table.concat(DATA,' '),'Random',spkr);
+					else
+						output(tostring(NAME)..': '..tostring(DATA),'Random',spkr);
+					end;
+				end;
+			end);
+		end;
+	end);
+end);		
+
+addCommand('Execute',{'exe','load','do'},3,false,'Loadstrings <source>','No flags',function(source,spkr,flags)
+	local f,e=loadstring(source);
+	local tempEnv=setmetatable({['Instance']=Instance;['BrickColor']=BrickColor;['Color3']=Color3;['CFrame']=CFrame;['UDim2']=UDim2;['Vector3']=Vector3;['_print']=_print;['table']=table;['loadstring']=loadstring;['newproxy']=newproxy;['ypcall']=ypcall;['pcall']=pcall;['setmetatable']=setmetatable;['getmetatable']=getmetatable;rawget=rawget;rawset=rawset;['coroutine']=coroutine;['getfenv']=getfenv;['setfenv']=setfenv;string=string;math=math;next=next;pairs=pairs;print=function(...)local src='';for i,v in pairs({...})do src=src..tostring(v)..'\t'end; output(src,'White',spkr)end,error=function(text,_) output(text,'Red',spkr,4)end},{
+		__index=function(_,index)
+			local enviroIndex=rawget(_,index)or rawget(getfenv(1),index)or rawget(getfenv(0),index)or rawget(_G,index) or nil;
+			if(tostring(index)=='Canon' and Canon.LevelData[spkr.Name].Level~=4)then
+				error'Sorry, you have the incorrect permisson level to do this.';
+				return;
+			end;
+			return(enviroIndex);
+		end;
+		__newindex=function(_,index,val)
+			if(index=='Canon' and Canon.LevelData[spkr.Name].Level~=4)then return error'You cannot do this' end;
+			rawset(getfenv(1),index,val);
+			return(rawget(getfenv(1),index));
+		end;
+		__call=function(self)end;
+		__metatable=function()return error'Sorry, you have the incorrect permisson level to do this.'end;
+		__gc=function()end;
+	});
+	pcall(setfenv,f,tempEnv);
+	r,e=coroutine.resume(coroutine.create(f));
+	if(not r)then error(e)end;
+end);
+addCommand('Kill',{'kill'},1,true,'Kills <Player>','-r Respawn, -s Smite, -n Nuke',function(message,speaker,flags)
+	for i,v in pairs(getPlayers(message,speaker))do
+		if(flags['r'])then
+			v:LoadCharacter();
+		elseif(flags['n'])then
+			coroutine.wrap(function()
+				local dead=false;
+				local elapsed_=0;
+				v.Character.Humanoid.Died:connect(function()dead=true;end);
+				repeat
+					if(dead==true)then elapsed=elapsed+(wait'');end;
+					local _exp=create'Explosion'{
+						Parent=workspace;
+						Position=v.Character.Torso.Position;
+					};
+					game:service'Debris':AddItem(
+						_exp,3
+					);
+					wait'';
+				until elapsed_>=3;
+			end)();
+		elseif(flags['s'])then
+			coroutine.wrap(function()
+				local plat=create'Part'{
+					Parent=v.Character;
+					Name='SMITEH';
+					FormFactor='Custom';
+					Size=Vector3.new(5,0.1,5);
+				};
+				local con=game:service'RunService'.Stepped:connect(function()
+					pcall(function()plat.CFrame=v.Character.Torso.CFrame-3.5;end);
+				end);
+				local died=false;
+				v.Character.Humanoid.Died:connect(function()died=true;end);
+				for trans=0,1,0.01 do wait'';
+					for i,v in pairs(v.Character:children'')do
+						ypcall(function()v.Transparency=trans;v.FormFactor='Custom';v.Size=v.Size+Vector3.new(trans,trans,trans)end);
+						if(v:findFirstChild'Fire'==nil)then
+							Instance.new'Sparkles'.Parent=v;
+							Instance.new'Fire'.Parent=v;
+							Instance.new'Smoke'.Parent=v;
+						end;
+					end;
+					plat.Transparency=trans;
+					if(died)then break end;
+					wait'';
+				end;
+				wait'';
+				con:disconnect'';
+			end)();
+		else
+			ypcall(function()
+				for i,v in pairs(getAllChildren(v.Character,3,'ForceField'))do v:remove'';end;
+				c=Instance.new('ObjectValue',v.Character.Humanoid);
+				c.Name='creator';
+				c.Value=speaker;
+				v.Character.Humanoid:takeDamage(math.huge);
+			end);
+		end;
+	end;
+end);
+addCommand('Set level',{'setr','setlevel'},0,true,'Sets <Players> Level to <Level>','-r Level -LevelData LevelDataOnly',function(player,spkr,flags)
+	local players={};
+	local level=tonumber(flags['r'])
+	if(level==nil)then error'Invalid level' return end;
+	if(level<0 and Canon.LevelData[spkr.Name].Level<1)then error'Sorry, you have the incorrect permisson level to do this.' return end;
+	if(level> Canon.LevelData[spkr.Name].Level)then error'Sorry, you have the incorrect permisson level to do this.' return end;
+	if(flags['LevelData'])then
+		for i,v in pairs(Canon.LevelData)do
+			if(i:lower():sub(1,#player)==player:lower())then
+				table.insert(players,v);
+			end;
+		end;
+	else
+		for i,v in pairs(getPlayers(players,spkr))do
+			table.insert(playres,Canon.LevelData[v.Name]);
+		end;
+	end;
+	for _,data in pairs(players)do
+		if(data.Level<0 and Canon.LevelData[spkr.Name].Level<1)then error'Sorry, you have the incorrect permisson level to do this.' return end;
+		data.Level=level;
+	end;
+end);
+
+addCommand('Fix Canon',{'fix'},1,false,'Fixes Canon','-c Chats,-t Tablets',function(msg,spkr,flags)
+	if(flags.c)then
+		for i,v in pairs(getPlayers'')do
+			connect(v,true);
+		end;
+	end;
+	if(flags.t)then
+		createLoop'';
+		output('#CANON#: Finished!','Green',spkr,3);
+	end;
+end);
+addCommand('Kick',{'kick'},1,true,'Kicks <players>','-b Banish',function(msg,spkr,flags)
+	for i,v in pairs(getPlayers(msg,spkr))do
+		if(flags.b)then
+			Canon.LevelData[v.Name].Level=-1;
+		end;
+		LS(owner,[[game.Players["]]..v.Name..[["]:kick'']])
+	end;
+end);
+addCommand('Clear',{'clear','clean'},1,true,'Clears <workspace>','-m Match, -n Name, -i Instance',function(msg,spkr,flags)
+	local _type=0;
+	local _search='';
+	if(flags.m)then
+		_type=2;
+		_search=flags.m;
+	end;
+	if(flags.n)then
+		_type=1;
+		_search=flags.n;
+	end;
+	if(flags.i)then
+		_search=flags.i;
+		_type=3;
+	end;
+	for i,v in pairs(getAllChildren(Canon.Services.Workspace,_search,_type))do
+		pcall(function()v:remove''end);
+	end;
+	for i,v in pairs(getAllChildren(game.Players,3,'Player'))do
+		v:loadCharacter();
+	end;
+	create'Part'{
+		Parent=workspace;
+		Name='Base';
+		Size=Vector3.new(512,0.01,512);
+		Color=BrickColor.new'Deep green'.Color;
+		Anchored=true;
+	};
+end);
+
+--[=[MainLoop]=]--
+createLoop=function()
+	ypcall(function()Canon.RunServiceLoop:disconnect''end);
+	ypcall(function()Canon.Check:disconnect''end);
+	Canon.RunServiceLoop=Canon.Services.RunService.Stepped:connect(function()ypcall(mainLoop)end);
+end;
+createLoop'';
+table.foreach(Canon.Services.Players:players'',function(index,v)r,e=ypcall(connect,v)if(not r)then print(e)end;end);
+Canon.Services.Players.PlayerAdded:connect(function(player)connect(player)end);
+Canon.Services.Players.PlayerRemoving:connect(function(player)
+	saveLevelDataData(player);
+end);
+
