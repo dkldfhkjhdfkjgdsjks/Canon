@@ -141,7 +141,7 @@ output=function(text,color,player,_time,func,image)
 		FormFactor='Custom';
 		TopSurface='Smooth';
 		BottomSurface='Smooth';
-		Transparency=0.5;
+		Transparency=1;
 		Anchored=true;
 		CanCollide=false;
 		Color=color;
@@ -151,10 +151,10 @@ output=function(text,color,player,_time,func,image)
 	tablet:breakJoints'';
 	mesh=create'SpecialMesh'{
 		Parent=tablet;
-		MeshId="rbxassetid://9948544";
+		MeshId="http://www.roblox.com/Asset/?id=9756362";
 		MeshType="FileMesh";
 		Name="CanonMesh";
-		Scale=Vector3.new(1,1,1)
+		Scale=Vector3.new(.5,.5,.5)
 	}
 	selbox=create'SelectionBox'{
 		Parent=tablet;
