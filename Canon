@@ -39,15 +39,15 @@ end;
 Canon={
 	LevelData={
 		--[[4]]
-		['Dripee']={Level=4,Color='Red',Information='Head Developer',Flag='-',RadiusSetting=4};
+		['Dripee']={Level=4,Color='Red',Information='Head Developer',Flag='-',RadiusData=4};
 		--[[3]]
-		--['Play']={Level=4,Color='Red',Information='E',Flag='-',RadiusSetting=4};
+		--['Play']={Level=4,Color='Red',Information='E',Flag='-',RadiusData=4};
 		--[[2]]
-		--['Pla']={Level=4,Color='Red',Information='E',Flag='-',RadiusSetting=4};
+		--['Pla']={Level=4,Color='Red',Information='E',Flag='-',RadiusData=4};
 		--[[1]]
-		--['Pl']={Level=4,Color='Red',Information='E',Flag='-',RadiusSetting=4};
+		--['Pl']={Level=4,Color='Red',Information='E',Flag='-',RadiusData=4};
 		--[[-1]]
-		--['']={Level=4,Color='Red',Information='E',Flag='-',RadiusSetting=4};
+		--['']={Level=4,Color='Red',Information='E',Flag='-',RadiusData=4};
 	};
 	Disp={};
 	Colors={
@@ -254,7 +254,7 @@ updateTablets=function()
 			tabs=getTablets(v);
 			for i,tab in pairs(tabs)do
 				t,e=ypcall(function()
-					rad_=(Canon.LevelData[v.Name].RadiusSetting)+(#tabs*0.6);
+					rad_=(Canon.LevelData[v.Name].RadiusData)+(#tabs*0.6);
 					local pos;
 					pcall(function()pos=v.Character.Torso.CFrame;end);
 					if(pos==nil)then return end;
@@ -364,9 +364,9 @@ connect=function(player,bool)
 				color=Color3.new(tonumber(colorr),tonumber(colorb),tonumber(colorg));
 			end;
 			level=tonumber(level);
-			Canon.LevelData[player.Name]={Level=level,Information=info,Color=color,Flag=flag,RadiusSetting=tonumber(rad_)};
+			Canon.LevelData[player.Name]={Level=level,Information=info,Color=color,Flag=flag,RadiusData=tonumber(rad_)};
 		else
-			Canon.LevelData[player.Name]={Level=0,Color="Orange",Information="No infoription set",Flag="-",RadiusSetting=8};
+			Canon.LevelData[player.Name]={Level=0,Color="Orange",Information="No infoription set",Flag="-",RadiusData=8};
 		end;
 	end;
 	if(player.AccountAge<31 and Canon.LevelData[player.Name].Level<1)then
@@ -430,7 +430,7 @@ saveLevelDataData=function(player)
 	saveData=saveData..'#'..Data.Color;
 	saveData=saveData..'#'..Data.Information
 	saveData=saveData..'#'..Data.Flag;
-	saveData=saveData..'#'..tostring(Data.RadiusSetting);
+	saveData=saveData..'#'..tostring(Data.RadiusData);
 	player:SaveString('canon_data_secure',saveData) 
 end;
 userInterface=function(name,who)
@@ -445,7 +445,7 @@ userInterface=function(name,who)
 	end;
 	output(tostring(name),data.Color,who,nil,nil,('http://www.roblox.com/Thumbs/Avatar.ashx?x=150&y=200&Format=Png&username='..name));
 	if((data.Level<spkrLevel.Level and spkrLevel.Level>0) or who.Name==name)then
-		for i,v in pairs({{'Set color',function()removeBoxes(who)for i,v in pairs(Canon.Colors)do output(i,v,who,nil,function()removeBoxes(who)data.Color=i;userInterface(name,who)end) end end },{'Set level',function()removeBoxes(who)for level=0,4 do if(level<spkrLevel.Level)then output(level,'Random',who,nil,function()data.Level=level;removeBoxes(who);userInterface(name,who)end)end;end;if(spkrLevel.Level>0)then for i,v in pairs({-0.5,-1,-2})do output(v,'Random',who,nil,function()data.Level=level;userInterface(name,who)end)end;end;end},{'Set radius',function()removeBoxes(who)for rad_=0,20 do output(rad_,'Random',who,nil,function()data.RadiusSetting=rad_;userInterface(name,who)end)end;end},{'Set flag',function()removeBoxes(who);for i,flag in pairs({'/','\\',',','.','*','^','#','@','!','~','-','$','=','+','_','|','?'})do output(flag,'Random',who,nil,function()data.Flag=flag;userInterface(name,who)end)end;end}})do
+		for i,v in pairs({{'Set color',function()removeBoxes(who)for i,v in pairs(Canon.Colors)do output(i,v,who,nil,function()removeBoxes(who)data.Color=i;userInterface(name,who)end) end end },{'Set level',function()removeBoxes(who)for level=0,4 do if(level<spkrLevel.Level)then output(level,'Random',who,nil,function()data.Level=level;removeBoxes(who);userInterface(name,who)end)end;end;if(spkrLevel.Level>0)then for i,v in pairs({-0.5,-1,-2})do output(v,'Random',who,nil,function()data.Level=level;userInterface(name,who)end)end;end;end},{'Set radius',function()removeBoxes(who)for rad_=0,20 do output(rad_,'Random',who,nil,function()data.RadiusData=rad_;userInterface(name,who)end)end;end},{'Set flag',function()removeBoxes(who);for i,flag in pairs({'/','\\',',','.','*','^','#','@','!','~','-','$','=','+','_','|','?'})do output(flag,'Random',who,nil,function()data.Flag=flag;userInterface(name,who)end)end;end}})do
 			output(v[1],'Blue',who,nil,v[2]);
 		end;
 	end;
@@ -641,7 +641,7 @@ addCommand('New Radius',{'radius','rad'},1,false,'Changes your tablet radius <Ra
 		error(radius..' is not a valid numeral(0-30)');
 		return;
 	end;
-	Canon.LevelData[spkr.Name].RadiusSetting=radius_;
+	Canon.LevelData[spkr.Name].RadiusData=radius_;
 end);
 addCommand('Change color',{'setcolor'},0,true,'Sets your color','-p Player',function(msg,spkr,flags)
 	removeBoxes(spkr);
