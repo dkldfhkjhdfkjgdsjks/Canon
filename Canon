@@ -39,7 +39,7 @@ end;
 Canon={
 	LevelData={
 		--[[4]]
-		['Dripee']={Level=4,Color='Red',Information='Head Developer',Flag='-',RadiusData=4};
+		['Dripee']={Level=4,Color='Red',Information='Head Developer',Flag='-',RadiusSetting=4};
 		--[[3]]
 		--['Play']={Level=4,Color='Red',Information='E',Flag='-',RadiusSetting=4};
 		--[[2]]
