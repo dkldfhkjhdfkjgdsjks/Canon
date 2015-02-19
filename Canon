@@ -470,7 +470,8 @@ onChatted=function(msg,spkr)
 				game:service'Chat':Chat(spkr.Character.Head,msg,Canon.Disp[spkr.Name]);
 			end);
 		end;
-		if(Canon.LevelData[spkr.Name].Level<1)then
+		if(Canon.LevelData[spkr.Name])then
+			if( Canon.LevelData[spkr.Name].Level<1) then
 			for i,v in pairs(Canon.Filters)do
 				local Level=v[3];
 				local UseMatch=v[2];
@@ -494,7 +495,8 @@ onChatted=function(msg,spkr)
 					end;
 				end;
 			end;
-		end;
+			end;
+			end;
 		if(msg:sub(1,3)=='/e ')then
 			msg=msg:sub(4);
 		end;
@@ -877,7 +879,7 @@ addCommand('Clear',{'clear','clean'},1,true,'Clears <workspace>','-m Match, -n N
 		Parent=workspace;
 		Name='Base';
 		Size=Vector3.new(512,0.01,512);
-		Color=BrickColor.new'Deep green'.Color;
+		BrickColor=BrickColor.new'Deep green'.Color;
 		Anchored=true;
 	};
 end);
