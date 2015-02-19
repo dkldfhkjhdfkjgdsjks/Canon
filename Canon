@@ -246,7 +246,7 @@ updateTablets=function()
 		end;
 	end)()
 	for _,v in pairs(Canon.Services.Players:players'')do
-		--coroutine.wrap(function()
+		coroutine.wrap(function()
 			tabs=getTablets(v);
 			for i,tab in pairs(tabs)do
 				t,e=ypcall(function()
@@ -266,7 +266,7 @@ updateTablets=function()
 				end);
 				if(not t)then print(e) end;
 			end;
-		--end)();
+		end)();
 	end;
 end;
 getPlayers=function(message,speaker,...)
