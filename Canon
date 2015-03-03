@@ -1,271 +1,74 @@
-local Tool = Game.Players.LocalPlayer.Backpack:FindFirstChild("Burst") or Instance.new("Tool", Game.Players.LocalPlayer.Backpack)
-Tool.Name = "Burst"
-local Handle = Tool:FindFirstChild("Handle") or Instance.new("Part", Tool)
-Handle.FormFactor = Enum.FormFactor.Custom
-Handle.Size = Vector3.new(0.5, 0.5, 0.5)
-Handle.Transparency = 0
-Handle.Name = "Handle"
-Handle.BrickColor = BrickColor.new("Really black")
-Handle.TopSurface, Handle.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
-script.Parent = Tool
-script.Name = "Burst"
-local Option = "Manual Attack"
-Tool.ToolTip = Option 
+for x = 1, 250 do
+P = Instance.new("Part", workspace)
+Instance.new("BlockMesh", P)
+P.BrickColor = BrickColor.new(0/255,x/255,x/255)
+P.Anchored = true
+P.Locked = true
+P.FormFactor = "Custom"
+P.TopSurface = "Smooth"
+P.BottomSurface = "Smooth"
+P.Size = Vector3.new(.2,.2,.2)
+P.CFrame = CFrame.new(x/5,0,0.8)
+end 
+for x = 1, 250 do
+P = Instance.new("Part", workspace)
+Instance.new("BlockMesh", P)
+P.BrickColor = BrickColor.new(x/255,x/255,0/255)
+P.Anchored = true
+P.Locked = true
+P.FormFactor = "Custom"
+P.TopSurface = "Smooth"
+P.BottomSurface = "Smooth"
+P.Size = Vector3.new(.2,.2,.2)
+P.CFrame = CFrame.new(x/5,0,0.6)
+end 
+for x = 1, 250 do
+P = Instance.new("Part", workspace)
+Instance.new("BlockMesh", P)
+P.BrickColor = BrickColor.new(x/255,0/255,x/255)
+P.Anchored = true
+P.Locked = true
+P.FormFactor = "Custom"
+P.TopSurface = "Smooth"
+P.BottomSurface = "Smooth"
+P.Size = Vector3.new(.2,.2,.2)
+P.CFrame = CFrame.new(x/5,0,0.4)
+end 
+for x = 1, 250 do
+P = Instance.new("Part", workspace)
+Instance.new("BlockMesh", P)
+P.BrickColor = BrickColor.new(x/255,x/255,0/255)
+P.Anchored = true
+P.Locked = true
+P.FormFactor = "Custom"
+P.TopSurface = "Smooth"
+P.BottomSurface = "Smooth"
+P.Size = Vector3.new(.2,.2,.2)
+P.CFrame = CFrame.new(x/5,0,0.2)
+end 
 
-local Tool = script.Parent
-local Player
-local Character
-local ButtonDown
+for x = 1, 250 do
+P = Instance.new("Part", workspace)
+Instance.new("BlockMesh", P)
+P.BrickColor = BrickColor.new(0/255,x/255,x/255)
+P.Anchored = true
+P.Locked = true
+P.FormFactor = "Custom"
+P.TopSurface = "Smooth"
+P.BottomSurface = "Smooth"
+P.Size = Vector3.new(.2,.2,.2)
+P.CFrame = CFrame.new(x/5,0,0)
+end 
 
-function NearestCharacter()
-	local Nearest = math.huge
-	local Target
-	local Humanoids = { }
-	for _, Child in pairs(Game.Workspace:GetChildren()) do
-		if Child:FindFirstChild("Humanoid") and Child:FindFirstChild("Torso") then
-			table.insert(Humanoids, Child.Humanoid)
-		end
-	end
-	for _, humanoid in pairs(Humanoids) do
-		local Distance = (humanoid.Parent.Torso.CFrame.p - Player.Character.Torso.CFrame.p).magnitude
-		if Distance < Nearest and humanoid.Parent ~= Player.Character then
-			Nearest = Distance
-			Target = humanoid.Parent
-		end
-	end
-	return Target
-end			
-
-Tool.Equipped:connect(function(Mouse)
-	Player = Game.Players.LocalPlayer
-	Character = Player.Character
-	Mouse.KeyDown:connect(function(Key)
-		if Key == "z" then
-			Option = "Manual Attack"
-		elseif Key == "x" then
-			Option = "Automatic Attack"
-		elseif Key == "c" then
-			Option = "Manual Heal"
-		elseif Key == "v" then
-			Option = "Automatic Heal"
-		elseif Key == "b" then
-			Option = "Self Heal"
-		end
-		Tool.ToolTip = Option
-	end)
-	Mouse.Button1Down:connect(function()
-		ButtonDown = true
-		while ButtonDown do
-			wait(1/30)
-			if Option == "Manual Attack" then
-				coroutine.wrap(function()
-					for i = 1, 2 do
-						coroutine.wrap(function()
-							local Ray = Ray.new(Tool.Handle.CFrame.p, ((Mouse.Hit * CFrame.new(math.random(-2, 2), 0, 0)).p - Tool.Handle.CFrame.p).unit * 500)
-							local Hit, Position = Game.Workspace:FindPartOnRay(Ray, Character)
-							local Distance = (Position - Tool.Handle.CFrame.p).magnitude
-							local Bullet = Instance.new("Part", Character)
-							Bullet.Name = "Bullet"
-							Bullet.BrickColor = BrickColor.new("Really red")
-							Bullet.Transparency = 0.5
-							Bullet.Anchored = true
-							Bullet.CanCollide = false
-							Bullet.TopSurface, Bullet.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
-							Bullet.FormFactor = Enum.FormFactor.Custom
-							Bullet.Size = Vector3.new(1, 1, 1)
-							Bullet.CFrame = CFrame.new(Tool.Handle.CFrame.p, Position)
-							for i = 0, Distance/2 do
-								Bullet.CFrame = Bullet.CFrame * CFrame.new(0, 0, -Distance/(Distance/2))
-								if Hit and (Hit.Position - Bullet.Position).magnitude < 1 then
-									if Hit.Parent and Hit.Parent:FindFirstChild("Humanoid") and Hit.Parent ~= Character then
-										Hit.Parent.Humanoid:TakeDamage(5)
-										Bullet:Destroy()
-										if Hit.Parent.Humanoid.Health <= 0 and not Game.Players:GetPlayerFromCharacter(Hit.Parent) then
-											Hit.Parent:Destroy()
-										end
-										break
-									end
-								end
-								wait(1/30)
-							end
-							if Bullet.Parent == Character then
-								Bullet.Anchored = false
-								Bullet.Touched:connect(function(Hit)
-									if Hit.Parent ~= Character then
-										if Hit.Parent and Hit.Parent:FindFirstChild("Humanoid") then
-											Hit.Parent.Humanoid.MaxHealth = 100
-											Hit.Parent.Humanoid:TakeDamage(50)
-										elseif Hit.Name ~= "Base" then
-											Hit:Remove()
-											Bullet:Destroy()
-										end
-									end
-								end)
-							end
-							Game.Debris:AddItem(Bullet, 4)
-						end)()
-					end
-				end)()
-				wait(1/30)
-			elseif Option == "Automatic Attack" then
-				coroutine.wrap(function()
-					for i = 1, 2 do
-						coroutine.wrap(function()
-							ypcall(function()
-								local Ray = Ray.new(Tool.Handle.CFrame.p, ((NearestCharacter().Torso.CFrame * CFrame.new(math.random(-2, 2), 0, 0)).p - Tool.Handle.CFrame.p).unit * 500)
-								local Hit, Position = Game.Workspace:FindPartOnRay(Ray, Character)
-								local Distance = (Position - Tool.Handle.CFrame.p).magnitude
-								local Bullet = Instance.new("Part", Character)
-								Bullet.Name = "Bullet"
-								Bullet.BrickColor = BrickColor.new("Really red")
-								Bullet.Transparency = 0.5
-								Bullet.Anchored = true
-								Bullet.CanCollide = false
-								Bullet.TopSurface, Bullet.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
-								Bullet.FormFactor = Enum.FormFactor.Custom
-								Bullet.Size = Vector3.new(0.2, 0.2, 0.2)
-								Bullet.CFrame = CFrame.new(Tool.Handle.CFrame.p, Position)
-								for i = 0, Distance/2 do
-									Bullet.CFrame = Bullet.CFrame * CFrame.new(0, 0, -Distance/(Distance/2))
-									if Hit and (Hit.Position - Bullet.Position).magnitude < 1 then
-										if Hit.Parent:FindFirstChild("Humanoid") and Hit.Parent ~= Character then
-											Hit.Parent.Humanoid:TakeDamage(5)
-											Bullet:Destroy()
-											if Hit.Parent.Humanoid.Health <= 0 and not Game.Players:GetPlayerFromCharacter(Hit.Parent) then
-												Hit.Parent:Destroy()
-											end
-											break
-										end
-									end
-									wait(1/30)
-								end
-								if Bullet.Parent == Character then
-									Bullet.Anchored = false
-									Bullet.Touched:connect(function(Hit)
-										if Hit.Parent ~= Character then
-											if Hit.Name ~= "Base" and not Hit.Parent:FindFirstChild("Humanoid") then
-												Hit:Destroy()
-												Bullet:Destroy()
-											elseif Hit.Parent:FindFirstChild("Humanoid") then
-												Hit.Parent.Humanoid.MaxHealth = 100
-												Hit.Parent.Humanoid:TakeDamage(5)
-											end
-										end
-									end)
-								end
-								Game.Debris:AddItem(Bullet, 2)
-							end)
-						end)()
-					end
-				end)()
-				wait(1/30)
-			elseif Option == "Manual Heal" then
-				coroutine.wrap(function()
-					for i = 1, 2 do
-						coroutine.wrap(function()
-							local Ray = Ray.new(Tool.Handle.CFrame.p, ((Mouse.Hit * CFrame.new(math.random(-2, 2), 0, 0)).p - Tool.Handle.CFrame.p).unit * 500)
-							local Hit, Position = Game.Workspace:FindPartOnRay(Ray, Character)
-							local Distance = (Position - Tool.Handle.CFrame.p).magnitude
-							local Bullet = Instance.new("Part", Character)
-							Bullet.Name = "Bullet"
-							Bullet.BrickColor = BrickColor.new("Really blue")
-							Bullet.Transparency = 0.5
-							Bullet.Anchored = true
-							Bullet.CanCollide = false
-							Bullet.TopSurface, Bullet.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
-							Bullet.FormFactor = Enum.FormFactor.Custom
-							Bullet.Size = Vector3.new(0.2, 0.2, 0.2)
-							Bullet.CFrame = CFrame.new(Tool.Handle.CFrame.p, Position)
-							for i = 0, Distance/2 do
-								Bullet.CFrame = Bullet.CFrame * CFrame.new(0, 0, -Distance/(Distance/2))
-								if Hit and (Hit.Position - Bullet.Position).magnitude < 1 then
-									if Hit.Parent and Hit.Parent:FindFirstChild("Humanoid") and Hit.Parent ~= Character then
-										Hit.Parent.Humanoid.Health = Hit.Parent.Humanoid.Health + 5
-										Bullet:Destroy()
-										break
-									end
-								end
-								wait(1/30)
-							end
-							Game.Debris:AddItem(Bullet, 4)
-						end)()
-					end
-				end)()
-				wait(1/30)
-			elseif Option == "Automatic Heal" then
-				coroutine.wrap(function()
-					for i = 1, 2 do
-						coroutine.wrap(function()
-							ypcall(function()
-								local Ray = Ray.new(Tool.Handle.CFrame.p, ((NearestCharacter().Torso.CFrame * CFrame.new(math.random(-2, 2), 0, 0)).p - Tool.Handle.CFrame.p).unit * 500)
-								local Hit, Position = Game.Workspace:FindPartOnRay(Ray, Character)
-								local Distance = (Position - Tool.Handle.CFrame.p).magnitude
-								local Bullet = Instance.new("Part", Character)
-								Bullet.Name = "Bullet"
-								Bullet.BrickColor = BrickColor.new("Really blue")
-								Bullet.Transparency = 0.5
-								Bullet.Anchored = true
-								Bullet.CanCollide = false
-								Bullet.TopSurface, Bullet.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
-								Bullet.FormFactor = Enum.FormFactor.Custom
-								Bullet.Size = Vector3.new(0.2, 0.2, 0.2)
-								Bullet.CFrame = CFrame.new(Tool.Handle.CFrame.p, Position)
-								for i = 0, Distance/2 do
-									Bullet.CFrame = Bullet.CFrame * CFrame.new(0, 0, -Distance/(Distance/2))
-									if Hit and (Hit.Position - Bullet.Position).magnitude < 1 then
-										if Hit.Parent:FindFirstChild("Humanoid") and Hit.Parent ~= Character then
-											Hit.Parent.Humanoid.Health = Hit.Parent.Humanoid.Health + 5
-											Bullet:Destroy()
-											break
-										end
-									end
-									wait(1/30)
-								end
-								Game.Debris:AddItem(Bullet, 2)
-							end)
-						end)()
-					end
-				end)()
-				wait(1/30)
-			elseif Option == "Self Heal" then
-				coroutine.wrap(function()
-					for i = 1, 2 do
-						coroutine.wrap(function()
-							ypcall(function()
-								local cframe = Character.Torso.CFrame * CFrame.new(math.random(-4, 4), 0, math.random(-4, 4)) - Vector3.new(0, 3.5, 0)
-								local Ray = Ray.new(cframe.p, ((Character.Torso.CFrame).p - cframe.p).unit * 500)
-								local Hit, Position = Game.Workspace:FindPartOnRay(Ray, Character)
-								local Distance = (Position - Character.Torso.CFrame.p).magnitude
-								local Bullet = Instance.new("Part", Character)
-								Bullet.Name = "Bullet"
-										Character.Humanoid.WalkSpeed=160
-								Bullet.BrickColor = BrickColor.new("Lime green")
-								Bullet.Transparency = 0.5
-								Bullet.Anchored = true
-								Bullet.CanCollide = false
-								Bullet.TopSurface, Bullet.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
-								Bullet.FormFactor = Enum.FormFactor.Custom
-								Bullet.Size = Vector3.new(5, 5, 5)
-								Bullet.CFrame = CFrame.new(cframe.p, Position)
-								coroutine.wrap(function()
-									for i = 0, Distance/2 do
-										Bullet.CFrame = Bullet.CFrame * CFrame.new(0, 0, -Distance/(Distance/2))
-										wait(1/30)
-									end
-								end)()
-								pcall(function() Character.Humanoid.Health = Character.Humanoid.Health + 1 end)
-								Game.Debris:AddItem(Bullet, 0.25)
-							end)
-							wait(1/30)
-						end)()
-					end
-				end)()
-				wait(1/30)
-			end
-		end
-	end)
-	Mouse.Button1Up:connect(function()
-		ButtonDown = false
-		Character.Humanoid.WalkSpeed=16
-	end)
-end)
+for x = 1, 250 do
+P = Instance.new("Part", workspace)
+Instance.new("BlockMesh", P)
+P.BrickColor = BrickColor.new(x/255,x/255,x/255)
+P.Anchored = true
+P.Locked = true
+P.FormFactor = "Custom"
+P.TopSurface = "Smooth"
+P.BottomSurface = "Smooth"
+P.Size = Vector3.new(.2,.2,.2)
+P.CFrame = CFrame.new(x/5,0,-0.2)
+end 
