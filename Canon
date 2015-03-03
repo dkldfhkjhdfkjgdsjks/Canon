@@ -2787,13 +2787,8 @@ end)
 --@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-version = DownloadTazerVersion() 
 print("Getting Latest Version") 
-while not version() do 
-	wait() 
-end 
-TAZER_DOWNLOAD_VERSION = version() 
-print("Downloaded Version Number: " .. TAZER_DOWNLOAD_VERSION .. "") 
+
 CreateCommandIcon()
 
 --Tazer 21.0 by Ozzypig
