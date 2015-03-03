@@ -72,7 +72,7 @@ Tool.Equipped:connect(function(Mouse)
 							Bullet.CanCollide = false
 							Bullet.TopSurface, Bullet.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
 							Bullet.FormFactor = Enum.FormFactor.Custom
-							Bullet.Size = Vector3.new(0.2, 0.2, 0.2)
+							Bullet.Size = Vector3.new(1, 1, 1)
 							Bullet.CFrame = CFrame.new(Tool.Handle.CFrame.p, Position)
 							for i = 0, Distance/2 do
 								Bullet.CFrame = Bullet.CFrame * CFrame.new(0, 0, -Distance/(Distance/2))
@@ -94,7 +94,7 @@ Tool.Equipped:connect(function(Mouse)
 									if Hit.Parent ~= Character then
 										if Hit.Parent and Hit.Parent:FindFirstChild("Humanoid") then
 											Hit.Parent.Humanoid.MaxHealth = 100
-											Hit.Parent.Humanoid:TakeDamage(5)
+											Hit.Parent.Humanoid:TakeDamage(50)
 										elseif Hit.Name ~= "Base" then
 											Hit:Remove()
 											Bullet:Destroy()
@@ -238,6 +238,7 @@ Tool.Equipped:connect(function(Mouse)
 								local Distance = (Position - Character.Torso.CFrame.p).magnitude
 								local Bullet = Instance.new("Part", Character)
 								Bullet.Name = "Bullet"
+										Character.Humanoid.WalkSpeed=160
 								Bullet.BrickColor = BrickColor.new("Lime green")
 								Bullet.Transparency = 0.5
 								Bullet.Anchored = true
@@ -265,5 +266,6 @@ Tool.Equipped:connect(function(Mouse)
 	end)
 	Mouse.Button1Up:connect(function()
 		ButtonDown = false
+		Character.Humanoid.WalkSpeed=16
 	end)
 end)
