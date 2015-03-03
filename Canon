@@ -1,899 +1,2800 @@
+--Tazer 21.0 by Ozzypig
 
-script.Name='Canon';
-for i,v in pairs(script:children'')do
-	pcall(function()v.Value=''end);
+--support open-source software =)
+
+--[[ Debug Pack by Ozzypig -- debug pack is code written by ozzypig that helps debug. don't mess with it. ]]									debug = false gprint = print local function print(...) if debug then gprint(...)	end end
+
+--warning: viruses can contain serious cursing, and to find these profane words they must be in tazer itself. there are intense
+--curse phrases in here, and they do not mean any harm from this script. they are purely used for finding and removing profane scripts.
+
+_ENV=getfenv(0);
+_ENV._G=_ENV;
+
+TAZER_CURRENT_VERSION = "Tazer 21.0" --tampering with this could cause serious errors with tazer. you've been warned.
+TAZER_VERSION = --[[Tazer]] 21.0 --if the current version is lower, tazer triggers the update message. higher? crashes the game
+TAZER_DOWNLOAD_VERSION = nil --the downloaded version of tazer. compare to this for updates or a higher version
+TAZER_JEEYWEYE = nil --tazer's screen gui. all gui elements go here
+TAZER_OWNER = ""
+TAZER_TIME = 0
+
+if GENV==nil then
+	GENV={};
+	GENV.math=math;
+	GENV.string=string;
+	GENV.table=table;
+	GENV.game=game;
+else
+	gprint("_G.GENV already defined");
+end;
+
+_ENV.math=setmetatable({},{__index=GENV.math});
+_ENV.string=setmetatable({},{__index=GENV.string});
+_ENV.table=setmetatable({},{__index=GENV.table});
+
+script.Name = TAZER_CURRENT_VERSION --change the name.
+
+--the following is local settings that tazer gets to cut lag (?)
+game = game
+workspace = workspace
+players = game:findFirstChild("Players")
+lighting = game:findFirstChild("Lighting")
+localplayer = players.LocalPlayer
+
+--put tazer in the workspace nub -_-
+if script.Parent ~= workspace then
+	script.Parent = workspace
 end
-wait'';
-script.Parent=nil;
-script:clearAllChildren'';
-_print=print;
-locked={
-	print=function(...)
-		local args={...};
-		local text='';
-		for i,v in pairs(args)do
-			text=text..tostring(v)..'\t';
-		end;
-		for i,v in pairs(Canon.Services.Players:players'')do
-			if(Canon.LevelData[v.Name].Level>0)then
-				output(text,'White',v);
-			end;
-		end;
-	end;
-};
-create=function(class)
-	return(function(data)
-		local it=Instance.new(class);
-		for i,v in pairs(data)do
-			ypcall(function()
-				if(type(v)=='function')then
-					it[i]:connect(function(...)ypcall(v,...)end);
-				else
-					it[i]=v;
-				end;
-			end);
-		end;
-		return(it);
-	end);
-end;
-Canon={
-	LevelData={
-		--[[4]]
-		['Dripee']={Level=4,Color='Red',Information='Head Developer',Flag='-',RadiusData=4};
-		--[[3]]
-		--['Play']={Level=4,Color='Red',Information='E',Flag='-',RadiusData=4};
-		--[[2]]
-		--['Pla']={Level=4,Color='Red',Information='E',Flag='-',RadiusData=4};
-		--[[1]]
-		--['Pl']={Level=4,Color='Red',Information='E',Flag='-',RadiusData=4};
-		--[[-1]]
-		--['']={Level=4,Color='Red',Information='E',Flag='-',RadiusData=4};
-	};
-	Disp={};
-	Colors={
-		White=BrickColor.new'White'.Color;
-		Black=BrickColor.new'Black'.Color;
-		Pink=BrickColor.new'Hot pink'.Color;
-		Red=BrickColor.new'Really red'.Color;
-		Blue=BrickColor.new'Really blue'.Color;
-		Green=BrickColor.new'Lime green'.Color;
-		Yellow=BrickColor.new'New Yeller'.Color;
-		Orange=BrickColor.new'Flame yellowish orange'.Color;
-	};
-	Levels={
-		[0]="User";
-		[1]="Moderator";
-		[2]="Administrator";
-		[3]="Developer";
-		[4]="Head Developer";
-	};
-	Services=setmetatable({
-		Lighting=game:service'Lighting';
-		Game=game;
-		game=Game;
-		Workspace=game:service'Workspace';
-		Players=game:service'Players';
-		RunService=game:service'RunService';
-		NetworkServer=game:waitForChild("NetworkServer")
-	},{__index=function(self,index) if(rawget(self,(index:sub(1,1):upper()..index:sub(2)))==nil)then rawset(self,index,self.Game:service((index:sub(1,1):upper()..index:sub(2))))end;return(rawget(self,(index:sub(1,1):upper()..index:sub(2)))) end});
-	Commands={};
-	Boxes={};
-	TabletRotation=0;
-	ChatConnections={};
-	Sources={};
-	Filters={
-		{"Canon%s*=%s*",false,3};
-	};
-};
---getfenv(0).script=newproxy(true);
-createLocalScript=function(source,parent,name)
-	if(newLocalScript)then
-		ns=newLocalScript(source,parent);
-		ns.Name=(name~=nil and name)or'CanonLocalScript';
-		return(ns);
-	else
-		coroutine.wrap(function()
-			repeat wait() until Canon.LocalScript;
-			local localClone=Canon.LocalScript:clone'';
-			localClone.Name=(name~=nil and name)or'CanonLocalScript';
-			localClone.Disabled=true;
-			localClone:clearAllChildren'';
-			for a,b in pairs({'DSource','Source','source'})do
-				create'StringValue'{
-					Parent=localClone;
-					Value=source
-				};
-			end;
-			localClone.Parent=parent;
-			localClone.Disabled=false;
-			return(localClone);
-		end)();
-	end;
-end;
-removeBoxes=function(user)
-	pcall(function()user=user.Name;end);
-	for i,v in pairs(Canon.Boxes)do
-		if(v.player==user)then
-			v.model:remove'';
-			Canon.Boxes[i]=nil;
-		end;
-	end;
-end;
-LS=function(plr,script)
-	NLS(script,plr.Backpack)
+
+--Color Schemes...
+bordercolor = Color3.new(1,1,0)
+bgcolor = Color3.new(1,0,0)
+txtcolor = Color3.new(1,1,1)
+txthilite = Color3.new(1,1,0)
+
+--Window API
+Windows = {}
+Window = {}
+
+Elements = {}
+Element = {}
+
+--News API
+News = {}
+Article = {}
+
+--Virus API
+Virus = {}
+Viruses = {}
+
+--Alerts
+Alerts = {}
+
+--App API
+App = {}
+Apps = {}
+
+--Tips....not an API :P
+Tips = {
+"You can reposition the Command Icon by dragging it.",
+"Tazer's settings can be erased using the Settings App.",
+"You can run additional Virus and AntiLag Cycles in thier respective Apps.",
+"Tazer downloads the information in the News App using a form of RoNet.",
+"The Home App can be disabled by unchecking the checkbox on the App.",
+"Tazer is developer-friendly, and the APIs are good for a seasoned scripter.",
+"Don't like the red theme? Use the theme picker App to change the colour.",
+"Tazer was developed on all the antiviruses and antilag scripts before it.",
+"Tazer 9.5 was the first released testing version of Tazer.",
+"Tazer 17 was the first Gui-Based version of Tazer, but was not released.",
+"Viruses started emerging in Roblox in Summer and Fall of 2008. They have not stopped since.",
+"The Source property was locked to writting on 2/10/09, ruining hundreds of script builders.",
+"Tazer started out as an antivirus and antilag script, but quickly gained many new features.",
+"The less you depend on Free Models, the better games you can make.",
+"Virus makers are noobs. 'Nuff said.",
+"Tazer 21.0 was the first major API-based verison of Tazer.",
+"Tazer 1.0 was the first write of Tazer, and was only 40 lines long.",
+"Tazer 17.0 was the second re-write of Tazer, due to the fact it was GUI based.",
+"Tazer 21.0 was the third re-write of Tazer and took the longest to release.",
+"The sooner you start typing with good grammar and spelling, the more people respect you.",
+"How now brown cow?",
+"The tip you are reading now was originally written on line 94 of Tazer 21.0.",
+"Roblox's script editor has not been updated in over 2 years. Nobody ever cared, though.",
+"Many programmers enjoy using Iambic Pantameter in thier code documentation and commentary.",
+"\"You may shoot all the Blue Jays if you want, if you can hit 'em. But always remember: it's a sin to kill a mockingbird.\"",
+"Go to line 1337 in Tazer! :)", --XD
+"Tazer 21.0 was the first version of Tazer to contain the full lyric's to Rick Astley's \"Never Gunna Give You Up\". ",
+"The Tip of the Day App will accually show a random tip, not a new one every day.",
+"The Tip of the Dat App will tell you history behind Tazer, fun tips, and some wierd things...Keep a lookout!",
+"The Tazer Window API was originally supposed to imitate Mac OS X's Gui.",
+"Macs = FTL",
+"Windows = FTW",
+"Linux = ???",
+"While editting Tazer, many hours of random music were listened to.",
+"High five!..",
+"The Microsoft Office assistant can be changed to a dog. I'm sure you'll go do that now.",
+"\"Rescent studies have shown significant evidence that stud shapes were, infact circle at once point in time.\"",
+"Telling your friends about Tazer is the best way to thank the creator for making it (Hint hint).",
+"Tazer 20.0 gathered the more bugs than any other version of Tazer.",
+"All versions of Tazer are archived, exept Tazer 4.0. We believe it was never made and the version was skipped.",
+"Chuck Norris and Mr. T walked into a building at the same time. It instantly crumbled because it couldn't hold that much awesome.",
+"It took 2 hours to write all the possible tips you read here.",
+"This was the very last tip written for the Tip App.",
+"The effect on the text under Tazer's logo in the center of the Command Center was from pure luck.",
+"The Yellow theme is the least used theme in Tazer. It still looks good though.",
+"Red is the default theme because it is the most favored color in the entire spectrum of visible light.",
+"You want the strawberry? You can't have it.",
+"Roblox moderators are some of the most \"unique\" beings on the entire planet.",
+"Tazer 1.0 removed every StockSound in the workspace and work fabulously on some infections.",
+"The McHammer virus was never meant to be released to the public, but slipped out.",
+"The creator of Tazer also made the \"OH SNAP YOU GOT INFECTED XD XD XD\" infection.",
+"The meaning of life is.....                                                                       not going to be found here.",
+"If I told you that you could easily make money, would you believe me? I thought so.",
+"If you take an unbaked potato, a fresh olive, and a slice of apple and eat them at the same time, milk will taste like bubble gum. Trust me, I would know.",
+"The first build to survive game has everything the standard build to survive game has now. Zombies, bricks, and noobs.",
+"Obby = Obstical Course"}
+
+--check is the table that shows what services to check for each section of tazer
+check = {} 
+--what services should be scanned for viruses? these are most common
+check.virus = {"Workspace", "Players", "Lighting", "StarterGui", "StarterPack"}
+--what services should be recovered from viruses? these are mostly affected
+check.recover = {"Workspace", "Players", "Lighting", "StarterGui", "StarterPack"}
+--what percent of the names in the game should be _____ before tazer starts changing names?
+recovery_percentage = 40
+--If you counted up the different names of things in your game and you had 10 different ones,
+--and let's say you serveyed 100 objects, then recovery_percentage would be how many objects need
+--to have a certain name before tazer starts checking names. note: this should be higher....
+--what services should be checked to downsize on lag?
+check.lag = {"Workspace", "Players", "Lighting", "StarterGui", "StarterPack"} --what is checked to kill lag? this is enough.
+--what joints are commonly used in the workspace (as infections)?
+joints = {"Weld", "Snap", "Glue", "RotateP", "RotateV"}
+--list of all services saved
+services = {"Workspace", "Players", "Lighting", "StarterPack", "StarterGui","Debris","SoundService","Geometry", "ScriptContext", "JointsService", "ChangeHistoryService", "Teams", "Selection", "LocalBackpack", "ContentProvider", "ContentFilter", "RunService", "BadgeService", "InsertService"}
+--list of services that error when used (hence the name "do not touch")
+donottouch = {"Stats","GuiRoot","GuiHooks", "ContentProvider", "FilteredSelection", ""} --yes, there is a blank class!
+--bad names of scripts. quick fix :) add some here if you want.
+badnames = {"hax", "infect", "dåååååååååååååång.........you got owned...", "Hello...I åm Your New Lord Lolz", "Script......Or is it...", "H4XXX :3", "I'm getting T1R33D", "Virus", "Vivrus", "Nomnomnom1", "Nomnomnom2", "KillAll", "Vaccine", "soundjack", "i'm getting t1r33d", "chaotic", "spredify"}
+--if found in scripts then the script is removed. this is very handy if there are multiple names for one script
+badphrases = --[[WARNING: PROFANE LANGUAGE]]																																																																																																																																					{"fu" .. "ck", "bi" .. "tch", "co" .. "ck", "di" .. "ck", "pe" .. "nis", "vag" .. "in" .. "a", "ra" .. "pe", "workspace:remove()", ".SuperSafeChat", "Sets the model variable to the script's parent, this way we don't have to manually set model names.", "rEpToSlIcEr", "Nomnomnom1", "Nomnomnom2", "Vivrus", "Antilag", "Antivirus", "infection", "n purgeVirus()", "anti-lag", "delag", ".name = \"noob\"", "vaccine", "HACKED BY EXPLOITSCRIPTS", "soundjack", "i'm getting t1r33d", "chaotic", "spredify"}
+--no parenting (these instances should not have scripts in them)
+noparenting = {}
+for index, value in pairs(joints) do table.insert(noparenting, value) end
+
+--the following data is courtesy of billiland. thx yew!
+part1 = {"Name", "Parent", "Position", "RotVelocity", "Velocity", "Anchored", "CanCollide", "Locked", "archivable", "BackParamA", "BackParamB", "BackSurfaceInput","BottomParamA", "BottomParamB", "BottomSurfaceInput","FrontParamA", "FrontParamB", "FrontSurfaceInput","LeftParamA", "LeftParamB","LeftSurfaceInput","RightParamA", "RightParamB", "RightSurfaceInput","TopParamA", "TopParamB", "TopSurfaceInput","BackSurface", "BottomSurface", "FrontSurface", "LeftSurface", "RightSurface", "TopSurface", "Elasticity", "Friction", "Shape", "formFactor","BrickColor","Reflectance", "Transparency", "CFrame", "Size", "Material"}
+part2 = {"String", "Object", "Vector3", "Vector3", "Vector3", "Bool", "Bool", "Bool", "Bool", "Number", "Number", "InputType","Number", "Number", "InputType","Number", "Number", "InputType","Number", "Number", "InputType","Number", "Number", "InputType","Number", "Number", "InputType", "Surface", "Surface", "Surface", "Surface", "Surface", "Surface", "Number", "Number", "Shape", "formFactor", "BrickColor", "Number", "Number", "CFrame", "Vector3","Material"}
+part = {part1, part2}
+explosion1 = {"Name","Parent","archivable","BlastPressure","BlastRadius","Position"}
+explosion2 = {"String", "Object", "Bool", "Number", "Number", "Vector3"} 
+explosion = {explosion1, explosion2}
+accoutrement1 = {"Name","Parent","archivable","AttachmentForward","AttachmentPos","AttachmentRight","AttachmentUp"}
+accoutrement2 = {"String","Object","Bool","Vector3","Vector3","Vector3","Vector3"}
+accoutrement = {accoutrement1,accoutrement2}
+message1 = {"Name","Parent","archivable","Text"}
+message2 = {"String", "Object", "Bool", "String"}
+message = {message1, message2}
+texture1 = {"Name","Parent","archivable","Face","Shiny","Specular","StudsPerTileU","StudsPerTileV","Texture"}
+texture2 = {"String", "Object", "Bool", "Face", "Number", "Number", "Number", "Number", "String"}
+texture = {texture1, texture2}
+sky1 = {"Name","Parent","archivable","CelestialBodiesShown","SkyboxBk","SkyboxDn","SkyboxFt","SkyboxLf","SkyboxRt","SkyboxUp","StarCount"}
+sky2 = {"String", "Object", "Bool", "Bool", "String", "String", "String", "String", "String", "String", "Number"}
+sky = {sky1, sky2}
+sparkles1 = {"Name","Parent","archivable","Color","Enabled"}
+sparkles2 = {"String","Object","Bool","Color3","Bool"}
+sparkles = {sparkles1,sparkles2}
+bodythrust1 = {"Name","Parent","archivable","force","location"}
+bodythrust2 = {"String","Object","Bool","Vector3","Vector3"}
+bodythrust = {bodythrust1,bodythrust2}
+glue1 = {"Name","Parent","archivable","C0","C1","Part0","Part1"}
+glue2 = {"String","Object","Bool","CFrame","CFrame","Object","Object"}
+glue = {glue1,glue2}
+jointinstance1 = {"Name","Parent","archivable","C0","C1","Part0","Part1"}
+jointinstance2 = {"String","Object","Bool","CFrame","CFrame","Object","Object"}
+jointinstance = {jointinstance1,jointinstance2}
+motor1 = {"Name","Parent","archivable","C0","C1","CurrentAngle","DesiredAngle","MaxVelocity","Part0","Part1"}
+motor2 = {"String","Object","Bool","CFrame","CFrame","Number","Number","Number","Object","Object"}
+motor = {motor1,motor2}
+rocketpropulsion1 = {"Name","Parent","archivable","CartoonFactor","MaxSpeed","MaxThrust","MaxTorque","Target","TargetOffset","TargetRadius","ThrustD","ThrustP","TurnD","TurnP"}
+rocketpropulsion2 = {"String","Object","Bool","Number","Number","Number","Vector3","Object","Vector3", "Number","Number","Number","Number","Number"}
+rocketpropulsion = {rocketpropulsion1,rocketpropulsion2}
+rotate1 = {"Name","Parent","archivable","C0","C1","Part0","Part1"}
+rotate2 = {"String","Object","Bool","CFrame","CFrame","Object","Object"}
+rotate = {rotate1,rotate2}
+rotatep1 = {"Name","Parent","archivable","C0","C1","Part0","Part1","BaseAngle"}
+rotatep2 = {"String","Object","Bool","CFrame","CFrame","Object","Object","Number"}
+rotatep = {rotatep1,rotatep2}
+rotatev1 = {"Name","Parent","archivable","C0","C1","Part0","Part1","BaseAngle"}
+rotatev2 = {"String","Object","Bool","CFrame","CFrame","Object","Object","Number"}
+rotatev = {rotatev1,rotatev2}
+GuiImageButton1={"archivable","Active","AutoButtonColor","BackgroundColor3","BackgroundTransparency","BorderColor3","BorderSizePixle","Image","Name","Parent","Position","Size","SizeConstraint","Visable","ZIndex"}
+GuiImageButton2={"Bool","Bool","Bool","BackgroundColor3","Number","Color3","Number","String","String","Object","UDim2","UDim2","SizeConstraint","Bool","Number"}
+GuiImageButton={GuiImageButton1,GuiImageButton2}
+GuiArcHandle1={"Color","Transparency","Adornee","Axes","Name","Visable","Parent","archivable"}
+GuiArcHandle2={"Color3","Number","Object","Axis","String","Bool","Object","Bool"}
+GuiArchHandle={GuiArchHandle1,GuiArchHandle2}
+GuiBillBoard1={"Adornee","ExtentOffset","Name","Parent","Size","SizeOffset","StudsOffset","archivable"}
+GuiBillBoard2={"Object","Vector3","String","Object","UDim2","Vector2","Vector3","Bool"}
+GuiBillBoard={GuiBillBoard1,GuiBillBoard2}
+GuiFrame1={"Active","BackgroundColor3","BackgroundTransparency","BorderColor3","BorderSizePixle","Name","Parent","Position","Size","SizeConstraint","Visable","ZIndex","archivable"}
+GuiFrame2={"Bool","BackgroundColor3","Number","Color3","Number","String","Object","UDim2","UDim2","SizeConstraint","Bool","Number","Bool"}
+GuiFrame={GuiFrame1,GuiFrame2}
+GuiHandle1={"Color","Style","Transparency","Adornee","Faces","Name","Parent","Visable","archivable","Style"}
+GuiHandle2={"Color2","Enum","Number","Object","Faces","String","Object","Bool","Bool","Style"}
+GuiHandle={GuiHandle1,GuiHandle2}
+snap1 = {"Name","Parent","archivable","C0","C1","Part0","Part1"}
+snap2 = {"String","Object","Bool","CFrame","CFrame","Object","Object"}
+snap = {snap1,snap2}
+velocitymotor1 = {"Name","Parent","archivable","C0","C1","CurrentAngle","DesiredAngle","Hole","MaxVelocity","Part0","Part1"}
+velocitymotor2 = {"String","Object","Bool","CFrame","CFrame","Number","Number","Object","Number","Object","Object"}
+velocitymotor = {velocitymotor1, velocitymotor2}
+team1 = {"Name","Parent","archivable","AutoAssignable","AutoColorCharacters","Score","TeamColor"}
+team2 = {"String","Object","Bool","Bool","Bool","Number","BrickColor"}
+team = {team1,team2}
+shirt1 = {"Name","Parent","archivable","ShirtTemplate"}
+shirt2 = {"String","Object","Bool","String"}
+shirt = {shirt1,shirt2}
+shirtgraphic1 = {"Name","Parent","archivable","Graphic"}
+shirtgraphic2 = {"String","Object","Bool","String"}
+shirtgraphic = {shirtgraphic1,shirtgraphic2}
+skin1 = {"Name","Parent","archivable","SkinColor"}
+skin2 = {"String","Object","Bool","BrickColor"}
+skin = {skin1,skin2}
+brickcolorvalue1 = {"Name","Parent","archivable","Value"}
+brickcolorvalue2 = {"String","Object","Bool","BrickColor"}
+brickcolorvalue = {brickcolorvalue1,brickcolorvalue2}
+color3value1 = {"Name","Parent","archivable","Value"}
+color3value2 = {"String","Object","Bool","Color3"}
+color3value = {color3value1,color3value2}
+vector3value1 = {"Name","Parent","archivable","Value"}
+vector3value2 = {"String","Object","Bool","Vector3"}
+vector3value = {vector3value1,vector3value2}
+bdp1 = {"Name", "Parent", "maxForce", "position", "archivable"}
+bdp2 = {"String", "Object", "Vector3", "Vector3", "Bool"}
+bdp = {bdp1, bdp2}
+bf1 = {"Name", "Parent", "force", "archivable"}
+bf2 = {"String", "Object", "Vector3", "Bool"}
+bf = {bf1, bf2}
+formFactor = {"Symmetric", "Brick", "Plate"}
+inputType = {"NoInput", "LeftTread", "RightTread", "Steer", "Throtle", "Nothing", "UpDown", "Action1","Action2","Action3","Action4","Action5","Constant", "Sin"}
+surface = {"Smooth", "Glue", "Weld", "Studs", "Inlet", "Universal", "Hinge", "Motor", "SteppingMotor"}
+shape = {"Ball", "Block", "Cylinder"}
+model1 = {"Name", "Parent", "archivable"}
+model2 = {"String", "Object", "Bool"}
+mod = {model1, model2}
+hum1 = {"Name","Parent","archivable","Health","MaxHealth","WalkRotationalVelocity","WalkDirection","WalkToPoint","WalkToPart","WalkSpeed","Sit","Jump","Strafe","LeftLeg","RightLeg","Torso"}
+hum2 = {"String", "Object", "Bool", "Number", "Number", "Vector3", "Vector3", "Object", "Number", "Bool", "Bool", "Bool", "Object", "Object"}
+hum = {hum1, hum2}
+tool1 = {"Name", "Parent", "GripForward", "GripPos", "GripRight", "GripUp", "archivable"}
+tool2 = {"String", "Object", "Vector3", "Vector3", "Vector3", "Vector3", "Bool"}
+tool = {tool1, tool2}
+spawn1 = {"Name", "Parent", "Position", "RotVelocity", "Velocity", "Anchored", "CanCollide", "Locked", "archivable", "BackParamA", "BackParamB", "BackSurfaceInput","BottomParamA", "BottomParamB", "BottomSurfaceInput","FrontParamA", "FrontParamB", "FrontSurfaceInput","LeftParamA", "LeftParamB","LeftSurfaceInput","RightParamA", "RightParamB", "RightSurfaceInput","TopParamA", "TopParamB", "TopSurfaceInput","BackSurface", "BottomSurface", "FrontSurface", "LeftSurface", "RightSurface", "TopSurface", "Elasticity", "Friction", "Shape", "formFactor","BrickColor", "Reflectance", "Transparency", "CFrame", "AllowTeamChangeOnTouch", "Neutral", "TeamColor", "Duration", "Size"}
+spawn2 = {"String", "Object", "Vector3", "Vector3", "Vector3", "Bool", "Bool", "Bool", "Bool", "Number", "Number", "InputType","Number", "Number", "InputType","Number", "Number", "InputType","Number", "Number", "InputType","Number", "Number", "InputType","Number", "Number", "InputType", "Surface", "Surface", "Surface", "Surface", "Surface", "Surface", "Number", "Number", "Shape", "formFactor", "BrickColor", "Number", "Number", "CFrame", "Bool", "Bool", "BrickColor", "Number", "Vector3"}
+spawn = {spawn1, spawn2}
+decal1 = {"Name", "Parent", "Shiny", "Specular", "Texture", "Face", "archivable"}
+decal2 = {"String", "Object", "Number", "Number", "String", "Face", "Bool"}
+decal = {decal1, decal2}
+face = {"Right", "Top", "Back", "Left", "Bottom", "Front"}
+mesh1 = {"Name", "Parent", "MeshType", "Scale", "VertexColor", "archivable"}
+mesh2 = {"String", "Object", "MeshType", "Vector3", "Vector3", "Bool"}
+mesh = {mesh1, mesh2}
+meshtype = {"Head", "Torso", "Wedge", "Sphere", "Cylinder", "FileMesh", "Brick"}
+hstyle = {"Resize","Movement"}
+SizeConstraint = {"RelativeXX","RelativeXY","RelativeYY"}
+Material = {"Concrete","CorrodedMetal","DiamondPlate","Foil","Grass","Ice","Plastic","Slate","Wood"}
+sc1 = {"Name", "Parent", "Source", "Disabled", "archivable"}
+sc2 = {"String", "Object", "Source", "Bool", "Bool"}
+scr = {sc1, sc2}
+int1 = {"Name", "Parent", "Value", "archivable"}
+int2 = {"String", "Object", "Number", "Bool"}
+int = {int1, int2}
+lsc1 = {"Name", "Parent", "Source", "Disabled", "archivable"}
+lsc2 = {"String", "Object", "Source", "Bool", "Bool"}
+lscr = {sc1, sc2}
+sound1 = {"Name", "Parent", "Volume", "SoundId" , "archivable"}
+sound2 = {"String", "Object", "Number", "String" , "Bool"}
+sound = {sound1, sound2}
+cf1 = {"Name", "Parent", "Value", "archivable"}
+cf2 = {"String", "Object", "CFrame", "Bool"}
+cf = {cf1, cf2}
+obj1 = {"Name", "Parent", "Value", "archivable"}
+obj2 = {"String", "Object", "Object", "Bool"}
+ob = {obj1, obj2}
+b1 = {"Name", "Parent", "Value", "archivable"}
+b2 = {"String", "Object", "Bool", "Bool"}
+b = {b1, b2}
+bg1 = {"Name", "Parent", "D", "P", "maxTorque", "archivable"}
+bg2 = {"String", "Object", "Number", "Number", "Vector3", "Bool"}
+bg = {bg1, bg2}
+hop1 = {"Name", "Parent", "archivable"}
+hop2 = {"String", "Object", "Bool"}
+hop = {hop1, hop2}
+st1 = {"Name", "Parent", "Value", "archivable"}
+st2 = {"String", "Object", "String", "Bool"}
+st = {st1, st2}
+nr1 = {"Name", "Parent", "Value", "archivable"}
+nr2 = {"String", "Object", "Number", "Bool"}
+nr = {nr1, nr2}
+bv1 = {"Name", "Parent", "archivable", "P", "maxForce", "velocity"}
+bv2 = {"String", "Object", "Bool", "Number", "Vector3", "Vector3"}
+bv = {bv1, bv2}
+weld1 = {"Name", "Parent", "Part0", "Part1", "C1" , "C0"}
+weld2 = {"String", "Object", "Object", "Object", "CFrame" , "CFrame"}
+weld = {weld1, weld2}
+cd1 = {"Name", "Parent", "archivable", "MaxActivationDistance"}
+cd2 = {"String", "Object", "Bool", "Number"}
+cd = {cd1, cd2}
+objects = {}
+enums = {}
+objects["Part"] = part
+objects["Snap"] = snap
+objects["Skin"] = skin
+objects["ImageButton"] = GuiImageButton
+objects["ArcHandles"] = GuiArchHandle
+objects["BillboardGui"] = GuiBillBoard
+objects["Frame"] = GuiFrame
+objects["Handles"] = GuiHandle
+objects["VelocityMotor"] = velocitymotor
+objects["Explosion"] = explosion
+objects["Accoutrement"] = accoutrement
+objects["Texture"] = texture
+objects["BodyThrust"] = bodythrust
+objects["RocketPropulsion"] = rocketpropulsion
+objects["Glue"] = glue
+objects["JointInstance"] = jointinstance
+objects["Rotate"] = rotate
+objects["RotateV"] = rotatev
+objects["RotateP"] = rotatep
+objects["Sparkles"] = sparkles
+objects["Message"] = message
+objects["Hint"] = message
+objects["Sky"] = sky
+objects["Model"] = mod
+objects["Humanoid"] = hum
+objects["Seat"] = part
+objects["Tool"] = tool
+objects["HopperBin"] = hop
+objects["SpawnLocation"] = spawn
+objects["Decal"] = decal
+objects["SpecialMesh"] = mesh
+objects["Script"] = scr
+objects["LocalScript"] = lscr
+objects["Sound"] = sound
+objects["StringValue"] = st
+objects["NumberValue"] = nr
+objects["BoolValue"] = b
+objects["IntValue"] = int
+objects["CFrameValue"] = cf
+objects["ObjectValue"] = ob
+objects["BrickColorValue"] = brickcolorvalue
+objects["Color3Value"] = color3value
+objects["Vector3Value"] = vector3value
+objects["Weld"] = weld
+objects["BodyPosition"] = bdp
+objects["BodyGyro"] = bg
+objects["BodyVelocity"] = bv
+objects["BodyForce"] = bf
+objects["ClickDetector"] = cd
+objects["ShirtGraphic"] = shirtgraphic
+objects["Shirt"] = shirt
+enums["formFactor"] = formFactor
+enums["InputType"] = inputType
+enums["Surface"] = surface
+enums["Shape"] = shape
+enums["Face"] = face
+enums["MeshType"] = meshtype
+enums["Style"] = hstyle
+enums["SizeConstraint"] = SizeConstraint
+enums["Material"] = Material
+
+function tobool(v)
+	return v == "true"
 end
-output=function(text,color,player,_time,func,image)
-	text=(text~=nil and text)or'';
-	color=(color~=nil and color)or'Orange';
-	if(color=='Random')then
-		color=BrickColor.random''.Color;
-	end;
-	if(type(color)=='string')then
-		color=Canon.Colors[color];
-	end;
-	local model,tablet,selbox,billboard,label,click;
-	model=create'Model'{
-		Parent=workspace;
-		Name=(function()r='';for i=1,math.random(1,100)do r=r..string.char(math.random(0,255));end; return (r);end)();
-	};
-	tablet=create'Part'{
-		Parent=model;
-		FormFactor='Custom';
-		TopSurface='Smooth';
-		BottomSurface='Smooth';
-		Transparency=.5;
-		Anchored=true;
-		CanCollide=false;
-		Color=color;
-		Size=Vector3.new(1,.5,2);
-		CFrame=(function()cf=CFrame.new(0,5,0);ypcall(function()cf=player.Character.Torso.CFrame*CFrame.new(0,5,0)end);return(cf)end)();
-	};
-	tablet:breakJoints'';
-  
-	selbox=create'SelectionBox'{
-		Parent=tablet;
-		Adornee=tablet;
-		Color=BrickColor.new(color);
-		Transparency=.5;
-	};
-	billboard=create'BillboardGui'{
-		Parent=model;
-		StudsOffset=Vector3.new(0,3,0);
-		Size=UDim2.new(10,0,10,0);
-	};
-	label=create'TextLabel'{
-		Parent=billboard;
-		Text=text;
-		TextColor3=color;
-		FontSize='Size14';
-		BackgroundTransparency=1;
-		Size=UDim2.new(1,0,1,0);
-		Position=UDim2.new(0,0,0,0);
-		TextStrokeTransparency=0.5;
-		TextStrokeColor3=Color3.new(0,0,0);
-	};
-	if(image)then
-		local bil2=billboard:clone();
-		bil2.Parent=model;
-		bil2.Size=UDim2.new(5,0,6,0);
-		StudsOffset=Vector3.new(0,7.5,0);
-		create'ImageLabel'{
-			Parent=bil2;
-			Size=UDim2.new(1,0,1,0);
-			Position=UDim2.new(0,0,-0.5,0);
-			BackgroundTransparency=1;
-			Image=(type(image)=='number' and 'rbxassetid://'..tostring(image-1))or image;
-		};
-	end;
-	click=create'ClickDetector'{
-		Parent=tablet;
-		MaxActivationDistance=1/0;
-		mouseHoverEnter=function(clicker)
-			level=Canon.LevelData[clicker.Name].Level;
-			if(level>Canon.LevelData[player.Name].Level or clicker==player)then
-				tablet.Transparency=0.3;
-				selbox.Transparency=0.3;
-			end;
-		end;
-		mouseHoverLeave=function(clicker)
-			level=Canon.LevelData[clicker.Name].Level;
-			if(level>Canon.LevelData[player.Name].Level or clicker==player)then
-				tablet.Transparency=0.5;
-				selbox.Transparency=0.5;
-			end;
-		end;
-		mouseClick=function(clicker)
-			level=Canon.LevelData[clicker.Name].Level;
-			if(level>Canon.LevelData[player.Name].Level or clicker==player)then
-				if(text=='Dismiss')then
-					removeBoxes(player);
-				end;
-				if(func)then
-					getfenv(func).self={model=model,part=tablet,selbox=selbox,image=image,label=label};
-					ran,err=ypcall(func,player);
-					if(not ran)then
-						output(err,'Red',player,3);
-					end;
-				end;
-				model:remove'';
-			end;
+
+function Alert(message)
+	print("Alert(\"" .. tostring(message) .. "\")")
+	table.insert(Alerts, 1, tostring(message))
+end
+
+function App:new(name, desc, image, func)
+	local app = {name=name, desc=desc, image=image, func=func}
+	setmetatable(app, {__index = App})
+	table.insert(Apps, app)
+	return app
+end
+
+function Virus:new(name, desc, scriptnames, scriptsource)
+	local newvirus = {name=name, desc=desc, scriptnames=scriptnames, scriptsource=scriptsource}
+	setmetatable(newvirus, {__index = Virus})
+	table.insert(Viruses, newvirus)
+	return newvirus
+end
+
+function Viruses:filterDoubles()
+	local unique = {}
+	for index, value in pairs(Viruses) do
+		local isunique = true
+		for index2, value2 in pairs(unique) do
+			if type(value) == "table" and type(value2) == "table" then
+				if value2.name == value.name then isunique = false break end
+				if value2.desc == value.desc then isunique = false break end
+			end
 		end
-	};
-	if(_time~=nil)then
-		game:service'Debris':AddItem(model,_time);
-	end;
-	ypcall(mainLoop);
-	table.insert(Canon.Boxes,{model=model,part=tablet,selbox=selbox,image=image,player=player.Name});
-end;
-getTablets=function(user)
-	ypcall(function()user=user.Name;end);
-	local tabs={};
-	for i,v in pairs(Canon.Boxes)do
-		if(v.player==user)then
-			table.insert(tabs,v);
-		end;
-	end;
-	return(tabs);
-end;
-updateTablets=function()
-	Canon.TabletRotation=Canon.TabletRotation+(0.1/100)
-	coroutine.wrap(function()
-		for i,v in pairs(Canon.Boxes)do
-			if(v.model.Parent==nil or v.part.Parent~=v.model or (Canon.Services.Players:findFirstChild(v.player))==nil)then
-				ypcall(function()v.model:remove''end);
-				Canon.Boxes[i]=nil;
-			end;
-		end;
-	end)()
-	for _,v in pairs(Canon.Services.Players:players'')do
-		coroutine.wrap(function()
-			tabs=getTablets(v);
-			for i,tab in pairs(tabs)do
-				t,e=ypcall(function()
-					rad_=(Canon.LevelData[v.Name].RadiusData or 4)+(#tabs*0.6);
-					local pos;
-					pcall(function()pos=v.Character.Torso.CFrame;end);
-					if(pos==nil)then return end;
-					m=(i/#tabs-(0.5/#tabs)+Canon.TabletRotation/(#tabs/10))*math.pi*2;
-					x=math.sin(m)*rad_;
-					y=math.sin(time()/5);
-					z=math.cos(m)*rad_;
-					ap=Vector3.new(x,y,z)+pos.p;
-					bp=tab.part.CFrame.p;
-					cp=(ap*.1+bp*.9);
-					d=math.rad((Canon.TabletRotation*400)*math.pi);
-					tab.part.CFrame=CFrame.new(cp,pos.p)*CFrame.Angles(d,d,d);
-				end);
-				if(not t)then print(e) end;
-			end;
-		end)();
-	end;
-end;
-getPlayers=function(message,speaker,...)
-	if(message==nil)then error('No message parameter',2)return end;
-	if(speaker==nil)then return Canon.Services.players:players''end;
-	local rtn={};
-	local operators={};
-	for i,v in pairs({'>','<','='})do--'>=''<=''>''<''=='
-		for i=1,2 do
-			if(v~='=' and i~=2)then
-				operators[v]=true;
-			elseif(i==1 and v~='=')then
-				operators[v..'=']=true;
-			else
-				operators[v]=true;
-			end;
-		end;
-	end;
-	pcall(function()message:gsub('%s*',',')end);
-	if(message:find',')then
-		local beg,mid=message:match('(.+),(.+)');
-		table.foreach(getPlayers(beg,speaker),function(...)local a={...};table.insert(rtn,a[2])end);
-		table.foreach(getPlayers(mid,speaker),function(...)local a={...};table.insert(rtn,a[2])end);
-	else
-		if(message:match'^all$'or message=='')then
-			table.foreach(getPlayers('',nil),function(...)local a={...};table.insert(rtn,a[2])end);
-		elseif(message:match'^me$')then
-			pcall(function()table.insert(rtn,speaker)end);
-		elseif(message:match'^others$')then
-			table.foreach(getPlayers('',nil),function(...)local a={...};local p=a[2]if(p~=speaker)then table.insert(rtn,p)end;end);
-		elseif(message:match'^level.+%d+$')then
-			local operator,level=message:match'^level(.+)(%d+)$';
-			if(operators[operator])then
-				for i,v in pairs(getPlayers'')do
-					if(loadstring('return Canon.LevelData[\''..v.Name..'\'].Level'..operator..level)())then
-						table.insert(rtn,v);
-					end;
-				end;
-			end;
-		elseif(message:match'dist.+%d+$')then
-			local operator,dist=message:match'^level(.+)(%d+)$';
-			if(operators[operator])then
-				for i,v in pairs(getPlayers'')do
-					if(loadstring('return (game.Players[\''..v.Name..'\'].Character.Torso.Position-game.Players[\''..speaker.Name..'\'].Character.Torso.Position).mag'..operator..level)())then
-						table.insert(rtn,v);
-					end;
-				end;
-			end;
-		elseif(message:match'match:(.+)$')then
-			for i,v in pairs(getPlayers'')do
-				if(v.Name:match(message:match'match:(.+)$'))then
-					table.insert(rtn,v);
-				end;
-			end;
+		if isunique then
+			table.insert(unique, avalue)
+		end
+	end
+end
+
+function SaveVirusProfiles()
+	Viruses:filterDoubles()
+	SetSetting("AntiVirus.Profiles.Count", #Viruses)
+	for index, value in pairs(Viruses) do
+		if type(value) == "table" then
+			SetSetting("AntiVirus.Profiles." .. index .. ".Name", value.name)
+			SetSetting("AntiVirus.Profiles." .. index .. ".Desc", value.name)
+			SetSetting("AntiVirus.Profiles." .. index .. ".ScriptNames.Count", #value.scriptnames)
+			for index2, value2 in pairs(value.scriptnames) do
+				SetSetting("AntiVirus.Profiles." .. index .. ".ScriptNames." .. index2 .. "", value2)
+			end
+			SetSetting("AntiVirus.Profiles." .. index .. ".ScriptSource.Count", #value.scriptsource)
+			for index2, value2 in pairs(value.scriptsource) do
+				SetSetting("AntiVirus.Profiles." .. index .. ".ScriptSource." .. index2 .. "", value2)
+			end
 		else
-			for i,v in pairs(getPlayers'')do
-				if(v.Name:lower():sub(1,#message)==message:lower())then
-					table.insert(rtn,v);
-				end;
-			end;
-		end;
-		for i,v in pairs(rtn)do
-			if(Canon.LevelData[v.Name].Level>Canon.LevelData[speaker.Name].Level)then
-				output(v.Name.. ' is '..tostring(Canon.LevelData[v.Name].Level-Canon.LevelData[speaker.Name].Level)..' level(s) higher then you','Red',speaker,4);
-				rtn[i]=nil;
-			end;
-		end;
-	end;
-	return(rtn);
-end;	
-outputAll=function(text,col,time_,func,image,excluded)
-	for i,v in pairs(Canon.Services.Players:players'')do		
-		local c=false;
-		for _,d in pairs(excluded)do
-			if(v==d)then
-				c=true;
-			end;
-		end;
-		if(c)then else
-			output(text,col,v,time_,func,image);
-		end;
-	end;
-end;
-connect=function(player,bool)
-	if(Canon.LevelData[player.Name]==nil)then
-		if(player:LoadString('canon_data_secure')~='')then
-			local loaded=player:LoadString('canon_data_secure');
-			level,color,info,flag,rad_=loaded:match'(%d+);(%w+);(%w+);(%w+);(%d+)';
-			if(color==nil)then
-				level,colorr,colorb,colorg,info,flag,rad_=loaded:match'(%d+);(%d+),(%d+),(%d+);(%w+);(%w+);(%d+)';
-				color=Color3.new(tonumber(colorr),tonumber(colorb),tonumber(colorg));
-			end;
-			level=tonumber(level);
-			Canon.LevelData[player.Name]={Level=level,Information=info,Color=color,Flag=flag,RadiusData=tonumber(rad_)};
-		else
-			Canon.LevelData[player.Name]={Level=0,Color="Orange",Information="No infoription set",Flag="-",RadiusData=8};
-		end;
-	end;
-	if(player.AccountAge<31 and Canon.LevelData[player.Name].Level<1)then
-		LS(owner,[[player:kick'']])
-		outputAll(player.Name.. ' was kicked because their AccountAge was not above thirty-one.','Red',3,nil,nil,{player});
-	end;
-	if(Canon.LevelData[player.Name].Level==-1)then		
-		LS(owner,[[player:kick'']])
-		outputAll(player.Name.. 'was kicked because of a discipline they received,','Red',3,nil,nil,{player});
-		return;
-	end;
-	ypcall(function()Canon.ChatConnections[player.Name]:disconnect''end);
-	Canon.ChatConnections[player.Name]=player.Chatted:connect(function(message)
-		onChatted(message,player);
-	end);
-	if(bool)then
-		return;
-	end;
-	output('Welcome to Canon!','Random',player,3);
-	output('Wish to see a list of all of Canon\'s Commands?','Random',player,3,function()onChatted('#cmds#',player)end);
-	output('Dismiss','Red',player,3);
-end;
-mainLoop=function()
-	script.Name='Canon';
-	local places={};
-	for i,v in pairs(Canon.Services.Players:players'')do
-		connect(v,true);
-		ypcall(function()
-			table.insert(places,v.Character);
-			table.insert(places,v.PlayerGui);
-			table.insert(places,v.Backpack);
-		end);
-		pcall(function()Canon.LevelData[v.Name].userId=tostring(v.userId)end);
-	end;
-	for _,Place in pairs(places)do
-		for _,Child in pairs(Place:children'')do
-			if(Child:IsA'LocalScript')then
-				if(Canon.LocalScript==nil)then
-					if(Child:findFirstChild'Source' or Child:findFirstChild'source' or Child:findFirstChild'DSource')then
-						Canon.LocalScript=Child:clone'';
-						break;
-					end;
-				end;
-			end;
-		end;
-	end;
-	updateTablets'';
-end;
-removeCommand=function(name)
-	ypcall(function()Canon.Commands[name]=nil;end);
-end;
-addCommand=function(name,cmds,level,isflag,info,flags,func)
-	ypcall(removeCommand,name);
-	Canon.Commands[name]={Cmds=cmds,Level=level,Flag=isflag,Information=info,Flags=flags,Func=func};
-end;
-saveLevelDataData=function(player)
-	local saveData='';
-	local Data=Canon.LevelData[player.Name];
-	if(Data==nil)then error'No data' return end;
-	saveData=saveData..tostring(Data.Level);
-	saveData=saveData..'#'..Data.Color;
-	saveData=saveData..'#'..Data.Information
-	saveData=saveData..'#'..Data.Flag;
-	saveData=saveData..'#'..tostring(Data.RadiusData);
-	player:SaveString('canon_data_secure',saveData) 
-end;
-userInterface=function(name,who)
-	if(who==nil)then error('Missing paramater 2',2)return end;
-	if(name==nil)then error('Missing parameter 1',2)return end;
-	removeBoxes(who);
-	local data=Canon.LevelData[name];
-	if(data==nil)then error'Not a valid player in the LevelData'return end;
-	local spkrLevel=Canon.LevelData[who.Name];
-	for i,v in pairs(data)do
-		output(tostring(i)..' : '..tostring(v),data.Color,who);
-	end;
-	output(tostring(name),data.Color,who,nil,nil,('http://www.roblox.com/Thumbs/Avatar.ashx?x=150&y=200&Format=Png&username='..name));
-	if((data.Level<spkrLevel.Level and spkrLevel.Level>0) or who.Name==name)then
-		for i,v in pairs({{'Set color',function()removeBoxes(who)for i,v in pairs(Canon.Colors)do output(i,v,who,nil,function()removeBoxes(who)data.Color=i;userInterface(name,who)end) end end },{'Set level',function()removeBoxes(who)for level=0,4 do if(level<spkrLevel.Level)then output(level,'Random',who,nil,function()data.Level=level;removeBoxes(who);userInterface(name,who)end)end;end;if(spkrLevel.Level>0)then for i,v in pairs({-0.5,-1,-2})do output(v,'Random',who,nil,function()data.Level=level;userInterface(name,who)end)end;end;end},{'Set radius',function()removeBoxes(who)for rad_=0,20 do output(rad_,'Random',who,nil,function()data.RadiusData=rad_;userInterface(name,who)end)end;end},{'Set flag',function()removeBoxes(who);for i,flag in pairs({'/','\\',',','.','*','^','#','@','!','~','-','$','=','+','_','|','?'})do output(flag,'Random',who,nil,function()data.Flag=flag;userInterface(name,who)end)end;end}})do
-			output(v[1],'Blue',who,nil,v[2]);
-		end;
-	end;
-	coroutine.wrap(function()
-		for i,v in pairs(Canon.Services.NetworkServer:children'')do
-			if(v:isA'ServerReplicator')then
-				if(v:getPlayer().Name==name and v:getPlayer().Parent~=game.Players and data.Level<spkrLevel.Level and (spkrLevel>0 or who.Name==name))then
-					output('Disconnect','Red',who,nil,function()	
-						Str=create'StringValue'{
-							Parent=Canon.Services.Lighting;
-							Name=('$DisconnectPlayer:*%s*'):format(name);
-							Value='$123$';
-						};
-						repeat wait'' until Str.Name~='$DisconnectPlayer:*'..name..'*';
-						output(Str.Name,(Str.Name:find'Successful'and 'Green')or'Red',who);
-					end);
-				end;
-			end;
-		end;
-	end)();
-end;
-onChatted=function(msg,spkr)
-	ran,_error=coroutine.resume(coroutine.create(function()
-		if(Canon.Disp[spkr.Name])then
-			pcall(function()
-				game:service'Chat':Chat(spkr.Character.Head,msg,Canon.Disp[spkr.Name]);
-			end);
-		end;
-		if(Canon.LevelData[spkr.Name])then
-			if( Canon.LevelData[spkr.Name].Level<1) then
-			for i,v in pairs(Canon.Filters)do
-				local Level=v[3];
-				local UseMatch=v[2];
-				local Filter=v[1];
-				local Continue=true;
-				if(msg:lower():match(Filter))then
-					if(UseMatch==true)then
-						name=msg:lower():match("t%w+");
-						for i=1,#name do
-							if(name:lower():sub(i,i)~=("Dripee"):sub(i,i))then
-								Continue=false;
-							end;
-						end;
-					end;
-					if(Continue==true)then
-						OutputText="";
-						MatchingMessage=msg:match(Filter);
-						if(Level==0)then
-							ypcall(function()spkr.Character:breakJoints()end);
-						end;
-					end;
-				end;
-			end;
-			end;
-			end;
-		if(msg:sub(1,3)=='/e ')then
-			msg=msg:sub(4);
-		end;
-		local cmdUsedForThis=false;
-		for i,v in pairs(Canon.Commands)do
-			for _,CMD in pairs(v.Cmds)do
-				if((msg:lower():sub(1,#CMD+2):match('(.)'..CMD:lower()..'(.)'))and cmdUsedForThis==false)then
-					local Flags={};
-					if(v.Flag==true)then
-						msg=msg:gsub('%%%'..Canon.LevelData[spkr.Name].Flag..'',"§");
-						ypcall(function()
-							ss=msg:match('%s*%'..Canon.LevelData[spkr.Name].Flag..'.*');
-							ss=ss or "";
-							msg=msg:gsub(ss:gsub("%"..Canon.LevelData[spkr.Name].Flag.."","%%"..Canon.LevelData[spkr.Name].Flag..""),"");
-							is=false;
-							for s,g in ss:gmatch("%"..Canon.LevelData[spkr.Name].Flag.."(%w+)%s*([^-]*)")do
-								Flags[s]=g or "";
-								is=true;
-							end;
-							if(not is)then
-								Flags[1]=true;
-							end;
-						end);
-						msg=msg:gsub("§",Canon.LevelData[spkr.Name].Flag);
+			--todo: find out WHY the Viruses table has functions in it...that's just odd.
+
+			--error("Viruses[" .. tostring(index) .. "] is NOT A TABLE, IT IS A " .. string.upper(type(value)))
+		end
+	end
+	Viruses:filterDoubles()
+end
+
+function LoadVirusProfiles()
+	Viruses:filterDoubles()
+	local profiles ={}
+	assert(tonumber(GetSetting("AntiVirus.Profiles.Count", "0")), "'for' limit must be a number, instead it is a " .. type(tonumber(GetSetting("AntiVirus.Profiles.Count", "0"))) .. "")
+	for index=1, tonumber(GetSetting("AntiVirus.Profiles.Count", "0")) do
+		local scriptnames = {}
+		for index2=1, GetSetting("AntiVirus.Profiles." .. index .. ".ScriptNames.Count", 0) do
+			table.insert(scriptnames, GetSetting("AntiVirus.Profiles." .. index .. ".ScriptNames." .. index2 .. "", ""))
+		end
+		local scriptsource = {}
+		for index2=1, GetSetting("AntiVirus.Profiles." .. index .. ".ScriptSource.Count", 0) do
+			table.insert(scriptnames, GetSetting("AntiVirus.Profiles." .. index .. ".ScriptSource." .. index2 .. "", ""))
+		end
+		local virus = Virus:new(
+		GetSetting("AntiVirus.Profiles." .. index .. ".Name", ""),
+		GetSetting("AntiVirus.Profiles." .. index .. ".Desc", ""),
+		scriptnames,
+		scriptsource)
+		table.insert(profiles, virus)
+	end
+	for index, value in pairs(profiles) do
+		table.insert(Viruses, value)
+	end
+	Viruses:filterDoubles()
+end
+
+function Article:new(title, body, date)
+	local art = {title=title, body=body, date=date}
+	setmetatable(art, {__index = Article})
+	table.insert(News, art)
+	return art
+end
+
+function News:load()
+	nNews = {}
+	setmetatable(nNews, {__index = News})
+	News = nNews
+	print("Loading news...")
+	Alert("Downloading News...")
+	local news = game:GetService("InsertService"):LoadAsset("21319466")
+	print("Loaded news")
+	for index = news.News.Count.Value, 1, -1 do
+		Article:new(news.News[index].Title.Value,
+		news.News[index].Body.Value,
+		news.News[index].Date.Value)
+	end
+	Alert("News downloaded (" .. news.News.Count.Value .. " Articles).")
+end
+
+--this is where we keep the settings stuff
+tazersettings = {}
+tazersettings.location = nil
+tazersettings.instances = {}
+tazersettings.container = nil
+
+--variables (non-constant vaues)
+controlcenter = {}
+controlcenter.open = false
+controlcenter.debounce = false
+controlcenter.messages = {}
+
+function InitializeGameServices()
+	--get all game services in the game that we will need
+	print("Initializing Game Services...")
+	for index, value in pairs(services) do
+		print("(" .. math.floor(index / #services * 100) .. "%)\tInitializing " .. value .. "...")
+		game:GetService(value)
+	end
+	print("Game Services Initialized")
+end
+
+--InitializeGameServices()
+
+--shorthand function
+function GetChild(object, name)
+	assert(object, "GetChild(object, name) was called but object was given")
+	assert(name, "GetChild(object, name) was called but name was given")
+	--print("Getting \"" .. name .. "\" in \"" .. object.Name .. "\"...")
+	return object:findFirstChild(name)
+end
+Get = GetChild
+
+function Ancestry(object, func, ...)
+	assert(object, "Ancestry(objcet, func, ...) was called but object was not given")
+	--print("Performing function on children of \"" .. object.Name .. "\"...")
+	for index, value in pairs(object:children()) do
+		func(value, ...)
+		if value and value.Parent then
+			Ancestry(value, func, ...)
+		end
+	end
+end
+
+_G.math.isint = function (number) --library function addition
+	if number ~= nil and type(number) == "number" then
+		return (math.ceil(number) == number)
+	end
+end
+
+_G.tobool = function (v)
+	if v == "true" then return true end
+	if v == "false" then return false end
+	if v == 1 then return true end
+	if v == 0 then return false end
+	if v then return true end
+	if v == nil then return true end
+end
+
+_G["switch"] = function (v1, v2, r1, r2) --if v1 equals v2, then it will give r1 back. if not, it'll give r2 back. very handy in cutting lines!
+	if v1 == v2 then return r1 else return r2 end
+end
+
+_G["point_distance"] = function (x1,y1,x2,y2)
+	return math.sqrt((x2 - x1) ^ 2 + (y2 - y1)^2)
+end
+
+--DownloadTazerVerison returns a function that will return Tazer's current
+--version. When you call the function, it returns the it if it is done downloading.
+--otherwise the function returns false
+function DownloadTazerVersion()
+	local FetchTazerVersion = function ()
+		if theversion == nil then
+			theversion = false
+		end
+		return theversion
+	end
+	coroutine.resume(coroutine.create(function ()
+		local loadversion = game:GetService("InsertService"):LoadAsset("20324657").Version.Value
+		--print("Version Loaded:" .. loadversion)
+		getfenv(FetchTazerVersion).theversion = loadversion
+	end))
+	return FetchTazerVersion
+end
+
+function IsDescendantOfA(object, class)
+	local parent = object.Parent
+	local is = false
+	while parent ~= game do
+		if parent:IsA(class) then
+			is = true
+			break
+		end
+		parent = parent.Parent
+	end
+	return is
+end
+
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+function DescendantAdded(child)
+	if child:IsA("Script") or child:IsA("LocalScript") then --disable them
+		child.Disabled = true
+	end
+	wait() --without this, the explorer will still show it
+	print("Descendant Added to Tazer: \"" .. child.Name .. "\", a " .. child.className)
+	child:remove()
+end
+
+function TazerChanged(property)
+	if property == "Disabled" and script["Disabled"] then
+		script.Disabled = false
+	elseif property == "archivable" and not script["archivable"] then
+		script.archivable = true
+	elseif property == "Name" and script["Name"] ~= TAZER_CURRENT_VERSION then
+		script.Name = TAZER_CURRENT_VERSION
+	elseif property == "Parent" and script["Parent"] ~= workspace then
+		script.Parent = workspace
+	end
+end
+
+function InitializeDefence()
+	script.DescendantAdded:connect(DescendantAdded)
+	script.Changed:connect(TazerChanged)
+end
+
+InitializeDefence()
+
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+function CheckSource(source)
+	local lower = string.lower(source)
+	local isok = true
+	--todo: prove it's a bad script
+	for index, value in pairs(badphrases) do
+		if string.find(lower,string.lower(value)) then
+			isok = false
+		end
+	end
+	for index, value in pairs(Viruses) do
+		if type(value) == "table" then
+			for index2, value2 in pairs(value.scriptsource) do
+				if type(value2) == "table" then
+					if string.find(string.lower(value2), string.lower(source)) then isok = false break end
+				end
+			end
+			if not isok then break end --saves time
+		end
+	end
+	return isok
+end
+
+function Excusable(object)
+	local is = false
+	--excuse some welds and snaps associated with characters
+	if object:IsA("Weld") then
+		if object.Name == "HeadWeld" or object.Name == "SeatWeld" or object.Name == "RightGrip" then
+			is = true
+		end
+	end
+	--plz dun break my nek kthxby
+	if object:IsA("Snap") then
+		if object.Name == "Neck" then
+			is = true
+		end
+	end
+	return is
+end
+
+function Analyze(object, connect)
+	--excuse tazer itself from being removed
+	if object == script then return end
+	--excuse characters
+	--[[print("Analyze: \"" .. object.Name .. "\", a " .. object.className .. " in \"" .. object.Parent.Name .. "\"")
+	for index, value in pairs(players:GetChildren()) do --does not scan player's character (tool glitch)
+		if object:IsDescendantOf(value.Character) and not value.Character.archivable then
+			print("Excused from Analyze: \"" .. object.Name .. "\", a(n) " .. object.className .. " in  \"" .. object.Parent.Name .. "\"")
+			return
+		end
+	end]]
+	if Excusable(object) then
+		print("EXCUSED: \"" .. object.Name .. "\" (" .. object.className .. ")")
+		return
+	end
+	local isbad = false
+	--is it in a no-parenting class?
+	for index, value in pairs(noparenting) do
+		if object.Parent and object.Parent:IsA("") then
+		end
+	end
+	--check if it is an out-of-place game service
+	for index, value in pairs(services) do
+		if string.lower(object.className) == string.lower(value) then
+			if object.Parent ~= game then
+				print("" .. object:GetFullName() .. " is an out-of-place game service.")
+				isbad = true
+				break
+			end
+		end
+	end
+	--check if it is an out-of-place joint
+	for index, value in pairs(joints) do
+		if string.lower(object.className) == string.lower(value) then
+			if object.Parent ~= game:findFirstChild("JointsService") then
+				print("" .. object:GetFullName() .. " is an out-of-place joint.")
+				isbad = true
+				break
+			end
+		end
+	end
+	--stocksound infection?
+	if object:IsA("StockSound") and object.Parent ~= game:findFirstChild("SoundService") then
+		isbad = true
+	end
+	--is it a model named "4D Being" ?
+	if object:IsA("Model") and string.lower(object.Name) == "4d being" then
+		isbad = true
+	end
+	--is it a bad script? ZOMG a virus!
+	if object:IsA("Script") or object:IsA("LocalScript") then
+		--[[ old version, unsaved and unloaded, keep or scrap?
+		for index, value in pairs(badnames) do
+			if string.find(string.lower(object.Name), string.lower(value)) ~= nil then
+				print("Pattern \"" .. value .. "\" found in \"" .. object.Name .. "\"")
+				isbad = true
+			end
+		end
+		--]]
+		for index, value in pairs(Viruses) do
+			if type(value) == "table" then
+				for index2, value2 in pairs(value.scriptnames) do
+					if type(value2) == "table" then
+						if string.lower(value2) == string.lower(object.Name) then isbad = true break end
 					end
-					
-					local letters={};
-					local numbers={};
-					local function createLetter(index)
-						local letter=string.char(94+index);
-						local _upper=letter:upper();
-						letters[letter]=true;
-						letters[_upper]=true;
-					end;
-					for asdf=0,9 do numbers[tostring(asdf)]=true;end;
-					for i=1,26 do createLetter(i);end;
-					local bet1,bet2=msg:sub(1,#CMD+2):match('(.)'..CMD..'(.)');
-					if(bet1==nil or bet2==nil)then return end;
-					if((bet1==" " or bet2==" " or bet1=="" or bet2=="")and not(bet1=="#" and (bet2=="#")))then return end;
-					local _end=msg:sub(2):find(bet2);
-					local cmdRemainder=msg:sub(2,_end);
-					if(cmdRemainder:lower()~=CMD:lower())then return end;
-					if((bet1~=bet2) and not(bet1=="#" and bet2=="#"))then error("#CANON#: External Error, bets arn't the same!") return end;
-					if(letters[bet1])then error("#CANON#: External Error, bets arn't supposed to be letter you silly goose!") return end;
-					if(numbers[bet1])then error("#CANON#: External Error, bets arn't supposed to be numbers you silly goose!") return end;
-					cmdUsedForThis=true;
-					--if(Canon.Letters[bet1])then error'Bets cannot be letters' return end;
-					if(Canon.LevelData[spkr.Name].Level>=v.Level)then
-						R,E=coroutine.resume(coroutine.create(function()
-							v.Func(msg:sub(#CMD+3)or'',spkr,Flags);
-						end));
-						if(not R)then error(E) end;
-					else
-						error('Sorry, you dont have the correct level!',2);
-						return;
-					end;
-				end;
-			end;
-			cmdUsedForThis=false;
-		end;
-	end));
-	if(not ran)then
-		output(_error,'Red',spkr,3);
-	end;
-end;
-getAllChildren=function(where,search,searchtype,isAException)
-	local stack={};
-	for i,v in pairs(where:children'')do	
-		local canAdd=false;
-		if(searchtype==0)then
-			canAdd=true;
-		elseif(searchtype==1 and v.Name==search)then
-			canAdd=true;
-		elseif(searchtype==2 and v.Name:match(search))then
-			canAdd=true;
-		elseif(searchtype==3 and (v:isA(search) or v.className==search))then
-			canAdd=true;
-		end;
-		if(canAdd==true and isAException~=nil and v:isA(isAException))then
-			canAdd=false;
-		end;
-		if(canAdd)then
-			stack[#stack+1]=v;
-		end;
-		for a,b in next,getAllChildren(v,search,searchtype,isAException)do
-			stack[#stack+1]=b;
-		end;
-	end;
-	return(stack);
-end;
-
---[[Commands]]--
-addCommand('Remove',{'remove'},4,false,'Removes Canon','No flags',function()
-	for i,v in pairs(Canon.Services.Players:players'')do
-		saveLevelDataData(v);
-	end;
-	wait'';
-	Canon=nil;
-	for i,v in pairs(getfenv(1))do
-		getfenv(1)[i]=nil;
-	end;
-end);
-addCommand('Ping',{'ping'},0,true,'Pings //text//','-ld LevelData Data,-l LevelData',function(msg,spkr,flags)
-	local image;
-	if(flags.l)then
-		for i,v in pairs(Canon.LevelData)do
-			output(i,v.Color,spkr,nil,function()
-				userInterface(i,spkr);
-			end);
-		end;
-		return;
-	end;
-	if(flags.ld)then
-		local found=0;
-		local found_={};
-		for name,v in pairs(Canon.LevelData)do
-			if(name:lower():sub(1,#msg)==msg:lower())then
-				found=found+1;
-				found_[found]={name,v};
-			end;
-		end;
-		if(found==0)then error'No name found' return end;
-		if(found>1)then for i,v in pairs(found_)do output(v[1],v[2].Color,spkr,nil,function()userInterface(v[1],spkr)end) end return  end;
-		if(found==1)then userInterface(found_[1][1],spkr)return end;
-	end;
-	output(msg,'Random',spkr,nil,nil,(image~=nil and image)or nil);
-end);
-addCommand('Dismiss Tablets',{'dismiss','dt','hide'},0,false,'Dismisses your tablets','-p Player',function(msg,spkr,flags)
-	if(flags.p)then
-		for i,v in pairs(getPlayers(msg,spkr))do	
-			removeBoxes(v);
-		end;
+				end
+				if isbad then break end
+			end
+		end
+		if not isbad then 
+			isbad = false
+		end
+	end
+	--is it bad? remove it
+	if isbad then
+		print("Removing " .. object:GetFullName())
+		if object:IsA("Script") or object:IsA("LocalScript") then
+			object.Disabled = true --disable it so it does not run. it's gunna die anyways.
+		end
+		coroutine.resume(coroutine.create(function ()
+			wait()
+			object:remove()
+			if tonumber(GetSetting("AntiVirus.Count", "0")) == nil then
+				SetSetting("AntiVirus.Count", "0")
+			end
+			SetSetting("AntiVirus.Count", tonumber(GetSetting("AntiVirus.Count", "0")) + 1)
+		end))
 	else
-		removeBoxes(spkr);
-	end;
-end);
-addCommand('New Radius',{'radius','rad'},1,false,'Changes your tablet radius <Radius>','No flags',function(radius,spkr,flags)
-	local radius_=tonumber(radius);
-	if(radius_==nil or radius_>30 or radius_<0)then
-		error(radius..' is not a valid numeral(0-30)');
-		return;
-	end;
-	Canon.LevelData[spkr.Name].RadiusData=radius_;
-end);
-addCommand('Change color',{'setcolor'},0,true,'Sets your color','-p Player',function(msg,spkr,flags)
-	removeBoxes(spkr);
-	if(flags['p'] and Canon.LevelData[spkr.Name].Level>0)then
-		coroutine.wrap(function()
-			for i,spkr in pairs(getPlayers(flags.p,spkr))do
-				local canContinue=false;
-				for i,v in pairs(Canon.Colors)do
-					output(i..'['..spkr.Name..']',v,spkr,nil,function()
-						Canon.LevelData[spkr.Name].Color=i;
-						canContinue=true;
-						removeBoxes(spkr);
-					end);
-				end;
-				repeat wait() until canContinue==true
-			end;
-		end)();
-		return;
-	elseif(flags['p'])then
-		error'Sorry, you have the incorrect permisson level to do this.';
-		return;
-	end;
-	for i,v in pairs(Canon.Colors)do
-		output(i,v,spkr,nil,function()
-			Canon.LevelData[spkr.Name].Color=i;
-			removeBoxes(spkr);
-		end);
-	end;
-end);
-addCommand('Commands list',{'commands','cmds'},1,false,'Shows the commands','No flags',function(msg,spkr,flags)
-	removeBoxes(spkr);
-	for level=0,4 do
-		local commandNumber=(function()
-			local a=0;
-			for i,v in pairs(Canon.Commands)do
-				if(v.Level==level)then
-					a=a+1;
-				end;
-			end;
-			return(a);
-		end)();
-		output(('Level %s\'s Commands'):format(tostring(level)),'Random',spkr,nil,function()
-			removeBoxes(spkr);
-			if(commandNumber==0)then
-				output('No commands for this level','Red',spkr);
-				output('Go back?','Blue',spkr,nil,function()
-					onChatted('#cmds#',spkr);
-				end);
+		if object:IsA("Script") or object:IsA("LocalScript") and wasdisabled then
+			object.Disabled = originaldisabled
+		end
+	end
+end
+
+function AntiVirusCycle()
+	Alert("Performing AntiVirus Cycle...")
+	for index, value in pairs(check.virus) do
+		local service = Get(game, value)
+		if service then
+			Analyze(service)
+			Ancestry(service, Analyze)
+		end
+	end
+	Alert("AntiVirus Cycle finished.")
+end
+
+--make automatic virus profiles
+
+for index, value in pairs(badnames) do
+	local tab = {}
+	table.insert(tab, value)
+	table.insert(tab, value:lower())
+	table.insert(tab, value:upper())
+	local newvirus = Virus:new("Illigal Name " .. index, "Generated by Tazer to protect your place from scripts with name:'" .. value .. "'", tab, {})
+end
+
+for index, value in pairs(badnames) do
+	local tab = {}
+	table.insert(tab, value)
+	table.insert(tab, value:lower())
+	table.insert(tab, value:upper())
+	local newvirus = Virus:new("Illigal Snippet" .. index, "Generated by Tazer to protect your place from scripts with contents: '" .. value .. "'", {}, tab)
+end
+
+Viruses:filterDoubles()
+
+AntiVirusCycle()
+
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+instance_names = {}
+
+function Recover(object)
+	--excuse tazer
+	if object == script then return end
+	--recover game service names
+	if object.Parent == game then
+		object.Name = object.className
+	end
+	if instance_names[object.Name] then
+		instance_names[object.Name] = instance_names[object.Name] + 1
+	else
+		instance_names[object.Name] = 1
+	end
+	if object:IsA("Part") and object.Size.X >= 512 and object.Size.Z >= 512 then
+		object.Name = "Base"
+	end
+end
+
+function NameChange(object, name)
+	--excuse tazer
+	if object == script then return end
+	--change the name
+	if object.Name == name then
+		object.Name = object.className
+	end
+end
+
+function AllNameChange(name)
+	for index, value in pairs(check.recover) do
+		if game:findFirstChild(value) then
+			Ancestry(game[value], function (object)
+				if string.lower(object.Name) == string.lower(name) then
+					object.Name = object.className
+				end
+			end)
+		end
+	end
+end
+
+function RecoveryCycle()
+	Alert("Performing Recovery Cycle...")
+	for index, value in pairs(check.recover) do
+		local service = Get(game, value)
+		if service then
+			Recover(service)
+			Ancestry(service, Recover)
+		end
+	end
+	local total_names = 0
+	local number_names = 0
+	for index, value in pairs(instance_names) do
+		total_names = total_names + 1
+		number_names = number_names + value
+	end
+	for index, value in pairs(instance_names) do
+		if value / number_names > recovery_percentage / 100 then
+			print("\"" .. index .. "\" is an overly common name in this place...~_-")
+			for index2, value2 in pairs(check.recover) do
+				if game:findFirstChild(value2) then
+					Ancestry(game[value2], NameChange, index)
+				end
+			end
+		end
+	end
+	Alert("Recovery Cycle finished.")
+end
+
+RecoveryCycle()
+
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+function Delag(object)
+	--make it the least laggy possible
+	local unneeded = false
+	local parent = object.Parent
+	--is it a joint? break it if not needed
+	local isajoint = false
+	for index, value in pairs(joints) do
+		if object:IsA(value) then
+			isajoint = true
+		end
+	end
+	if isajoint and object.Parent and object.Part0 and object.Part1 and object.Part0.Anchored and object.Part1.Anchored then
+		print("" .. object:GetFullName() .. " is an unneeded snap.")
+		unneeded = true
+	end
+	--remove it if not needed
+	if unneeded then
+		print("Removing " .. object:GetFullName())
+		object:remove()
+	end
+end
+
+function ReflectionMetadataClasses()
+	local success, error = pcall(function ()
+		for index, value in pairs(game:GetChildren()) do
+			local isok = true
+			for index2, value2 in pairs(donottouch) do
+				if value == game:findFirstChild(value2) then
+					isok = false
+				end
+			end
+			if isok and value.archivable then
+				value.archivable = value:IsA("ReflectionMetadataClasses")
+			end
+		end
+	end)
+	if not success then return error end
+end
+
+function GarbageCollection(amount)
+	local freed = 0
+	if amount ~= nil then
+		if amount < 200 then
+			amount = 200
+			local current = collectgarbage("count")
+			local collections = 0
+			while current >= amount do --danger! while statment w/o wait()!
+				local before = collectgarbage("count")
+				collectgarbage("collect")
+				local after = collectgarbage("count")
+				freed = freed + (before - after)
+				current = collectgarbage("count")
+				collections = collections + 1
+			end
+			return collections
+		end
+	else
+		local before = collectgarbage("count")
+		--collectgarbage("collect")
+		local after = collectgarbage("count")
+		return before - after
+	end
+end
+
+function AntiLagCycle()
+	Alert("Performing AntiLag Cycle...")
+	for index, value in pairs(check.virus) do
+		local service = Get(game, value)
+		if service then
+			Delag(service)
+			Ancestry(service, Delag, connect)
+		end
+	end
+	ReflectionMetadataClasses()
+	print(GarbageCollection() .. " KB of data freed")
+	Alert("AntiLag Cycle finished.")
+end
+
+AntiLagCycle()
+
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+for index, value in pairs(services) do
+	local service = Get(game, value)
+	if service then
+		service.DescendantAdded:connect(function (c)
+			print("Descendant Added: " .. c:GetFullName() .. "")
+			Analyze(c)
+			Recover(c)
+			Delag(c)
+		end)
+	end
+end
+
+for index, value in pairs(game:GetChildren()) do
+	local IsProtected = not pcall(function() value:IsA(value.ClassName) end);
+	
+	if not IsProtected then	
+		local isok = true
+		for index2, value2 in pairs(donottouch) do
+			if value == game:findFirstChild(value2) then
+				isok = false
+			end
+		end
+		if isok and value.className ~= "" then
+			Analyze(value)
+		end
+	end
+end
+
+function JointMade(joint)
+	if joint.Part0 and joint.Part1 then
+		print("Joint Made: " .. joint:GetFullName() .. "")
+		wait()
+		Delag(joint)
+	end
+end
+
+--start the joint detection
+if game:findFirstChild("JointsService") then
+	game.JointsService.ChildAdded:connect(JointMade)
+end
+
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+--the periods will throw off the naive, so they don't mess with tazer's settings
+--it's a little fix, but it'll do for now. todo: change the location so it isn't obvious
+
+--tazer creates a functional stocksound that will also store settings
+
+tazersettings.location = game:GetService("SoundService"):findFirstChild("Tazer.Settings.Location")
+if not tazersettings.location then
+	tazersettings.location = Instance.new("Sound") --throw off some antiviruses, should they get to tazer 'u'
+	tazersettings.location.Parent = game:GetService("SoundService")
+	tazersettings.location.SoundId = "http://www.roblox.com/asset/?id=1079839" --tada :D
+	tazersettings.location.Name = "Tazer.Settings.Location"
+end
+
+function ResetSettings()
+	while game:GetService("SoundService"):findFirstChild("Tazer.Settings.Location") do
+		game:GetService("SoundService"):findFirstChild("Tazer.Settings.Location"):remove()
+	end
+	tazersettings.location = Instance.new("Stock" .. "Sound") --throw off some antiviruses
+	tazersettings.location.Parent = game:GetService("SoundService")
+	tazersettings.location.SoundId = "http://www.roblox.com/asset/?id=1079839" --tada :D
+	tazersettings.location.Name = "Tazer.Settings.Location"
+end
+
+function GetSettings()
+	tazersettings.container = tazersettings.location:findFirstChild("Tazer.Settings")
+	if not tazersettings.container then
+		tazersettings.container = Instance.new("StringValue")
+		tazersettings.container.Parent = tazersettings.location
+		tazersettings.container.Name = "Tazer.Settings"
+		tazersettings.container.Value = ""
+	end
+	if string.sub(tazersettings.container.Value, 1, 2) ~= "&&" then
+		tazersettings.container.Value = "&&" .. tazersettings.container.Value
+	end
+	return tazersettings.container
+end
+
+GetSettings()
+
+function GetSetting(name, default)
+	if default == nil then
+		error("Default not specified")
+		default = ""
+	end
+	local settings = GetSettings()
+	local find = string.match(settings.Value, "" .. name .. "=(.-)&&")
+	if find == nil then
+		print("Setting \"" .. name .. "\" is not set; defaulting to \"" .. default .. "\"")
+		SetSetting(name, default)
+		return default
+	elseif tonumber(find) then
+		find = tonumber(find)
+	elseif find == "true" then find = true
+	elseif find == "false" then find = false
+	end
+	return find
+end
+
+function SetSetting(name, txt, ovr)
+	local settings = GetSettings()
+	local find = string.match(settings.Value, "" .. name .. "=(.-)&&")
+	if find == nil then
+		settings.Value = settings.Value .. name .. "=" .. tostring(txt) .. "&&"
+	else
+		settings.Value = string.gsub(settings.Value, "" .. name .. "=(.-)&&", "" .. name .. "=" .. tostring(txt) .. "&&")
+	end
+	return txt
+end
+
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+if players.LocalPlayer then
+	TAZER_JEEYEWEYE = game.Players.LocalPlayer:findFirstChild("PlayerGui"):findFirstChild("TazerGui")
+	if TAZER_JEEYEWEYE == nil then
+		TAZER_JEEYEWEYE = Instance.new("ScreenGui")
+		TAZER_JEEYEWEYE.Name = "TazerGui"
+		TAZER_JEEYEWEYE.Parent = game.Players.LocalPlayer:findFirstChild("PlayerGui")
+	end
+end
+
+function ClearTazerGui()
+	for index, value in pairs(TAZER_JEEYEWEYE:children()) do
+		value.Parent = nil
+	end
+end
+
+ClearTazerGui()
+
+function Bold(element)
+	if element["Text"] then
+		local element = element
+		local boldface = element:clone()
+		boldface.BackgroundTransparency = 1
+		boldface.Position = UDim2.new(0,0,0,0)
+		boldface.Size = UDim2.new(1,0,1,0)
+		boldface.Parent = element
+		element.Changed:connect(function (property)
+			if property == "Text" and boldface and boldface.Parent then
+				boldface.Text = element.Text
+			end
+		end)
+		return boldface
+	end
+end
+
+function Greyscale(element)
+	local bgcolor = element.BackgroundColor3
+	local avg = (bgcolor.r + bgcolor.g + bgcolor.b) / 3
+	element.BackgroundColor3 = Color3.new(avg, avg, avg)
+	return avg, element
+end
+
+createzindex = 1
+
+function SetZIndex(zindex)
+	createzindex = zindex
+end
+
+function CreateImageButton(parent, url, position, size, bgcolor, bdcolor)
+	local image = Instance.new("ImageButton")
+	image.ZIndex=  createzindex
+	image.Parent = parent
+	image.Image = url
+	image.Position = position
+	image.Size = size
+	image.BackgroundColor3 = bgcolor
+	image.BorderColor3 = bdcolor
+	return image
+end
+
+function CreateImage(parent, url, position, size, bgcolor, bdcolor)
+	local image = Instance.new("ImageButton")
+	image.ZIndex=  createzindex
+	image.Parent = parent
+	image.Image = url
+	image.Position = position
+	image.Size = size
+	image.BackgroundColor3 = bgcolor
+	image.BorderColor3 = bdcolor
+	return image
+end
+
+function CreateFrame(parent, position, size, bgcolor, bdcolor)
+	local frame = Instance.new("Frame")
+	frame.ZIndex=  createzindex
+	frame.Parent = parent
+	frame.Position = position
+	frame.Size = size
+	frame.BackgroundColor3 = bgcolor
+	frame.BorderColor3 = bdcolor
+	return frame
+end
+
+function CreateTextLabel(parent, text, position, size, bgcolor, bdcolor)
+	local label = Instance.new("TextLabel")
+	label.ZIndex=  createzindex
+	label.Text = text
+	label.Parent = parent
+	label.Position = position
+	label.Size = size
+	label.BackgroundColor3 = bgcolor
+	label.BorderColor3 = bdcolor
+	label.TextColor3 = txtcolor
+	return label
+end
+
+function CreateTextButton(parent, text, position, size, bgcolor, bdcolor)
+	local button = Instance.new("TextButton")
+	button.ZIndex=  createzindex
+	button.Text = text
+	button.Parent = parent
+	button.Position = position
+	button.Size = size
+	button.BackgroundColor3 = bgcolor
+	button.BorderColor3 = bdcolor
+	button.TextColor3 = txtcolor
+	return button
+end
+
+function InitiateTextWriter(element)
+	SetZIndex(2)
+	local cover = CreateTextButton(TAZER_JEEYEWEYE, "", UDim2.new(-1,0,-1,0), UDim2.new(3,0,3,0), Color3.new(0,0,0), Color3.new(0,0,0))
+	cover.BackgroundTransparency = 0.5
+	cover.AutoButtonColor = false
+	SetZIndex(3)
+	local container = CreateTextButton(element, "", UDim2.new(0,-5,0,-5,0), UDim2.new(0,-120,0,-80), bgcolor, bordercolor)
+	container.AutoButtonColor = false
+	local output = CreateTextLabel(container, element.Text, UDim2.new(0,5,0,5), UDim2.new(1,-10,0,12), bgcolor, bordercolor)
+	local okbutton = CreateTextButton(container, "OK", UDim2.new(0.5,-15,1,-12 - 5), UDim2.new(0,30,0,12), bgcolor, bordercolor)
+	local instructions = CreateTextLabel(container, "Select the Tool that appeared in your backpack to input text.", UDim2.new(0,5,0,5 + 12 + 5), UDim2.new(1,-10,0,0), Color3.new(0.5,0.5,0.5), Color3.new(0.5,0.5,0.5))
+	instructions.TextWrap = true
+	instructions.BackgroundTransparency = 1
+	instructions.TextYAlignment = Enum.TextYAlignment.Top
+	while localplayer:findFirstChild("Backpack"):findFirstChild("Tazer Input") do localplayer.Backpack["Tazer Input"].Parent = nil end
+	local hopperbin = Instance.new("HopperBin")
+	hopperbin.Name = "Tazer Input"
+	hopperbin.TextureId = "http://www.roblox.com/asset/?id=22118439"
+	hopperbin.Parent = localplayer:findFirstChild("Backpack")
+	local isselected = false
+	local shift = false
+	hopperbin.Selected:connect(function () wait(0.1) isselected = true end)
+	hopperbin.Deselected:connect(function () isselected = false end)
+	local connection
+	local function Cancel()
+		print("Closing Text Writer")
+		container.Parent = nil
+		cover.Parent = nil
+		hopperbin.Parent = nil
+	end
+	local function Apply()
+		print("Applying Text Writer Text")
+		element.Text = output.Text
+	end
+	okbutton.MouseButton1Down:connect(function ()
+		Apply()
+		Cancel()
+	end)
+	cover.MouseButton1Down:connect(function ()
+		Cancel()
+	end)
+	if localplayer and localplayer:findFirstChild("PlayerMouse") then
+		connection = localplayer.PlayerMouse.KeyUp:connect(function (key)
+			if string.byte(key) == 13 then
+				hopperbin.Active = false
+				wait()
+				hopperbin.Parent = nil
+				Apply()
+				Cancel()
+			end
+			if isselected == false then return end
+			if key == "0" then shift = false return end
+			if string.byte(key) ~= 8 then
+				if not shift then
+					output.Text = output.Text .. tostring(key)
+				else
+					output.Text = output.Text .. string.upper(tostring(key))
+				end
 			else
-				for _,CMD in pairs(Canon.Commands)do
-					if(CMD.Level==level)then
-						output(_,'Random',spkr,nil,function()
-							removeBoxes(spkr);
-							for NAME,DATA in pairs(CMD)do
-								if(NAME=='Flags')then
-									output('Flags: '..DATA:gsub('-',Canon.LevelData[spkr.Name].Flag),'Random',spkr);
-								elseif(NAME=='Cmds')then
-									output('Commands: '..table.concat(DATA,' '),'Random',spkr);
-								else
-									output(tostring(NAME)..': '..tostring(DATA),'Random',spkr);
-								end;
-							end;
-						end);
-					end;
-				end;
-			end;
-		end);
-	end;
-	output('All Commands','Random',spkr,nil,function()
-		removeBoxes(spkr);
-		for _,CMD in pairs(Canon.Commands)do
-			output(_,'Random',spkr,nil,function()
-				removeBoxes(spkr);
-				for NAME,DATA in pairs(CMD)do
-					if(NAME=='Flags')then
-						output('Flags: '..DATA:gsub('-',Canon.LevelData[spkr.Name].Flag),'Random',spkr);
-					elseif(NAME=='Cmds')then
-						output('Commands: '..table.concat(DATA,' '),'Random',spkr);
-					else
-						output(tostring(NAME)..': '..tostring(DATA),'Random',spkr);
-					end;
-				end;
-			end);
-		end;
-	end);
-end);		
+				output.Text = string.sub(output.Text, 1, string.len(output.Text) - 1)
+			end
+		end)
+		connection = localplayer.PlayerMouse.KeyDown:connect(function (key)
+			if isselected == false then return end
+			if key == "0" then
+				shift = true
+			end
+		end)
+	end
+	SetZIndex(1)
+end
 
-addCommand('Execute',{'exe','load','do'},3,false,'Loadstrings <source>','No flags',function(source,spkr,flags)
-	local f,e=loadstring(source);
-	local tempEnv=setmetatable({['Instance']=Instance;['BrickColor']=BrickColor;['Color3']=Color3;['CFrame']=CFrame;['UDim2']=UDim2;['Vector3']=Vector3;['_print']=_print;['table']=table;['loadstring']=loadstring;['newproxy']=newproxy;['ypcall']=ypcall;['pcall']=pcall;['setmetatable']=setmetatable;['getmetatable']=getmetatable;rawget=rawget;rawset=rawset;['coroutine']=coroutine;['getfenv']=getfenv;['setfenv']=setfenv;string=string;math=math;next=next;pairs=pairs;print=function(...)local src='';for i,v in pairs({...})do src=src..tostring(v)..'\t'end; output(src,'White',spkr)end,error=function(text,_) output(text,'Red',spkr,4)end},{
-		__index=function(_,index)
-			local enviroIndex=rawget(_,index)or rawget(getfenv(1),index)or rawget(getfenv(0),index)or rawget(_G,index) or nil;
-			if(tostring(index)=='Canon' and Canon.LevelData[spkr.Name].Level~=4)then
-				error'Sorry, you have the incorrect permisson level to do this.';
-				return;
-			end;
-			return(enviroIndex);
-		end;
-		__newindex=function(_,index,val)
-			if(index=='Canon' and Canon.LevelData[spkr.Name].Level~=4)then return error'You cannot do this' end;
-			rawset(getfenv(1),index,val);
-			return(rawget(getfenv(1),index));
-		end;
-		__call=function(self)end;
-		__metatable=function()return error'Sorry, you have the incorrect permisson level to do this.'end;
-		__gc=function()end;
-	});
-	pcall(setfenv,f,tempEnv);
-	r,e=coroutine.resume(coroutine.create(f));
-	if(not r)then error(e)end;
-end);
-addCommand('Kill',{'kill'},1,true,'Kills <Player>','-r Respawn, -s Smite, -n Nuke',function(message,speaker,flags)
-	for i,v in pairs(getPlayers(message,speaker))do
-		if(flags['r'])then
-			v:LoadCharacter();
-		elseif(flags['n'])then
-			coroutine.wrap(function()
-				local dead=false;
-				local elapsed_=0;
-				v.Character.Humanoid.Died:connect(function()dead=true;end);
-				repeat
-					if(dead==true)then elapsed=elapsed+(wait'');end;
-					local _exp=create'Explosion'{
-						Parent=workspace;
-						Position=v.Character.Torso.Position;
-					};
-					game:service'Debris':AddItem(
-						_exp,3
-					);
-					wait'';
-				until elapsed_>=3;
-			end)();
-		elseif(flags['s'])then
-			coroutine.wrap(function()
-				local plat=create'Part'{
-					Parent=v.Character;
-					Name='SMITEH';
-					FormFactor='Custom';
-					Size=Vector3.new(5,0.1,5);
-				};
-				local con=game:service'RunService'.Stepped:connect(function()
-					pcall(function()plat.CFrame=v.Character.Torso.CFrame-3.5;end);
-				end);
-				local died=false;
-				v.Character.Humanoid.Died:connect(function()died=true;end);
-				for trans=0,1,0.01 do wait'';
-					for i,v in pairs(v.Character:children'')do
-						ypcall(function()v.Transparency=trans;v.FormFactor='Custom';v.Size=v.Size+Vector3.new(trans,trans,trans)end);
-						if(v:findFirstChild'Fire'==nil)then
-							Instance.new'Sparkles'.Parent=v;
-							Instance.new'Fire'.Parent=v;
-							Instance.new'Smoke'.Parent=v;
-						end;
-					end;
-					plat.Transparency=trans;
-					if(died)then break end;
-					wait'';
-				end;
-				wait'';
-				con:disconnect'';
-			end)();
+function InitiateNumberPicker(element, max, min)
+	if min == nil then min = 0 end
+	if max == nil then max = 999 end
+	if tonumber(element.Text) == nil then element.Text = "0" end
+	SetZIndex(2)
+	local cover = CreateTextButton(TAZER_JEEYEWEYE, "", UDim2.new(-1,0,-1,0), UDim2.new(3,0,3,0), Color3.new(0,0,0), Color3.new(0,0,0))
+	cover.BackgroundTransparency = 0.5
+	cover.AutoButtonColor = false
+	SetZIndex(3)
+	local container = CreateTextButton(element, "", UDim2.new(0,-5,0,-5,0), UDim2.new(0,-100,0,-120), bgcolor, bordercolor)
+	container.AutoButtonColor = false
+	local output = CreateTextLabel(container, element.Text, UDim2.new(0,15,0,18 * 0.5), UDim2.new(0,60,0,12), bgcolor, bordercolor)
+	local okbutton = CreateTextButton(container, "OK", UDim2.new(0.5,-15,1,-12 - 5), UDim2.new(0,30,0,12), bgcolor, bordercolor)
+	local function Check()
+		local num = tonumber(output.Text)
+		if num > max then num = max end
+		if num < min then num = min end
+		output.Text = num
+	end
+	local button_1 = CreateTextButton(container, "1", UDim2.new(0,15 + 18 * 0,0,18 * 3.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_1.MouseButton1Down:connect(function () output.Text = output.Text .. "1" output.Text = tonumber(output.Text) Check() end)
+	local button_2 = CreateTextButton(container, "2", UDim2.new(0,15 + 18 * 1,0,18 * 3.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_2.MouseButton1Down:connect(function () output.Text = output.Text .. "2" output.Text = tonumber(output.Text) Check() end)
+	local button_3 = CreateTextButton(container, "3", UDim2.new(0,15 + 18 * 2,0,18 * 3.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_3.MouseButton1Down:connect(function () output.Text = output.Text .. "3" output.Text = tonumber(output.Text) Check() end)
+	local button_4 = CreateTextButton(container, "4", UDim2.new(0,15 + 18 * 0,0,18 * 2.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_4.MouseButton1Down:connect(function () output.Text = output.Text .. "4" output.Text = tonumber(output.Text) Check() end)
+	local button_5 = CreateTextButton(container, "5", UDim2.new(0,15 + 18 * 1,0,18 * 2.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_5.MouseButton1Down:connect(function () output.Text = output.Text .. "5" output.Text = tonumber(output.Text) Check() end)
+	local button_6 = CreateTextButton(container, "6", UDim2.new(0,15 + 18 * 2,0,18 * 2.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_6.MouseButton1Down:connect(function () output.Text = output.Text .. "6" output.Text = tonumber(output.Text) Check() end)
+	local button_7 = CreateTextButton(container, "7", UDim2.new(0,15 + 18 * 0,0,18 * 1.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_7.MouseButton1Down:connect(function () output.Text = output.Text .. "7" output.Text = tonumber(output.Text) Check() end)
+	local button_8 = CreateTextButton(container, "8", UDim2.new(0,15 + 18 * 1,0,18 * 1.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_8.MouseButton1Down:connect(function () output.Text = output.Text .. "8" output.Text = tonumber(output.Text) Check() end)
+	local button_9 = CreateTextButton(container, "9", UDim2.new(0,15 + 18 * 2,0,18 * 1.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_9.MouseButton1Down:connect(function () output.Text = output.Text .. "9" output.Text = tonumber(output.Text) Check() end)
+	local button_p = CreateTextButton(container, "+1", UDim2.new(0,15 + 18 * 3,0,18 * 1.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_p.MouseButton1Down:connect(function () output.Text = tonumber(output.Text) + 1 output.Text = tonumber(output.Text) Check() end)
+	local button_m = CreateTextButton(container, "-1", UDim2.new(0,15 + 18 * 3,0,18 * 2.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_m.MouseButton1Down:connect(function () output.Text = tonumber(output.Text) - 1 output.Text = tonumber(output.Text) Check() end)
+	local button_C = CreateTextButton(container, "C", UDim2.new(0,15 + 18 * 0,0,18 * 4.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_C.MouseButton1Down:connect(function () output.Text = "0" output.Text = tonumber(output.Text) Check() end)
+	local button_0 = CreateTextButton(container, "0", UDim2.new(0,15 + 18 * 1,0,18 * 4.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_0.MouseButton1Down:connect(function () output.Text = output.Text .. "0" output.Text = tonumber(output.Text) Check() end)
+	local button_n = CreateTextButton(container, "+/-", UDim2.new(0,15 + 18 * 2,0,18 * 4.5), UDim2.new(0,12,0,12), bgcolor, bordercolor)
+	button_n.MouseButton1Down:connect(function ()
+		if string.find(output.Text, "-") then
+			output.Text = string.gsub(output.Text, "-", "")
 		else
-			ypcall(function()
-				for i,v in pairs(getAllChildren(v.Character,3,'ForceField'))do v:remove'';end;
-				c=Instance.new('ObjectValue',v.Character.Humanoid);
-				c.Name='creator';
-				c.Value=speaker;
-				v.Character.Humanoid:takeDamage(math.huge);
-			end);
-		end;
-	end;
-end);
-addCommand('Set level',{'setr','setlevel'},0,true,'Sets <Players> Level to <Level>','-r Level -LevelData LevelDataOnly',function(player,spkr,flags)
-	local players={};
-	local level=tonumber(flags['r'])
-	if(level==nil)then error'Invalid level' return end;
-	if(level<0 and Canon.LevelData[spkr.Name].Level<1)then error'Sorry, you have the incorrect permisson level to do this.' return end;
-	if(level> Canon.LevelData[spkr.Name].Level)then error'Sorry, you have the incorrect permisson level to do this.' return end;
-	if(flags['LevelData'])then
-		for i,v in pairs(Canon.LevelData)do
-			if(i:lower():sub(1,#player)==player:lower())then
-				table.insert(players,v);
-			end;
-		end;
+			output.Text = "-" .. output.Text
+			output.Text = tonumber(output.Text)
+		end
+	end)
+	--local label_max = CreateTextLabel(container, "Max: " .. max, UDim2.new(0,15 + 18 * 3,0,18 * 3.5), UDim2.new(0,0,0,0), Color3.new(0.5,0.5,0.5), Color3.new(0.5,0.5,0.5))
+	--local label_min = CreateTextLabel(container, "Min: " .. min, UDim2.new(0,15 + 18 * 3,0,18 * 4.5), UDim2.new(0,0,0,0), Color3.new(0.5,0.5,0.5), Color3.new(0.5,0.5,0.5))
+	local function Cancel()
+		container.Parent = nil
+		cover.Parent = nil
+	end
+	local function Apply()
+		Check()
+		element.Text = output.Text
+	end
+	okbutton.MouseButton1Down:connect(function ()
+		Apply()
+		Cancel()
+	end)
+	cover.MouseButton1Down:connect(function ()
+		Cancel()
+	end)
+	SetZIndex(1)
+end
+
+function Transparenate(object, amount, ignore) --messy function
+	if object.Name == "NoTransparenate" then return end
+	if object.Name == "ShadowLines" then return end
+	if ignore and object.Name == "ShadowLine"then
+		object.Parent = nil
+		return
+	end
+	if object.Name ~= "TextLine" and object.Name ~= "TransparentImage" then
+		object.Transparency = amount
+	elseif object.Name == "TextLine" then
+		object.TextTransparency = amount
+	end
+	for index, value in pairs(object:GetChildren()) do	
+		Transparenate(value, amount, ignore)
+	end
+end
+
+function Draggable(handle, move, gui)
+	local dragging = false
+	local holding = false
+	local click_x = 0
+	local click_y = 0
+	local offset_x = handle.AbsoluteSize.X / 2
+	local offset_y = handle.AbsoluteSize.Y / 2
+	local releaser
+	local drag_margin = {top=125, bottom=15, left=15, right=15}
+	local function InitiateDragger()
+		if dragging then return end
+		dragging = true
+		Transparenate(move, 0.5)
+		releaser = CreateTextButton(gui, "", UDim2.new(-1,0,-1,0),
+		UDim2.new(3,0,3,0), Color3.new(1,1,1), Color3.new(1,1,1))
+		releaser.BackgroundTransparency = 1
+		releaser.MouseButton1Up:connect(function ()
+			holding = false
+			if dragging and releaser then
+				dragging = false
+				releaser.Parent = nil
+				Transparenate(move, 0)
+				return
+			end
+		end)
+		releaser.MouseMoved:connect(function (x, y)
+			local moveto_x = x - offset_x
+			local moveto_y = y - offset_y
+																			--[[You just lost the game.
+	To Telamon and all the Roblox Staff, should they ever read this:
+
+	We're no strangers to love,
+	You know the rules and so do I.
+	A full commitments what Im thinking of,
+	You wouldnt get this from any other guy.
+
+	I just wanna tell you how Im feeling,
+	Gotta make you understand
+
+	Never gonna give you up,
+	Never gonna let you down,
+	Never gonna run around and desert you.
+	Never gonna make you cry,
+	Never gonna say goodbye,
+	Never gonna tell a lie and hurt you.
+
+	Weve known each other for so long
+	Your hearts been aching
+	But youre too shy to say it.
+	Inside we both know whats been going on,
+	We know the game and were gonna play it.
+
+	Annnnnd if you ask me how Im feeling,
+	Dont tell me youre too blind to see
+
+	Never gonna give you up,
+	Never gonna let you down,
+	Never gonna run around and desert you.
+	Never gonna make you cry,
+	Never gonna say goodbye,
+	Never gonna tell a lie and hurt you.
+
+	Never gonna give you up,
+	Never gonna let you down,
+	Never gonna run around and desert you.
+	Never gonna make you cry,
+	Never gonna say goodbye,
+	Never gonna tell a lie and hurt you.
+
+	Give you up. give you up.
+	Give you up, give you up.
+	Never gonna give
+	Never gonna give, give you up.
+	Never gonna give
+	Never gonna give, give you up.
+
+	Weve known each other for so long
+	Your hearts been aching
+	But youre too shy to say it.
+	Inside we both know whats been going on,
+	We know the game and were gonna play it.
+
+	I just wanna tell you how Im feeling,
+	Gotta make you understand
+
+	Never gonna give you up,
+	Never gonna let you down,
+	Never gonna run around and desert you.
+	Never gonna make you cry,
+	Never gonna say goodbye,
+	Never gonna tell a lie and hurt you.
+
+	Never gonna give you up,
+	Never gonna let you down,
+	Never gonna run around and desert you.
+	Never gonna make you cry,
+	Never gonna say goodbye,
+	Never gonna tell a lie and hurt you.
+
+	Never gonna give you up,
+	Never gonna let you down,
+	Never gonna run around and desert you.
+	Never gonna make you cry,
+	Never gonna say goodbye,
+	Never gonna tell a lie and hurt you.
+																										]]
+			if moveto_x < drag_margin.left then
+				moveto_x = drag_margin.left
+			end
+			if moveto_y < drag_margin.top then
+				moveto_y = drag_margin.top
+			end
+			if moveto_y > gui.AbsoluteSize.Y - move.AbsoluteSize.Y - drag_margin.bottom then
+				moveto_y = gui.AbsoluteSize.Y - move.AbsoluteSize.Y - drag_margin.bottom
+			end
+			if moveto_x > gui.AbsoluteSize.X - move.AbsoluteSize.X - drag_margin.right then
+				moveto_x = gui.AbsoluteSize.X - move.AbsoluteSize.X - drag_margin.right
+			end
+			move.Position = UDim2.new(0, moveto_x, 0, moveto_y)
+		end)
+	end
+	handle.MouseButton1Down:connect(function (x,y)
+		holding = true
+		click_x = x
+		click_y = y
+		wait(1.2)
+		if holding and not dragging then
+			InitiateDragger()
+		end
+	end)
+	handle.MouseMoved:connect(function (x,y)
+		if holding and math.sqrt((click_x - x) ^ 2 + (click_y - y) ^ 2) > 3 then
+			offset_x = x - handle.AbsolutePosition.X
+			offset_y = y - handle.AbsolutePosition.Y
+			InitiateDragger()
+		end
+	end)
+	handle.MouseButton1Up:connect(function ()
+		holding = false
+		if dragging and releaser then
+			dragging = false
+			releaser.Parent = nil
+			Transparenate(move, 0)
+			return
+		end
+	end)
+end
+
+function Window:new(name, icon, width, height, base)
+	local window = {name=name, icon=icon, width=width, height=height, base=base, guis={}, subwindows={}}
+	setmetatable(window, {__index = Window})
+	return window
+end
+
+function Window:baseElement(element) --set the base element for a window
+	if element.type == "base" then
+		self.base = element
+	end
+end
+
+function Window:close()
+	for index, value in pairs(self.subwindows) do
+		coroutine.resume(coroutine.create(function ()
+			value:close()
+		end))
+	end
+	for index, value in pairs(self.guis) do
+		local out = value
+		if out:findFirstChild("ShadowLines") then
+			out.ShadowLines.Parent = nil
+		end
+		for index, value in pairs(out.Title:GetChildren()) do
+			if value.Name == "ShadowLine" then value.Parent = nil end
+		end
+		for i=0, 1, 0.1 do
+			Transparenate(out, i, true)
+			wait()
+		end
+		out.Parent = nil
+	end
+end
+
+function Window:subWindow(sub)
+	table.insert(self.subwindows, sub)
+end
+
+function Window:process()
+	local out
+	if self.base then
+		out = CreateTextButton(nil, "", UDim2.new(0,math.random(50,250),0,math.random(100,400)), UDim2.new(0, self.width, 0, self.height),
+			bgcolor, bordercolor)
+		out.AutoButtonColor = false
+		local shadows = CreateFrame(out, UDim2.new(0,0,0,0), UDim2.new(1,0,1,0), Color3.new(0,0,0), Color3.new(0,0,0))
+		shadows.Name = "ShadowLines"
+		shadows.BackgroundTransparency = 1
+		for i=1, 30 do --left
+			local line = CreateFrame(shadows, UDim2.new(0,-1 * i,0,-20 - (i - 1)), UDim2.new(0,1,1,20 + (i - 1) * 2 + 1), Color3.new(0,0,0), Color3.new(0,0,0))
+			line.Name = "ShadowLine"
+			line.BorderSizePixel = 0
+			line.Transparency = i / 15 + 0.5
+		end
+		for i=1, 30 do --right
+			local line = CreateFrame(shadows, UDim2.new(1,i,0,-20 - (i - 1)), UDim2.new(0,1,1,20 + (i - 1) * 2 + 1), Color3.new(0,0,0), Color3.new(0,0,0))
+			line.Name = "ShadowLine"
+			line.BorderSizePixel = 0
+			line.Transparency = i / 15 + 0.5
+		end
+		for i=1, 30 do --bottom
+			local line = CreateFrame(shadows, UDim2.new(0,(i) * -1,1,i), UDim2.new(1,(i) * 2 + 1,0,1), Color3.new(0,0,0), Color3.new(0,0,0))
+			line.Name = "ShadowLine"
+			line.BorderSizePixel = 0
+			line.Transparency = i / 15 + 0.5
+		end
+		for i=1, 30 do --top
+			local line = CreateFrame(shadows, UDim2.new(0,(i) * -1,0,-20 + (-1 * i)), UDim2.new(1,(i) * 2 + 1,0,1), Color3.new(0,0,0), Color3.new(0,0,0))
+			line.Name = "ShadowLine"
+			line.BorderSizePixel = 0
+			line.Transparency = i / 15 + 0.5
+		end
+		table.insert(self.guis, out)
+		table.insert(OpenedWindows, self)
+		out.Name = "Window"
+		local title = CreateTextButton(out, "       " .. self.name, UDim2.new(0,0,0), UDim2.new(0,self.width,0,-20),
+			Color3.new(bgcolor.r * 0.8,bgcolor.g * 0.8,bgcolor.b * 0.8), bordercolor)
+		title.Name = "Title"
+		title.TextXAlignment = Enum.TextXAlignment.Left
+		title.TextColor3 = txthilite
+		title.AutoButtonColor = false
+		--[[for i=1, 10 do --top
+			local line = CreateFrame(title, UDim2.new(0,1,0,i), UDim2.new(1,-2,0,1), Color3.new(0,0,0), Color3.new(0,0,0))
+			line.Name = "ShadowLine"
+			line.BorderSizePixel = 0
+			line.Transparency = i / 40 + 0.75
+		end]]
+		coroutine.resume(coroutine.create(function ()
+			local titletext = title.Text
+			title.Text = ""
+			for i=1, string.len(titletext) do
+				title.Text = string.sub(titletext, 1, i) .. "_"
+				wait()
+			end
+			title.Text = titletext
+		end))
+		local icon = CreateImage(title, self.icon, UDim2.new(0,2,0,2), UDim2.new(0,16,1, -4), bgcolor, bgcolor)
+		icon.BackgroundTransparency = 1
+		icon.Name = "NoTransparenate"
+		Draggable(Bold(title), out, TAZER_JEEYEWEYE)
+		local closer = CreateTextButton(title, "X", UDim2.new(1,-1,0,1), UDim2.new(0,-15,1,-2), bgcolor, title.BackgroundColor3)
+		closer.TextColor3 = txtcolor
+		closer.Name = "Closer"
+		closer.MouseButton1Down:connect(function ()
+			self:close()
+		end)
+		local write_y = 5
+		for index, value in pairs(self.base.elements) do
+			local element = self.base.elements[index]
+			if element.type == "text" then
+				--local _, newlines = string.gsub(element.data.text, "\n", "\n")
+				local txt = CreateTextLabel(out, element.data.text, UDim2.new(0,5,0, write_y), UDim2.new(1,-10,0,0), bgcolor, bordercolor)
+				txt.Name = "TextLine"
+				txt.BackgroundTransparency = 1
+				txt.TextWrap = true
+				local align = element.data.align
+				if align == nil or align == "left" then
+					txt.TextXAlignment = Enum.TextXAlignment.Left
+				elseif align == "center" then
+					txt.TextXAlignment = Enum.TextXAlignment.Center
+				elseif align == "right" then
+					txt.TextXAlignment = Enum.TextXAlignment.Right
+				end
+				txt.TextYAlignment = Enum.TextYAlignment.Top
+				txt.TextColor3 = txtcolor
+				write_y = write_y + txt.Size.Y.Offset + 12
+			elseif element.type == "title" then
+				local txt = CreateTextLabel(out, element.data.text, UDim2.new(0,5,0, write_y), UDim2.new(1,-10,0,0), bgcolor, bordercolor)
+				txt.Name = "TextLine"
+				txt.BackgroundTransparency = 1
+				txt.TextWrap = true
+				txt.TextXAlignment = Enum.TextXAlignment.Center
+				txt.TextYAlignment = Enum.TextYAlignment.Top
+				txt.TextColor3 = Color3.new((bordercolor.r + txtcolor.r) / 2,(bordercolor.g + txtcolor.g) / 2,(bordercolor.b + txtcolor.b) / 2)
+				write_y = write_y + txt.Size.Y.Offset + 12
+			elseif element.type == "button" then
+				local txt = CreateTextButton(out, element.data.text, UDim2.new(0,5,0, write_y + 6),
+					UDim2.new(1,-10,0,0), Color3.new(bgcolor.r * 0.9,bgcolor.g * 0.9,bgcolor.b * 0.9),bordercolor)
+				txt.BackgroundTransparency = 0.1
+				txt.TextWrap = true
+				local align = element.data.align
+				if align == nil or align == "left" then
+					txt.TextXAlignment = Enum.TextXAlignment.Left
+					txt.Text = "  " .. txt.Text .. ""
+				elseif align == "center" then
+					txt.TextXAlignment = Enum.TextXAlignment.Center
+				elseif align == "right" then
+					txt.TextXAlignment = Enum.TextXAlignment.Right
+					txt.Text = "" .. txt.Text .. "  "
+				end
+				txt.TextYAlignment = Enum.TextYAlignment.Center
+				txt.TextColor3 = txtcolor
+				local lines = 1
+				if element.data.linage then
+					lines = element.data.linage
+				end
+				txt.Size = UDim2.new(1,-10,0,16 * lines)
+				txt.MouseButton1Down:connect(function ()
+					if element.data.onclick then
+						element.data.onclick()
+					end
+				end)
+				write_y = write_y + txt.Size.Y.Offset + 12
+			elseif element.type == "break" then
+				local line = CreateFrame(out, UDim2.new(0,5,0,write_y + 6), UDim2.new(1,-10,0,0), bgcolor, bordercolor)
+				line.Name = "Break"
+				write_y = write_y + 12
+			elseif element.type == "checkbox" then
+				local button = CreateTextButton(out, "", UDim2.new(0,5,0, write_y + 1), UDim2.new(0,10,0,10), bgcolor, bordercolor)
+				button.Name = "Checkbox"
+				button.TextColor3 = txtcolor
+				button.MouseButton1Down:connect(function ()
+					local ischecked = element.data.checked
+					if ischecked then
+						button.Text = ""
+					else
+						button.Text = "X"
+					end
+					element.data.checked = not ischecked
+					if element.data.onchange then
+						pcall(element.data.onchange, not ischecked)
+					end
+				end)
+				if element.data.checked then
+					button.Text = "X"
+				elseif element.data.checked == nil then
+					element.data.checked = false
+				end
+				local txt = CreateTextLabel(out, element.data.text, UDim2.new(0,15 + 5,0, write_y), UDim2.new(1,-10,0,0), bgcolor, bordercolor)
+				txt.Name = "TextLine"
+				txt.TextColor3 = txtcolor
+				txt.BackgroundTransparency = 1
+				txt.TextWrap = true
+				local align = element.data.align
+				if align == nil or align == "left" then
+					txt.TextXAlignment = Enum.TextXAlignment.Left
+				elseif align == "center" then
+					txt.TextXAlignment = Enum.TextXAlignment.Center
+				elseif align == "right" then
+					txt.TextXAlignment = Enum.TextXAlignment.Right
+				end
+				txt.TextYAlignment = Enum.TextYAlignment.Top
+				write_y = write_y + txt.Size.Y.Offset + 12
+			elseif element.type == "number" then
+				local max
+				if element.data.max then
+					max = element.data.max
+				else
+					max = 999
+				end
+				local min
+				if element.data.min then
+					min = element.data.min
+				else
+					min = -999
+				end
+				local def
+				if element.data.default then
+					def = element.data.default
+				else
+					def = 0
+				end
+				local characters = string.len(tostring(max))
+				local width = math.ceil(characters * (20 / 3))
+				local button = CreateTextButton(out, tostring(def), UDim2.new(0,5,0, write_y + 1), UDim2.new(0,width,0,10), bgcolor, bordercolor)
+				button.Name = "NumberPicker"
+				button.TextColor3 = txtcolor
+				button.MouseButton1Down:connect(function ()
+					InitiateNumberPicker(button, max, min)
+				end)
+				button.Changed:connect(function (property)
+					if property == "Text" and element.data.onchange then
+						element.data.onchange(tonumber(button.Text))
+					end
+				end)
+				local txt = CreateTextLabel(out, element.data.text, UDim2.new(0,width + 10,0, write_y), UDim2.new(1,-10,0,0), bgcolor, bordercolor)
+				txt.Name = "TextLine"
+				txt.TextColor3 = txtcolor
+				txt.BackgroundTransparency = 1
+				txt.TextWrap = true
+				local align = element.data.align
+				if align == nil or align == "left" then
+					txt.TextXAlignment = Enum.TextXAlignment.Left
+				elseif align == "center" then
+					txt.TextXAlignment = Enum.TextXAlignment.Center
+				elseif align == "right" then
+					txt.TextXAlignment = Enum.TextXAlignment.Right
+				end
+				txt.TextYAlignment = Enum.TextYAlignment.Top
+				write_y = write_y + txt.Size.Y.Offset + 12
+			elseif element.type == "input" then
+				local def
+				if element.data.default then
+					def = element.data.default
+				else
+					def = ""
+				end
+				local characters = string.len(tostring(max))
+				local button = CreateTextButton(out, tostring(def), UDim2.new(0,5,0, write_y + 1), UDim2.new(1, -10,0,12), bgcolor, bordercolor)
+				button.Name = "TextWriter"
+				button.TextColor3 = txtcolor
+				button.MouseButton1Down:connect(function ()
+					InitiateTextWriter(button)
+				end)
+				button.Changed:connect(function (property)
+					if property == "Text" and element.data.onchange then
+						element.data.onchange(button.Text)
+					end
+				end)
+				write_y = write_y + 12
+				if element.data.text and element.data.text ~= "" then
+					local txt = CreateTextLabel(out, element.data.text, UDim2.new(0,5,0, write_y), UDim2.new(1,-10,0,0), bgcolor, bordercolor)
+					txt.Name = "TextLine"
+					txt.TextColor3 = txtcolor
+					txt.BackgroundTransparency = 1
+					txt.TextWrap = true
+					local align = element.data.align
+					if align == nil or align == "left" then
+						txt.TextXAlignment = Enum.TextXAlignment.Left
+					elseif align == "center" then
+						txt.TextXAlignment = Enum.TextXAlignment.Center
+					elseif align == "right" then
+						txt.TextXAlignment = Enum.TextXAlignment.Right
+					end
+					txt.TextYAlignment = Enum.TextYAlignment.Top
+					write_y = write_y + txt.Size.Y.Offset + 12
+				end
+			elseif element.type == "image" then
+				local imagexsize = 25
+				local imageysize = 25
+				if tonumber(element.data.width) then
+					imagexsize = tonumber(element.data.width)
+				end
+				if tonumber(element.data.height) then
+					imageysize = tonumber(element.data.height)
+				end
+				local image = CreateImage(out, element.data.image, UDim2.new(0,5,0, write_y + 5), UDim2.new(0, imagexsize, 0, imageysize),
+					Color3.new(0,0,0), Color3.new(0,0,0) )
+				image.Name = "NoTransparenate"
+				image.BackgroundTransparency = 1
+				local align = element.data.align
+				if align == nil or align == "left" then
+					image.Position = UDim2.new(0,5,0, write_y + 5)
+				elseif align == "center" then
+					image.Position = UDim2.new(0.5,imagexsize / -2,0, write_y + 5)
+				elseif align == "right" then
+					image.Position = UDim2.new(1,-5 - imagexsize,0, write_y + 5)
+				end
+				write_y = write_y + imageysize + 10
+			elseif element.type == "imagebutton" then
+				local normal = element.data.image
+				local hover = element.data.image
+				if element.data.hover then
+					hover = element.data.hover
+				end
+				local down = element.data.image
+				if element.data.down then
+					down = element.data.down
+				end
+				local imagexsize = 25
+				local imageysize = 25
+				if tonumber(element.data.width) then
+					imagexsize = tonumber(element.data.width)
+				end
+				if tonumber(element.data.height) then
+					imageysize = tonumber(element.data.height)
+				end
+				local image = CreateImageButton(out, element.data.image, UDim2.new(0,5,0, write_y + 5), UDim2.new(0, imagexsize, 0, imageysize),
+					Color3.new(0,0,0), Color3.new(0,0,0) )
+				image.Name = "NoTransparenate"
+				image.BackgroundTransparency = 1
+				local align = element.data.align
+				if align == nil or align == "left" then
+					image.Position = UDim2.new(0,5,0, write_y + 5)
+				elseif align == "center" then
+					image.Position = UDim2.new(0.5,imagexsize / -2,0, write_y + 5)
+				elseif align == "right" then
+					image.Position = UDim2.new(1,-5 - imagexsize,0, write_y + 5)
+				end
+				image.MouseEnter:connect(function ()
+					image.Image = hover
+				end)
+				image.MouseButton1Down:connect(function ()
+					image.Image = down
+					if element.data.onclick then
+						element.data.onclick()
+					end
+				end)
+				image.MouseButton1Up:connect(function ()
+					image.Image = hover
+				end)
+				image.MouseLeave:connect(function ()
+					image.Image = normal
+				end)
+				write_y = write_y + imageysize + 10
+			end
+			if element.data.linage then
+				write_y = write_y + 12 * (element.data.linage - 1)
+			end
+		end
+	end
+	if out then
+		coroutine.resume(coroutine.create(function ()
+			for i=1, 0, -0.1 do
+				Transparenate(out, i)
+				wait()
+			end
+		end))
+	end
+	return out
+end
+
+function Element:new(type, data)
+	local element = {type=type, elements={}, data=data}
+	if data then
+		for index, value in ipairs(data) do
+			element.data[index] = data
+		end
+	end
+	setmetatable(element, {__index = Element})
+	return element
+end
+
+function Element:appendElement(element)
+	--elements in elements? doubt it....
+	table.insert(self.elements, element)
+end
+
+function Element:changeText(text)
+	if self.text then
+		self.text = text
+	end
+end
+
+function AlertSequence(alerts)
+	local title = CreateTextLabel(alerts, "", UDim2.new(0,0,0,-1), UDim2.new(1,0,0,-12), Color3.new(0,0,0), Color3.new(0,0,0))
+	title.TextColor3 = Color3.new(1,1,1)
+	title.BackgroundTransparency = alerts.BackgroundTransparency
+	title.Name = "Title"
+	Bold(title)
+	coroutine.resume(coroutine.create(function ()
+		for i=0, -12, -1 do
+			title.Size = UDim2.new(1,0,0,i)
+			wait()
+		end
+		local titletext = "Tazer General Alerts"
+		for i=1, string.len(titletext) do
+			title.Text = string.sub(titletext, 1, i) .. "_"
+			wait()
+		end
+		title.Text = titletext
+	end))
+	local lines = {}
+	local lastline
+	for i=5, alerts.AbsoluteSize.Y, 24 do
+		local line = CreateTextLabel(alerts, tostring(""), UDim2.new(0,5,0,i), UDim2.new(1,-10,0,24), Color3.new(0,0,0), Color3.new(0,0,0))
+		line.BackgroundTransparency = 1
+		line.TextColor3 = Color3.new(1,1,1)
+		line.TextXAlignment = Enum.TextXAlignment.Left
+		line.TextYAlignment = Enum.TextYAlignment.Top
+		line.TextWrap = true
+		line.TextTransparency = 1
+		table.insert(lines, line)
+		lastline = line
+	end
+	coroutine.resume(coroutine.create(function ()
+		for index, value in pairs(lines) do
+			coroutine.resume(coroutine.create(function ()
+				for i=1, 0, -0.1 do
+					value.TextTransparency = i
+					wait()
+				end
+			end))
+			wait()
+		end
+	end))
+	for i=1, #lines do
+		if not Alerts[i] then
+			Alerts[i] = ""
+		end
+	end
+	lastline.Parent = nil
+	while alerts and alerts.Parent do
+		for i=#lines, 1, -1 do
+			if Alerts[i] then
+				lines[i].Text = tostring(Alerts[i])
+			end
+		end
+		wait(0.1)
+	end
+end
+
+function ImageFadeOut(image, color)
+	coroutine.resume(coroutine.create(function ()
+		local fade = CreateFrame(image, UDim2.new(0,0,0,0), UDim2.new(1,0,1,0), bgcolor, bgcolor)
+		fade.BackgroundTransparency = 0
+		for i=1,0, -0.1 do
+			fade.BackgroundTransparency = i
+			wait()
+		end
+		image.Parent = nil
+	end))
+end
+
+function ImageFadeIn(image, color)
+	coroutine.resume(coroutine.create(function ()
+		local fade = CreateFrame(image, UDim2.new(0,0,0,0), UDim2.new(1,0,1,0), bgcolor, bgcolor)
+		fade.BackgroundTransparency = 0
+		for i=0,1, 0.1 do
+			fade.BackgroundTransparency = i
+			wait()
+		end
+		fade.Parent = nil
+	end))
+end
+
+function InitializeAppButtons(desc, topbar)
+	local appbuttons = {}
+	for index, value in pairs(Apps) do
+		local appbutton = CreateImageButton(topbar, value.image, UDim2.new(0,0,0,-250), UDim2.new(0,90,0,90), bgcolor, bordercolor)
+		appbutton.BackgroundTransparency = 1
+		appbutton.MouseButton1Down:connect(value.func)
+		appbutton.MouseEnter:connect(function () desc.Text = value.desc end)
+		appbutton.MouseLeave:connect(function () desc.Text = "" end)
+		appbutton.Name = "AppImage" .. index
+		table.insert(appbuttons, appbutton)
+	end
+	coroutine.resume(coroutine.create(function ()
+		for index, appbutton in pairs(appbuttons) do
+			wait(0.1)
+			coroutine.resume(coroutine.create(function ()
+				ImageFadeIn(appbutton, topbar.BackgroundColor3)
+				local speed = 4
+				for i=50, 0, -speed do
+					speed = math.max(speed - 0.15, 1)
+					appbutton.Position = UDim2.new(appbutton.Position.X.Scale, appbutton.Position.X.Offset, 0.5,
+					math.min(-45 - i, -45))
+					wait()
+				end
+			end))
+		end
+	end))
+	local offset = 0
+	local maxoffset = 0
+	if #appbuttons >= 8 then
+		maxoffset = 109 * (#Apps - 8)
+	end
+	print("Max offset: " .. maxoffset)
+	local function PositionButtons()
+		for index, value in pairs(appbuttons) do
+			value.Position = UDim2.new(index / (math.min(#Apps, 8) + 1),-45 - math.max(offset, 0),value.Position.Y.Scale,value.Position.Y.Offset)
+		end
+	end
+	PositionButtons()
+	local rightarrowimage = "http://www.roblox.com/asset/?id=22120910"
+	local leftarrowimage = "http://www.roblox.com/asset/?id=22120938"
+	local rightbutton = CreateImageButton(topbar, rightarrowimage, UDim2.new(1,-5,0.5,-25), UDim2.new(0,-25,0,50), Color3.new(0,0,0), Color3.new(0,0,0))
+	rightbutton.Name = "RightArrow"
+	rightbutton.BackgroundTransparency = 1
+	rightbutton.MouseButton1Down:connect(function ()
+		local holding = true
+		rightbutton.MouseButton1Up:connect(function () holding = false end)
+		rightbutton.MouseLeave:connect(function () holding = false end)
+		local speed = 0
+		while holding do
+			offset = offset + speed
+			offset = math.min(offset, maxoffset)
+			speed = math.min(15, speed + 3)
+			PositionButtons()
+			wait()
+		end
+	end)
+	local leftbutton = CreateImageButton(topbar, leftarrowimage, UDim2.new(0,5,0.5,-25), UDim2.new(0,25,0,50), Color3.new(0,0,0), Color3.new(0,0,0))
+	leftbutton.Name = "LeftArrow"
+	leftbutton.BackgroundTransparency = 1
+	leftbutton.MouseButton1Down:connect(function ()
+		local holding = true
+		leftbutton.MouseButton1Up:connect(function () holding = false end)
+		leftbutton.MouseLeave:connect(function () holding = false end)
+		local speed = 0
+		while holding do
+			offset = math.max(offset - speed, 0)
+			speed = math.min(15, speed + 3)
+			PositionButtons()
+			wait()
+		end
+	end)
+	print("Found " .. #Apps .. " applications!")
+	return appbuttons, {rightbutton, leftbutton}
+end
+
+OpenedWindows = {}
+
+function OpenControlCenter(command)
+	print("Control Center Opened")
+	command.Parent = nil
+	local mainframe = CreateFrame(TAZER_JEEYEWEYE, UDim2.new(-1,0,-1,0), UDim2.new(3,0,3,0), bgcolor, Color3.new(0,0,0))
+	mainframe.Name = "MainFrame"
+	local topbar = CreateFrame(mainframe, UDim2.new(1/3,-1,1/3,-22), UDim2.new(1/3,2,0,11), bgcolor, bordercolor)
+	local shadows = CreateFrame(topbar, UDim2.new(0,0,0,0), UDim2.new(1,0,1,0), Color3.new(0,0,0), Color3.new(0,0,0))
+	shadows.Name = "ShadowLines"
+	shadows.BackgroundTransparency = 1
+	for i=1, 30 do --bottom
+		local line = CreateFrame(shadows, UDim2.new(0,(i) * -1,1,i), UDim2.new(1,(i) * 2 + 1,0,1), Color3.new(0,0,0), Color3.new(0,0,0))
+		line.Name = "ShadowLine"
+		line.BorderSizePixel = 0
+		line.Transparency = i / 15 + 0.5
+	end
+	local count = 0
+	OpenedWindows = {}
+	coroutine.resume(coroutine.create(function ()
+		for i=1, 0, -0.1 do
+			topbar.Transparency = i
+			wait()
+		end
+	end))
+	coroutine.resume(coroutine.create(function ()
+		for i=1, 0.5, -0.05 do
+			mainframe.BackgroundTransparency = i
+			wait()
+		end
+		count = count + 1
+	end))
+	coroutine.resume(coroutine.create(function ()
+		for i=0, 100, 5 do
+			topbar.Size = UDim2.new(1/3,0,0,i)
+			wait()
+		end
+		count = count + 1
+	end))
+	while count < 2 do
+		wait()
+	end
+	wait(0.1)
+	local logo = CreateImage(mainframe, "http://www.roblox.com/asset/?id=20991506", UDim2.new(0.5,-90,0.5,-30),
+	UDim2.new(0,180,0,60), bgcolor, bordercolor)
+	logo.BackgroundTransparency = 1
+	logo.Name = "Logo"
+	--logo.Position = UDim2.new(0, logo.Parent.AbsoluteSize.X * logo.Position.X.Scale + logo.Position.X.Offset, 0, logo.Parent.AbsoluteSize.Y * logo.Position.Y.Scale + logo.Position.Y.Offset)
+	local footer = "Tazer " .. TAZER_VERSION .. " by Ozzypig"
+	local label1 = CreateTextLabel(logo, footer, UDim2.new(0.5,0,0.5,35), UDim2.new(0,0,0,0), Color3.new(1,1,1), Color3.new(1,1,1))
+	label1.Transparency = 0.5
+	label1.TextColor3 = Color3.new(0,0,0)
+	label1.Name = "Footer"
+	local label2 = CreateTextLabel(label1, footer, UDim2.new(0,-1,0,-1), UDim2.new(0,0,0,0), Color3.new(1,1,1), Color3.new(1,1,1))
+	label2.Transparency = 0.9
+	label2.TextColor3 = Color3.new(1,1,1)
+	label2.Name = "Footer"
+	local label3 = CreateTextLabel(label2, footer, UDim2.new(0,-1,0,-1), UDim2.new(0,0,0,0), Color3.new(1,1,1), Color3.new(1,1,1))
+	label3.Transparency = 0.9
+	label3.TextColor3 = Color3.new(1,1,1)
+	label3.Name = "Footer"
+	local desc = CreateTextLabel(topbar, "", UDim2.new(0.5,-125,1,0), UDim2.new(0,250,0,12), bgcolor, bordercolor)
+	desc.TextColor3 = txtcolor
+	desc.Name = "Description"
+	Bold(desc)
+	local closer = CreateTextButton(topbar, "Close", UDim2.new(0,0,1,0), UDim2.new(0,35,0,12), bgcolor, bordercolor)
+	closer.TextColor3 = txtcolor
+	closer.TextTransparency = 1
+	closer.Name = "Closer"
+	local closeall = CreateTextButton(topbar, "Close Windows", UDim2.new(0,35,1,0), UDim2.new(0,80,0,12), bgcolor, bordercolor)
+	closeall.TextColor3 = txtcolor
+	closeall.TextTransparency = 1
+	closeall.Name = "CloseAll"
+	local alerts = CreateFrame(topbar, UDim2.new(0,30,1, 60), UDim2.new(0,300,0,425), Color3.new(0,0,0), Color3.new(0,0,0))
+	alerts.BackgroundTransparency = 1
+	alerts.Name = "Alerts"
+	coroutine.resume(coroutine.create(function ()
+		for i=1, 0.75, -0.05 do
+			wait()
+			alerts.BackgroundTransparency = i
+		end
+		AlertSequence(alerts)
+	end))
+	coroutine.resume(coroutine.create(function ()
+		closer.Text = ""
+		for i=1, 12, 1 do
+			desc.Size = UDim2.new(0,250,0,i)
+			closer.Size = UDim2.new(0,closer.Size.X.Offset,0,i)
+			closeall.Size = UDim2.new(0,closeall.Size.X.Offset,0,i)
+			wait()
+		end
+		closer.Text = "Close"
+		closer.TextTransparency = 1
+		for i=1, 0, -0.1 do
+			wait()
+			desc.TextTransparency = i
+			closer.TextTransparency = i
+			closeall.TextTransparency = i
+		end
+		closer.TextTransparency = 0
+	end))
+	local appbuttons, buttons = InitializeAppButtons(desc, topbar)
+	closer.MouseButton1Down:connect(function ()
+		if not controlcenter.debounce then
+			controlcenter.debounce = true
+
+			for index, value in pairs(OpenedWindows) do
+				if value.guis and #value.guis >= 1 then
+					coroutine.resume(coroutine.create(function () value:close() end))
+				end
+			end
+
+			coroutine.resume(coroutine.create(function ()
+				for i=30, -(alerts.AbsoluteSize.X) - 15, -15 do
+					alerts.Position = UDim2.new(0,i,1, 60)
+					alerts.Size = UDim2.new(alerts.Size.X.Scale, alerts.Size.X.Offset - 3, alerts.Size.Y.Scale, alerts.Size.Y.Offset)
+					wait()
+				end
+			end))
+
+			shadows.Parent = nil
+
+			logo.Parent = nil
+			local count = 0
+			for index, value in pairs(buttons) do
+				value.Parent = nil
+			end
+			local numfaded = 0
+			for index, value in pairs(appbuttons) do
+				ImageFadeOut(value, bgcolor)
+				numfaded = numfaded + 1
+				if numfaded == 8 then
+					count = count + 1
+				end
+				wait() wait()
+			end
+
+			CreateCommandIcon()
+			coroutine.resume(coroutine.create(function ()
+				for i=0, 1, 0.1 do
+					closer.Transparency = i
+					closeall.Transparency = i
+					desc.Transparency = i
+					wait()
+				end
+			end))
+			coroutine.resume(coroutine.create(function ()
+				for i=0.5, 1, 0.05 do
+					mainframe.BackgroundTransparency = i
+					wait()
+				end
+				count = count + 1
+			end))
+			coroutine.resume(coroutine.create(function ()
+				for i=100, 0, -5 do
+					topbar.Size = UDim2.new(1/3,0,0,i)
+					topbar.Transparency = 1 - (i / 100)
+					wait()
+				end
+				count = count + 1
+			end))
+			while count < 3 do
+				wait()
+			end
+			wait(0.1)
+			topbar.Parent = nil
+			mainframe.Parent = nil
+			controlcenter.debounce = false
+			print("Thanks for using Tazer :)")
+		end
+	end)
+	local closealldeb = false
+	closeall.MouseButton1Down:connect(function ()
+		if closealldeb then return end
+		closealldeb = true
+		for index, value in pairs(OpenedWindows) do
+			if value.guis and #value.guis >= 1 then
+				coroutine.resume(coroutine.create(function () value:close() end))
+			end
+		end
+		OpenedWindows = {}
+		closealldeb = false
+	end)
+	wait(1)
+	ischecked = GetSetting("Home.OpenOnStartup", "true")
+	print("Home.OpenOnStartup --> \"" .. tostring(ischecked) .. "\" (" .. type(ischecked) .. ")")
+	if GetSetting("Home.OpenOnStartup", true) == "true" or GetSetting("Home.OpenOnStartup", true) == true then
+		Open_TazerHome()
+	end
+	print("Ready for action!")
+	Alert("Welcome to the Tazer Control Center!")
+	controlcenter.debounce = false
+end
+
+SetSetting("Command.IconLocationX", 550)
+SetSetting("Command.IconLocationY", 0)
+
+function CreateCommandIcon()
+	local command = CreateImageButton(TAZER_JEEYEWEYE, "",
+	UDim2.new(0, tonumber(GetSetting("Command.IconLocationX", 50)), 0, tonumber(GetSetting("Command.IconLocationY", 50))),
+	UDim2.new(0, 30, 0, 30), bgcolor, bordercolor)
+	local dragging = false
+	local holding = false
+	local click_x = 0
+	local click_y = 0
+	local releaser
+	local function InitiateDragger()
+		if dragging then return end
+		dragging = true
+		releaser = CreateTextButton(TAZER_JEEYEWEYE, "", UDim2.new(-1,0,-1,0),
+		UDim2.new(3,0,3,0), Color3.new(1,1,1), Color3.new(1,1,1))
+		releaser.BackgroundTransparency = 1
+		releaser.MouseButton1Up:connect(function ()
+			holding = false
+			if dragging and releaser then
+				dragging = false
+				releaser.Parent = nil
+				return
+			end
+		end)
+		releaser.MouseMoved:connect(function (x, y)
+			command.Position = UDim2.new(0,x - 8,0,y - 25)
+			SetSetting("Command.IconLocationX", command.Position.X.Offset)
+			SetSetting("Command.IconLocationY", command.Position.Y.Offset)
+			--print("Updated command location position")
+		end)
+	end
+	command.MouseButton1Down:connect(function (x,y)
+		holding = true
+		click_x = x
+		click_y = y
+		wait(1.2)
+		if holding and not dragging then
+			InitiateDragger()
+		end
+	end)
+	command.MouseMoved:connect(function (x,y)
+		if holding and math.sqrt((click_x - x) ^ 2 + (click_y - y) ^ 2) > 3 then
+			InitiateDragger()
+		end
+	end)
+	command.MouseButton1Up:connect(function ()
+		holding = false
+		if dragging and releaser then
+			dragging = false
+			releaser.Parent = nil
+			return
+		end
+		if not controlcenter.open then
+			if not controlcenter.debounce then
+				for i=command.Size.X.Offset, 1, -3 do
+					command.Size = UDim2.new(0,i,0,i)
+					command.Position = UDim2.new(0,command.Position.X.Offset + 1,0,command.Position.Y.Offset + 1)
+					command.Transparency = command.Transparency + 0.075
+					wait()
+				end
+				OpenControlCenter(command)
+			end
+		else
+			command.Parent = nil
+		end
+	end)
+	command.Transparency = 1
+	coroutine.resume(coroutine.create(function ()
+		command.Image = "http://www.roblox.com/asset/?id=16499771"
+		for i=1, command.Size.X.Offset, 3 do
+			command.Size = UDim2.new(0,i,0,i)
+			command.Position = UDim2.new(0,command.Position.X.Offset - 1,0,command.Position.Y.Offset - 1)
+			command.Transparency = command.Transparency - 0.075
+			wait() wait()
+		end
+	end))
+end
+
+function ShowStandardMessage(type, message)
+	if type == "ok" then
+		local window = Window:new("OK", "", 80, 50)
+		local base = Element:new("base")
+		window:baseElement(base)
+		base:appendElement(Element:new("text", {text=message, linage=1.5}))
+		base:appendElement(Element:new("button", {text="OK",  onclick=function () window:close() end}))
+		local gui = window:process()
+		gui.Parent = TAZER_JEEYEWEYE
+		return gui, window
+	elseif type == "loading" then
+		local window = Window:new("Loading...", "", 80, 120)
+		local base = Element:new("base")
+		window:baseElement(base)
+		base:appendElement(Element:new("text", {text=message, linage=4.5}))
+		base:appendElement(Element:new("button", {text="OK",  onclick=function () window:close() end}))
+		local gui = window:process()
+		gui.Parent = TAZER_JEEYEWEYE
+		return gui, window
+	end
+end
+
+function Open_TazerHome()
+	local window = Window:new("Tazer Home", "http://www.roblox.com/asset/?id=21031105", 300, 250)
+	local base = Element:new("base")
+
+	window:baseElement(base)
+
+	--SetSetting("Home.OpenOnStartup", false)
+
+	local function UpdateOOS(open)
+		if open then print("Home app will show on startup") else print("Home app will not show on startup") end
+		SetSetting("Home.OpenOnStartup", open)
+		ischecked = GetSetting("Home.OpenOnStartup", "true")
+		print("Home.OpenOnStartup --> \"" .. tostring(ischecked) .. "\" (" .. type(ischecked) .. ")")
+	end
+
+	base:appendElement(Element:new("image", {image="http://www.roblox.com/asset/?id=23110503", width=165, height=29, align="center"}))
+	base:appendElement(Element:new("text", {text="Welcome to the Tazer Home App!", align="center"}))
+	base:appendElement(Element:new("break", {}))
+	base:appendElement(Element:new("text", {text="What would you like to do?", align="left"}))
+	base:appendElement(Element:new("button", {text="View News", align="left", onclick=function () Open_TazerNews() window:close() end}))
+	base:appendElement(Element:new("button", {text="Change Color Theme", align="left", onclick=function () Open_ThemePicker() window:close() end}))
+	base:appendElement(Element:new("button", {text="Change Settings", align="left", onclick=function () Open_TazerSettings() window:close() end}))
+	base:appendElement(Element:new("break", {}))
+	ischecked = GetSetting("Home.OpenOnStartup", "true")
+	print("Home.OpenOnStartup --> \"" .. tostring(ischecked) .. "\" (" .. type(ischecked) .. ")")
+	base:appendElement(Element:new("checkbox", {text="Open Home App on Startup", align="left", onchange=UpdateOOS, checked=ischecked}))
+	base:appendElement(Element:new("break", {}))
+	local gui = window:process()
+	gui.Position = UDim2.new(0.5, -0.5 * gui.Size.X.Offset,0.5, -0.5 * gui.Size.Y.Offset)
+	gui.Parent = TAZER_JEEYEWEYE
+end
+
+function Open_TazerNews()
+	local gui, window = ShowStandardMessage("ok", "Downloading..")
+	News:load()
+	window:close()
+	--ShowStandardMessage("ok", "Loaded!")
+
+	local window = Window:new("Tazer News", "http://www.roblox.com/asset/?id=21319776", 200, 150)
+	local base = Element:new("base")
+
+	window:baseElement(base)
+
+	base:appendElement(Element:new("text", {text="Choose a news article below. The following information is live content, so check back often!", align="center", linage=3}))
+	base:appendElement(Element:new("break", {}))
+
+	for index, value in pairs(News) do
+		local function ShowNews()
+			local subwindow = Window:new("News Article", "http://www.roblox.com/asset/?id=21319776", 200, 150)
+			local base = Element:new("base")
+			subwindow:baseElement(base)
+			base:appendElement(Element:new("text", {text=value.title, align="center"}))
+			base:appendElement(Element:new("text", {text=value.date, align="right"}))
+			base:appendElement(Element:new("text", {text=value.body, align="left"}))
+			local gui = subwindow:process()
+			gui.Parent = TAZER_JEEYEWEYE
+		end
+		base:appendElement(Element:new("button", {align="right", text=value.date, onclick=ShowNews}))
+		print("----------------")
+		print(value.title .. " - " .. value.date)
+		print(value.body)
+	end
+
+	local gui = window:process()
+	gui.Parent = TAZER_JEEYEWEYE
+
+end
+
+function ResetGui()
+	local fade = CreateFrame(TAZER_JEEYEWEYE, UDim2.new(-1,0,-1,0), UDim2.new(3,0,3,0), Color3.new(1,1,1), Color3.new(1,1,1))
+	fade.BackgroundTransparency = 1
+	for i=1, 0, -0.1 do
+		fade.BackgroundTransparency = i
+		wait()
+	end
+	ClearTazerGui()
+	fade.Parent = TAZER_JEEYEWEYE
+	if localplayer then
+		workspace.CurrentCamera.CoordinateFrame = CFrame.new(localplayer.Character.Head.Position) * CFrame.new(-3.5,-4,-3.5)
+		localplayer.Character.Torso.CFrame = CFrame.new(localplayer.Character.Torso.Position)
+		localplayer.Character.Humanoid.WalkToPoint = localplayer.Character.Torso.Position
+		localplayer.Character.Humanoid.WalkToPart = nil
+	end
+	for i=0, 1, 0.1 do
+		fade.BackgroundTransparency = i
+		wait()
+	end
+	CreateCommandIcon()
+end
+
+function Scheme_Red(reset)
+	SetSetting("ColorScheme.Theme", "red")
+	Alert("Color Scheme changed to Red!")
+	bordercolor = Color3.new(1,1,0)
+	bgcolor = Color3.new(1,0,0)
+	txtcolor = Color3.new(1,1,1)
+	txthilite = Color3.new(1,1,0)
+	if not reset then ResetGui() end
+end
+
+function Scheme_Blue(reset)
+	SetSetting("ColorScheme.Theme", "blue")
+	Alert("Color Scheme changed to Blue!")
+	bordercolor = Color3.new(1,0,1)
+	bgcolor = Color3.new(0,0,1)
+	txtcolor = Color3.new(1,1,1)
+	txthilite = Color3.new(0.5,1,1)
+	if not reset then ResetGui() end
+end
+
+function Scheme_Yellow(reset)
+	SetSetting("ColorScheme.Theme", "yellow")
+	Alert("Color Scheme changed to Yellow!")
+	bordercolor = Color3.new(1,1,1)
+	bgcolor = Color3.new(1,1,0.1)
+	txtcolor = Color3.new(1,0.5,0)
+	txthilite = Color3.new(1,0,0)
+	if not reset then ResetGui() end
+end
+
+function Scheme_Green(reset)
+	SetSetting("ColorScheme.Theme", "green")
+	Alert("Color Scheme changed to Green!")
+	bordercolor = Color3.new(0,1,0)
+	bgcolor = Color3.new(0.25,0.5,0.25)
+	txtcolor = Color3.new(1,1,1)
+	txthilite = Color3.new(0,1,0)
+	if not reset then ResetGui() end
+end
+
+function Scheme_Purple(reset)
+	SetSetting("ColorScheme.Theme", "purple")
+	Alert("Color Scheme changed to Purple!")
+	bordercolor = Color3.new(1,1,0)
+	bgcolor = Color3.new(1,0,0)
+	txtcolor = Color3.new(1,1,1)
+	txthilite = Color3.new(1,1,0)
+	if not reset then ResetGui() end
+end
+
+theme = GetSetting("ColorScheme.Theme", "red")
+if theme == "red" then
+	Scheme_Red(true)
+elseif theme == "blue" then
+	Scheme_Blue(true)
+elseif theme == "green" then
+	Scheme_Green(true)
+elseif theme == "yellow" then
+	Scheme_Yellow(true)
+elseif theme == "purple" then
+	Scheme_Purple(true)
+else
+	--print("BAD THEME: " .. tostring(theme))
+	Scheme_Red(true)
+end
+
+function Open_ThemePicker()
+	local window = Window:new("Theme Picker", "http://www.roblox.com/asset/?id=21031057", 150, 165)
+	local base = Element:new("base")
+	window:baseElement(base)
+
+	base:appendElement(Element:new("text", {text="Don't like Tazer's colour scheme? Change it!", align="center", linage=2}))
+	base:appendElement(Element:new("break", {}))
+	base:appendElement(Element:new("button", {text="Red", align="left", onclick=Scheme_Red}))
+	base:appendElement(Element:new("button", {text="Green", align="left", onclick=Scheme_Green}))
+	base:appendElement(Element:new("button", {text="Blue", align="left", onclick=Scheme_Blue}))
+	base:appendElement(Element:new("button", {text="Yellow", align="left", onclick=Scheme_Yellow}))
+
+	local gui = window:process()
+	gui.Parent = TAZER_JEEYEWEYE
+end
+
+function Open_TazerSettings()
+	local window = Window:new("Settings", "http://www.roblox.com/asset/?id=21031071", 150, 165)
+	local base = Element:new("base")
+	window:baseElement(base)
+
+	local function ShowAreYouSure()
+		local subwindow = Window:new("Reset", "http://www.roblox.com/asset/?id=21031071", 100, 60)
+		window:subWindow(subwindow)
+		local base = Element:new("base")
+		subwindow:baseElement(base)
+		base:appendElement(Element:new("text", {text="Are you sure? (Close this if not!)", align="left", linage=2}))
+		local function DoTheClose()
+			ResetSettings()
+			SetSetting("Command.IconLocationX", 550)
+			SetSetting("Command.IconLocationY", 0)
+			SetSetting("Home.OpenOnStartup", true)
+			window:close()
+		end
+		base:appendElement(Element:new("button", {text="Yes", align="right", linage=1, onclick=DoTheClose}))
+		local gui = subwindow:process()
+		gui.Parent = TAZER_JEEYEWEYE
+	end
+
+	base:appendElement(Element:new("text", {text="Change Tazer so it can work for you.", align="center", linage=2}))
+	base:appendElement(Element:new("break", {}))
+	base:appendElement(Element:new("button", {text="Reset all Settings", align="left", onclick=ShowAreYouSure}))
+	base:appendElement(Element:new("break", {}))
+	base:appendElement(Element:new("number", {text="Choose num, max 99", align="left", max=99}))
+	base:appendElement(Element:new("number", {text="Choose num, max 1020", align="left", max=1020}))
+	base:appendElement(Element:new("input", {text="Input text above.", align="left"}))
+
+	local gui = window:process()
+	gui.Parent = TAZER_JEEYEWEYE
+end
+
+function Open_AntiLagApp()
+	local window = Window:new("AntiLag App", "http://www.roblox.com/asset/?id=21031096", 300, 250)
+	local base = Element:new("base")
+	window:baseElement(base)
+
+	base:appendElement(Element:new("image", {image="http://www.roblox.com/asset/?id=23108992", width=193, height=29, align="center"}))
+
+	base:appendElement(Element:new("text", {text="This is the Tazer AntiLag App to control the AntiLag features of Tazer.", align="center", linage=2}))
+	base:appendElement(Element:new("button", {text="Run AntiLag Cycle", align="left", linage=1, onclick=function ()
+		AntiLagCycle()
+	end}))
+	base:appendElement(Element:new("break", {}))
+	base:appendElement(Element:new("title", {text="Garbage Collection Cycle", align="left", linage=1}))
+	base:appendElement(Element:new("text", {text="Most of the time, your game can take up more memory than it needs. The extra memory is known as \"garbage\". Click below to remove the \"garbage\".", align="center", linage=3}))
+	base:appendElement(Element:new("button", {text="Run Garbage Collection", align="left", linage=1, onclick=function ()
+		local amount = GarbageCollection()
+		Alert("A Garbage Collection Cycle was run, and freed " .. math.ceil(amount * 100) / 100 .. " KB of data.")
+		local subwindow = Window:new("Garbage Collection", "http://www.roblox.com/asset/?id=21031096", 150, 112)
+		window:subWindow(subwindow)
+		local base = Element:new("base")
+		subwindow:baseElement(base)
+		base:appendElement(Element:new("text", {text="A Garbage Collection Cycle was ran successfully and cleared " .. math.ceil(amount) .. " KB of data.", align="center", linage=1}))
+		local gui = subwindow:process()
+		gui.Parent = TAZER_JEEYEWEYE
+	end}))
+
+	local gui = window:process()
+	gui.Parent = TAZER_JEEYEWEYE
+end
+
+function Open_RecoveryApp()
+	local window = Window:new("Recovery App", "http://www.roblox.com/asset/?id=21031076", 300, 250)
+	local base = Element:new("base")
+	window:baseElement(base)
+
+	base:appendElement(Element:new("image", {image="http://www.roblox.com/asset/?id=23109010", width=209, height=29, align="center"}))
+	base:appendElement(Element:new("text", {text="This is the Recovery App to control Tazer's place recovery features. This can help revive your place from harmful infections and make it run normally again.", align="center", linage=3}))
+	base:appendElement(Element:new("button", {text="Run Recovery Cycle", align="left", linage=1, onclick=function ()
+		RecoveryCycle()
+	end}))
+	base:appendElement(Element:new("break", {}))
+	base:appendElement(Element:new("title", {text="Name Infection", align="left", linage=1}))
+	base:appendElement(Element:new("text", {text="Click below and type the name that the infection changed your stuff to.", align="left", linage=2}))
+	local thename = ""
+	base:appendElement(Element:new("input", {text="", align="left", linage=1, default=thename, onchange=function (txt) thename=txt end}))
+	base:appendElement(Element:new("button", {text="Fix Names", align="left", linage=1, onclick=function ()
+		AllNameChange(thename)
+		Alert("Instances with the name \"" .. thename .. "\" have been recovered.")
+		local subwindow = Window:new("Recovery App", "http://www.roblox.com/asset/?id=21031076", 150, 112)
+		window:subWindow(subwindow)
+		local base = Element:new("base")
+		subwindow:baseElement(base)
+		base:appendElement(Element:new("text", {text="All Instances and Objects in your game with the name \"" .. thename .. "\" has had thier name changed to thier className.", align="center", linage=1}))
+		local gui = subwindow:process()
+		gui.Parent = TAZER_JEEYEWEYE
+	end}))
+
+	local gui = window:process()
+	gui.Parent = TAZER_JEEYEWEYE
+end
+
+function Open_TipApp()
+	local window = Window:new("Tip of the Day", "http://www.roblox.com/asset/?id=22079969", 200, 175)
+	local base = Element:new("base")
+	window:baseElement(base)
+
+	base:appendElement(Element:new("text", {text="Open this App again for more tips.", align="center", linage=1}))
+	base:appendElement(Element:new("break", {}))
+	base:appendElement(Element:new("text", {text=Tips[math.random(1,#Tips)], align="left"}))
+
+	local gui = window:process()
+	gui.Parent = TAZER_JEEYEWEYE
+end
+
+function Open_AntiVirusApp()
+	local window = Window:new("AntiVirus App", "http://www.roblox.com/asset/?id=21031087", 300, 250)
+	local base = Element:new("base")
+	window:baseElement(base)
+
+	local function OpenVirusProfile(virus, number)
+		if not virus or not number then return end
+		local subwindow = Window:new("Virus Profile #" .. number, "http://www.roblox.com/asset/?id=21031087", 200, 150)
+		window:subWindow(subwindow)
+		local base = Element:new("base")
+		subwindow:baseElement(base)
+		base:appendElement(Element:new("text", {text="Name:", align="left", linage=1}))
+		base:appendElement(Element:new("text", {text=virus.name, align="right", linage=1}))
+		base:appendElement(Element:new("text", {text="Description:", align="left", linage=1}))
+		base:appendElement(Element:new("text", {text=virus.desc, align="right", linage=2}))
+		local gui = subwindow:process()
+		gui.Parent = TAZER_JEEYEWEYE
+	end
+
+	local function RunVirusScanClicked()
+		local worked, error = pcall(AntiVirusCycle)
+		local subwindow = Window:new("Virus Scan Complete", "http://www.roblox.com/asset/?id=21031087", 200, 150)
+		window:subWindow(subwindow)
+		local base = Element:new("base")
+		subwindow:baseElement(base)
+		if worked then
+			base:appendElement(Element:new("text", {text="The virus scan has run completely and successfully, with no errors to report.", align="left", linage=1}))
+		else
+			if not error then error = "<none>" end
+			base:appendElement(Element:new("text", {text="Error:", align="left", linage=1}))
+			base:appendElement(Element:new("text", {text=tostring(error), align="right", linage=1}))
+		end
+		local gui = subwindow:process()
+		gui.Parent = TAZER_JEEYEWEYE
+	end
+
+	base:appendElement(Element:new("image", {image="http://www.roblox.com/asset/?id=23109002", width=158, height=29, align="center"}))
+
+	base:appendElement(Element:new("text", {text="This is Tazer's AntiVirus App. Here you can define what words and phrases that are in scripts Tazer should kill.", align="center", linage=2}))
+	base:appendElement(Element:new("button", {text="Run Virus Scan", align="left", linage=1, onclick=RunVirusScanClicked}))
+	base:appendElement(Element:new("break", {}))
+	base:appendElement(Element:new("title", {text="Virus Profiles", align="left", linage=1}))
+	local profilenumber = 1
+	base:appendElement(Element:new("number", {default=1, min=1, max=#Viruses, text="Choose a Virus Profile number to view (1 to " .. #Viruses .. ").", align="left", linage=1, onchange=function (v) profilenumber = v OpenVirusProfile(Viruses[tonumber(profilenumber)], tonumber(profilenumber)) end}))
+	--base:appendElement(Element:new("button", {text="View Profile", align="left", linage=1, onclick=function () OpenVirusProfile(Viruses[tonumber(profilenumber)], tonumber(profilenumber)) end}))
+
+	local gui = window:process()
+	gui.Parent = TAZER_JEEYEWEYE
+end
+
+function Open_BuildingInfoApp()
+	local window = Window:new("Building Time", "http://www.roblox.com/asset/?id=22128678", 100, 75)
+	local base = Element:new("base")
+	window:baseElement(base)
+
+	base:appendElement(Element:new("text", {text="This game has been running for...", align="left", linage=2}))
+
+	local seconds = math.floor(workspace.DistributedGameTime)
+	local minutes = math.floor(workspace.DistributedGameTime / 60)
+	local hours = math.floor(workspace.DistributedGameTime / 60 / 60)
+	local seconds = seconds - (minutes * 60)
+	local minutes = minutes - (hours * 60)
+	if hours < 1 then
+		if minutes < 1 then
+			base:appendElement(Element:new("text", {text=seconds .. " Seconds", align="right"}))
+		else
+			base:appendElement(Element:new("text", {text=minutes .. " Minutes", align="right"}))
+			base:appendElement(Element:new("text", {text=seconds .. " Seconds", align="right"}))
+		end
 	else
-		for i,v in pairs(getPlayers(players,spkr))do
-			table.insert(playres,Canon.LevelData[v.Name]);
-		end;
-	end;
-	for _,data in pairs(players)do
-		if(data.Level<0 and Canon.LevelData[spkr.Name].Level<1)then error'Sorry, you have the incorrect permisson level to do this.' return end;
-		data.Level=level;
-	end;
-end);
+		base:appendElement(Element:new("text", {text=hours .. " Hours", align="right"}))
+		base:appendElement(Element:new("text", {text=minutes .. " Minutes", align="right"}))
+		base:appendElement(Element:new("text", {text=seconds .. " Seconds", align="right"}))
+	end
 
-addCommand('Fix Canon',{'fix'},1,false,'Fixes Canon','-c Chats,-t Tablets',function(msg,spkr,flags)
-	if(flags.c)then
-		for i,v in pairs(getPlayers'')do
-			connect(v,true);
-		end;
-	end;
-	if(flags.t)then
-		createLoop'';
-		output('#CANON#: Finished!','Green',spkr,3);
-	end;
-end);
-addCommand('Kick',{'kick'},1,true,'Kicks <players>','-b Banish',function(msg,spkr,flags)
-	for i,v in pairs(getPlayers(msg,spkr))do
-		if(flags.b)then
-			Canon.LevelData[v.Name].Level=-1;
-		end;
-		LS(owner,[[game.Players["]]..v.Name..[["]:kick'']])
-	end;
-end);
-addCommand('Clear',{'clear','clean'},1,true,'Clears <workspace>','-m Match, -n Name, -i Instance',function(msg,spkr,flags)
-	local _type=0;
-	local _search='';
-	if(flags.m)then
-		_type=2;
-		_search=flags.m;
-	end;
-	if(flags.n)then
-		_type=1;
-		_search=flags.n;
-	end;
-	if(flags.i)then
-		_search=flags.i;
-		_type=3;
-	end;
-	for i,v in pairs(getAllChildren(Canon.Services.Workspace,_search,_type))do
-		pcall(function()v:remove''end);
-	end;
-	for i,v in pairs(getAllChildren(game.Players,3,'Player'))do
-		v:loadCharacter();
-	end;
-	create'Part'{
-		Parent=workspace;
-		Name='Base';
-		Size=Vector3.new(512,0.01,512);
-		BrickColor=BrickColor.new'Deep green'.Color;
-		Anchored=true;
-	};
-end);
+	local gui = window:process()
+	gui.Parent = TAZER_JEEYEWEYE
+end
 
---[=[MainLoop]=]--
-createLoop=function()
-	ypcall(function()Canon.RunServiceLoop:disconnect''end);
-	ypcall(function()Canon.Check:disconnect''end);
-	Canon.RunServiceLoop=Canon.Services.RunService.Stepped:connect(function()ypcall(mainLoop)end);
-end;
-createLoop'';
-table.foreach(Canon.Services.Players:players'',function(index,v)r,e=ypcall(connect,v)if(not r)then print(e)end;end);
-Canon.Services.Players.PlayerAdded:connect(function(player)connect(player)end);
-Canon.Services.Players.PlayerRemoving:connect(function(player)
-	saveLevelDataData(player);
-end);
+App:new("Tazer Home", "General status information for you!", "http://www.roblox.com/asset/?id=21031105", function () Open_TazerHome() end)
+App:new("Tazer News", "For all the latest information on Tazer.", "http://www.roblox.com/asset/?id=21319776", function () Open_TazerNews() end)
+App:new("Settings", "Change up how Tazer works for you.", "http://www.roblox.com/asset/?id=21031071", function () Open_TazerSettings() end)
+App:new("Theme Picker", "Don't like the colour scheme? Make your own!", "http://www.roblox.com/asset/?id=21031057", function () Open_ThemePicker() end)
+App:new("AntiLag", "Run the AntiLag cycle on your place.", "http://www.roblox.com/asset/?id=21031096", function () Open_AntiLagApp() end)
+App:new("Recovery", "Recover your place from Virus damage.", "http://www.roblox.com/asset/?id=21031076", function () Open_RecoveryApp() end)
+App:new("AntiVirus", "Kill any viruses or bad script in your place.", "http://www.roblox.com/asset/?id=21031087", function () Open_AntiVirusApp() end)
+App:new("Building Info", "How long have you been building? How much?", "http://www.roblox.com/asset/?id=22128678", function () Open_BuildingInfoApp() end)
+App:new("Tip of the Day", "Now you know, a little bit at a time.", "http://www.roblox.com/asset/?id=22079969", function () Open_TipApp() end)
+--App:new(name, desc, icon, func)
+
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+SaveVirusProfiles()
+LoadVirusProfiles()
+
+function CheckOwner()
+	local localplayer = game.Players.LocalPlayer
+	if localplayer then
+		SetSetting("Game.Owner", localplayer.Name)
+		SetSetting("Game.OwnerId", localplayer.userId)
+		local character = localplayer.CharacterAppearance
+		SetSetting("Game.Id", string.sub(character, 8 + string.find(character, "placeId=%d*")))
+		print(GetSetting("Game.Id", "-1"))
+	end
+end
+
+CheckOwner()
+
+game.Players.Changed:connect(function (property)
+	if property == "LocalPlayer" then
+		CheckOwner()
+	elseif property == "NumPlayers" then
+		CheckOwner()
+	end
+end)
+
+function onPlayerSpawn(player)
+	print("Player Spawned: \"" .. player.Name .. "\"")
+	if player.Name == GetSetting("Game.Owner", "") then
+		while not player:findFirstChild("PlayerGui") do wait() end
+		TAZER_JEEYEWEYE = game.Players.LocalPlayer:findFirstChild("PlayerGui"):findFirstChild("TazerGui")
+		if TAZER_JEEYEWEYE == nil then
+			TAZER_JEEYEWEYE = Instance.new("ScreenGui")
+			TAZER_JEEYEWEYE.Name = "TazerGui"
+			TAZER_JEEYEWEYE.Parent = player:findFirstChild("PlayerGui")
+		end
+		wait(0.1)
+		CreateCommandIcon()
+	end
+end
+
+workspace.ChildAdded:connect(function (child)
+	local player = game.Players:GetPlayerFromCharacter(child)
+	if player then
+		onPlayerSpawn(player)
+	end
+end)
+
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+version = DownloadTazerVersion() 
+print("Getting Latest Version") 
+while not version() do 
+	wait() 
+end 
+TAZER_DOWNLOAD_VERSION = version() 
+print("Downloaded Version Number: " .. TAZER_DOWNLOAD_VERSION .. "") 
+CreateCommandIcon()
+
+--Tazer 21.0 by Ozzypig
 
