@@ -7,7 +7,7 @@ P.Locked = true
 P.FormFactor = "Custom"
 P.TopSurface = "Smooth"
 P.BottomSurface = "Smooth"
-P.Size = Vector3.new(.2,.2,.2)
+P.Size = Vector3.new(5,5,5)
 P.CFrame = CFrame.new(x/5,0,0.8)
 end 
 for x = 1, 550 do
@@ -19,7 +19,7 @@ P.Locked = true
 P.FormFactor = "Custom"
 P.TopSurface = "Smooth"
 P.BottomSurface = "Smooth"
-P.Size = Vector3.new(.2,.2,.2)
+P.Size = Vector3.new(5,5,5)
 P.CFrame = CFrame.new(x/5,0,0.6)
 end 
 for x = 1, 550 do
@@ -31,7 +31,7 @@ P.Locked = true
 P.FormFactor = "Custom"
 P.TopSurface = "Smooth"
 P.BottomSurface = "Smooth"
-P.Size = Vector3.new(.2,.2,.2)
+P.Size = Vector3.new(5,5,5)
 P.CFrame = CFrame.new(x/5,0,0.4)
 end 
 for x = 1, 550 do
@@ -43,8 +43,8 @@ P.Locked = true
 P.FormFactor = "Custom"
 P.TopSurface = "Smooth"
 P.BottomSurface = "Smooth"
-P.Size = Vector3.new(.2,.2,.2)
-P.CFrame = CFrame.new(x/5,0,0.2)
+P.Size = Vector3.new(5,5,5)
+P.CFrame = CFrame.new(x/5,0,05)
 end 
 
 for x = 1, 550 do
@@ -56,7 +56,7 @@ P.Locked = true
 P.FormFactor = "Custom"
 P.TopSurface = "Smooth"
 P.BottomSurface = "Smooth"
-P.Size = Vector3.new(.2,.2,.2)
+P.Size = Vector3.new(5,5,5)
 P.CFrame = CFrame.new(x/5,0,0)
 end 
 
@@ -69,6 +69,6 @@ P.Locked = true
 P.FormFactor = "Custom"
 P.TopSurface = "Smooth"
 P.BottomSurface = "Smooth"
-P.Size = Vector3.new(.2,.2,.2)
-P.CFrame = CFrame.new(x/5,0,-0.2)
+P.Size = Vector3.new(5,5,5)
+P.CFrame = CFrame.new(x/5,0,-05)
 end 
