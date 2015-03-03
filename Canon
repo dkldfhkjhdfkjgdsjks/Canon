@@ -1,190 +1,37 @@
-local player = game.Players.LocalPlayer
-local camera = workspace.CurrentCamera
-local mouse = player:GetMouse()
-
-while true do
-	wait()
-	if player.Character ~= nil then break end
+suck=suck
+player=game.Players.LocalPlayer
+c=Instance.new("HopperBin",player.Backpack)
+script.Parent=c
+local rays={}
+c.Selected:connect(function(mm)
+mm.Button1Down:connect(function()
+cast=Ray.new(player.Character.Torso.CFrame.p,mm.Hit.p.unit*500)
+hit,pos=Workspace:FindPartOnRay(cast,Workspace.CurrentCamera)
+d=(pos - player.Character.Torso.CFrame.p).magnitude
+x=Instance.new("Part",player.Character)
+table.insert(rays,x)
+x.CanCollide=false
+x.Anchored=true
+x.TopSurface=Enum.SurfaceType.Smooth
+x.BottomSurface=Enum.SurfaceType.Smooth
+x.formFactor=Enum.FormFactor.Custom
+x.Size=Vector3.new(0.8,0.8,d)
+x.CFrame=CFrame.new(pos,player.Character.Torso.CFrame.p) * CFrame.new(0,0,-d/2)
+end)
+mm.KeyDown:connect(function(key)
+if key:lower()=="k" then
+for i,v in pairs(rays) do
+v:Destroy()
 end
-local char = player.Character; local head = char:WaitForChild("Head")
-
-local move_speed = 50
-
-local moving = {}
-moving.LeftRight = 0
-moving.UpDown = 0
-moving.FrontBack = 0
-
-local keys = {}
-keys.TOGGLE_AXIS_MODE = "t"
-keys.TOGGLE_SHOW_AXES = "y"
-
-local axis_mode = "Local"
-local show_axes = false
-local axes = {}
-local axis_length = 2.5
-local axis_offset = 0.5
-
-axes.x = Instance.new("Part")
-axes.x.Anchored = true
-axes.x.CanCollide = false
-axes.x.Locked = true
-axes.x.Transparency = 1
-axes.x.TopSurface = 0; axes.x.BottomSurface = 0
-axes.x.formFactor = Enum.FormFactor.Custom
-axes.x.BrickColor = BrickColor.new("Really red")
-axes.x.Size = Vector3.new(axis_length, 0.2, 0.2)
-
-local mesh = Instance.new("BlockMesh", axes.x)
-mesh.Name = "Mesh"
-mesh.Scale = Vector3.new(1, 0.1, 0.1)
-
-axes.y = axes.x:Clone()
-axes.y.BrickColor = BrickColor.new("Lime green")
-axes.y.Size = Vector3.new(0.2, axis_length, 0.2)
-axes.y.Mesh.Scale = Vector3.new(0.1, 1, 0.1)
-
-axes.z = axes.x:Clone()
-axes.z.BrickColor = BrickColor.new("Really blue")
-axes.z.Size = Vector3.new(0.2, 0.2, axis_length)
-axes.z.Mesh.Scale = Vector3.new(0.1, 0.1, 1)
-
-axes.x.Parent = camera
-axes.y.Parent = camera
-axes.z.Parent = camera
-
-local bg = Instance.new("BodyGyro", head)
-bg.maxTorque = Vector3.new(1e5,1e5,1e5)
-bg.P = 1e5
-
-local bv = Instance.new("BodyVelocity", head)
-bv.maxForce = Vector3.new(1e15, 1e15, 1e15)
-bv.velocity = Vector3.new(0, 0, 0)
-
-local found = {}
-local find = nil
-find = function(model)
-	if model:IsA("BasePart") then
-			found[#found+1]=model
-	else
-		for __,child in pairs(model:GetChildren()) do
-			find(child)
-		end
-	end
+rays={}
+elseif key:lower()=="m" then
+for i,v in pairs(rays) do
+v.CanCollide=false
 end
-find(char)
-for _,x in pairs(found) do
-	if x:IsA("BasePart") then
-		local bf = x:FindFirstChild("BodyForce") or Instance.new("BodyForce", x)
-		bf.force = Vector3.new(0, 196.2 * x:GetMass(), 0)
-	end
+elseif key:lower()=="n" then
+for i,v in pairs(rays) do
+v.CanCollide=true
 end
-
-local kill = false
-local onStop = function()
-	kill = true
-	wait(0.1)
-	axes.x:Destroy();axes.y:Destroy();axes.z:Destroy()
-	bg:Destroy()
-	bv:Destroy()
-	for i,v in pairs(char:GetChildren()) do
-		if v:IsA("BasePart") then v.CanCollide = true end
-	end
-	for i,v in pairs(found) do
-		local f = v:FindFirstChild("BodyForce") if f then f:Destroy() end
-	end
-	script:Destroy()
 end
-char.Humanoid.Died:connect(onStop)
-
-
-local onKeyDown = nil; onKeyDown = function(key)
-	key = key:lower()
-	if key == keys.TOGGLE_AXIS_MODE then
-		local switch = ""
-		if axis_mode == "Global" then switch = "Local" else switch = "Global" end
-		if show_axes then onKeyDown(keys.TOGGLE_SHOW_AXES); axis_mode = switch; wait(); onKeyDown(keys.TOGGLE_SHOW_AXES) else
-			axis_mode = switch; onKeyDown(keys.TOGGLE_SHOW_AXES);
-		end
-	elseif key == keys.TOGGLE_SHOW_AXES then
-		show_axes = not show_axes
-		wait()
-		if show_axes then 
-			for step=axes.x.Transparency,0,-0.25 do
-				for i,v in pairs(axes) do v.Transparency = step end 
-				wait()
-			end
-			for i,v in pairs(axes) do v.Transparency = 0 end 
-		else
-		  	for step=axes.x.Transparency,1,0.25 do
-				for i,v in pairs(axes) do v.Transparency = step end 
-				wait()
-			end
-			for i,v in pairs(axes) do v.Transparency = 1 end 
-		end
-	elseif key == "w" then
-		moving.FrontBack = -1
-	elseif key == "s" then
-		moving.FrontBack = 1
-	elseif key == "a" then
-		moving.LeftRight = -1
-	elseif key == "d" then
-		moving.LeftRight = 1
-	elseif key == "q" then
-		moving.UpDown = -1
-	elseif key == "e" then
-		moving.UpDown = 1
-	end
-end
-function onKeyUp(key)
-	key = key:lower()
-	if key == "w" then
-		moving.FrontBack = 0
-	elseif key == "s" then
-		moving.FrontBack = 0
-	elseif key == "a" then
-		moving.LeftRight = 0
-	elseif key == "d" then
-		moving.LeftRight = 0
-	elseif key == "q" then
-		moving.UpDown = 0
-	elseif key == "e" then
-		moving.UpDown = 0
-	end
-end
-mouse.KeyDown:connect(onKeyDown)
-mouse.KeyUp:connect(onKeyUp)
-while not kill do
-	for i,v in pairs(char:GetChildren()) do
-		if v:IsA("BasePart") then v.CanCollide = false end
-	end
-	local vel = Vector3.new(0,0,0)
-	if axis_mode == "Global" then
-		local cf = CFrame.new(head.Position)
-		axes.x.CFrame = cf * CFrame.new(axis_length/2 + axis_offset, 0, 0)
-		axes.y.CFrame = cf * CFrame.new(0, axis_length/2 + axis_offset, 0)
-		axes.z.CFrame = cf * CFrame.new(0, 0, -axis_length/2 - axis_offset)
-		
-		vel = Vector3.new(move_speed * moving.LeftRight,
-						  move_speed * moving.UpDown,
-						  move_speed * moving.FrontBack)
-	elseif axis_mode == "Local" then
-		local cf = head.CFrame
-		axes.x.CFrame = cf * CFrame.new(axis_length/2 + axis_offset, 0, 0)
-		axes.y.CFrame = cf * CFrame.new(0, axis_length/2 + axis_offset, 0)
-		axes.z.CFrame = cf * CFrame.new(0, 0, -axis_length/2 - axis_offset)
-		
-		local x, y, z, R00, R01, R02, R10, R11, R12, R20, R21, R22 = head.CFrame:components()
-		local right = Vector3.new(R00, R10, R20) * move_speed * moving.LeftRight
-		local up = Vector3.new(R01, R11, R21) * move_speed * moving.UpDown
-		local look = Vector3.new(R02, R12, R22) * move_speed * moving.FrontBack
-		vel = vel + right
-		vel = vel + up
-		vel = vel + look
-	end
-	bg.cframe = camera.CoordinateFrame
-	bv.velocity = vel
-	
-	
-	game:GetService('RunService').Stepped:wait()
-end
+end)
+end)
