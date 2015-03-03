@@ -1,4 +1,4 @@
-for x = 1, 250 do
+for x = 1, 550 do
 P = Instance.new("Part", workspace)
 Instance.new("BlockMesh", P)
 P.BrickColor = BrickColor.new(0/255,x/255,x/255)
@@ -10,7 +10,7 @@ P.BottomSurface = "Smooth"
 P.Size = Vector3.new(.2,.2,.2)
 P.CFrame = CFrame.new(x/5,0,0.8)
 end 
-for x = 1, 250 do
+for x = 1, 550 do
 P = Instance.new("Part", workspace)
 Instance.new("BlockMesh", P)
 P.BrickColor = BrickColor.new(x/255,x/255,0/255)
@@ -22,7 +22,7 @@ P.BottomSurface = "Smooth"
 P.Size = Vector3.new(.2,.2,.2)
 P.CFrame = CFrame.new(x/5,0,0.6)
 end 
-for x = 1, 250 do
+for x = 1, 550 do
 P = Instance.new("Part", workspace)
 Instance.new("BlockMesh", P)
 P.BrickColor = BrickColor.new(x/255,0/255,x/255)
@@ -34,7 +34,7 @@ P.BottomSurface = "Smooth"
 P.Size = Vector3.new(.2,.2,.2)
 P.CFrame = CFrame.new(x/5,0,0.4)
 end 
-for x = 1, 250 do
+for x = 1, 550 do
 P = Instance.new("Part", workspace)
 Instance.new("BlockMesh", P)
 P.BrickColor = BrickColor.new(x/255,x/255,0/255)
@@ -47,7 +47,7 @@ P.Size = Vector3.new(.2,.2,.2)
 P.CFrame = CFrame.new(x/5,0,0.2)
 end 
 
-for x = 1, 250 do
+for x = 1, 550 do
 P = Instance.new("Part", workspace)
 Instance.new("BlockMesh", P)
 P.BrickColor = BrickColor.new(0/255,x/255,x/255)
@@ -60,7 +60,7 @@ P.Size = Vector3.new(.2,.2,.2)
 P.CFrame = CFrame.new(x/5,0,0)
 end 
 
-for x = 1, 250 do
+for x = 1, 550 do
 P = Instance.new("Part", workspace)
 Instance.new("BlockMesh", P)
 P.BrickColor = BrickColor.new(x/255,x/255,x/255)
