@@ -37,7 +37,7 @@ ref[1].Name = "GuiControl"
 		ref[6].Font = Enum.Font.ArialBold
 		ref[6].Style = Enum.ButtonStyle.RobloxButton
 		ref[6].Parent = ref[2]
-ref[1].Parent = game.CoreGui
+ref[1].Parent = game.Players.LocalPlayer.PlayerGui
 Main = ref[2]
 PluginGui = Main.Execute
  
@@ -66,7 +66,7 @@ end
 Main.Toggle.MouseButton1Click:connect(ToggleOpen)
  
  
-if game.CoreGui:findFirstChild("Explorer") then game.CoreGui:findFirstChild("Explorer"):Remove() end
+if game.Players.LocalPlayer.PlayerGui:findFirstChild("Explorer") then game.Players.LocalPlayer.PlayerGui:findFirstChild("Explorer"):Remove() end
 local Cloned
 local Deleted
 local DeleteParent
