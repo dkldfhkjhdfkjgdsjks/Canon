@@ -1,604 +1,190 @@
-------------------------------------------------------
---Version v6.9                                   |
---Drag Property added                        |
-------------------------------------------------------
+local player = game.Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local mouse = player:GetMouse()
+
+while true do
+	wait()
+	if player.Character ~= nil then break end
+end
+local char = player.Character; local head = char:WaitForChild("Head")
+
+local move_speed = 50
+
+local moving = {}
+moving.LeftRight = 0
+moving.UpDown = 0
+moving.FrontBack = 0
+
+local keys = {}
+keys.TOGGLE_AXIS_MODE = "t"
+keys.TOGGLE_SHOW_AXES = "y"
+
+local axis_mode = "Local"
+local show_axes = false
+local axes = {}
+local axis_length = 2.5
+local axis_offset = 0.5
+
+axes.x = Instance.new("Part")
+axes.x.Anchored = true
+axes.x.CanCollide = false
+axes.x.Locked = true
+axes.x.Transparency = 1
+axes.x.TopSurface = 0; axes.x.BottomSurface = 0
+axes.x.formFactor = Enum.FormFactor.Custom
+axes.x.BrickColor = BrickColor.new("Really red")
+axes.x.Size = Vector3.new(axis_length, 0.2, 0.2)
+
+local mesh = Instance.new("BlockMesh", axes.x)
+mesh.Name = "Mesh"
+mesh.Scale = Vector3.new(1, 0.1, 0.1)
+
+axes.y = axes.x:Clone()
+axes.y.BrickColor = BrickColor.new("Lime green")
+axes.y.Size = Vector3.new(0.2, axis_length, 0.2)
+axes.y.Mesh.Scale = Vector3.new(0.1, 1, 0.1)
+
+axes.z = axes.x:Clone()
+axes.z.BrickColor = BrickColor.new("Really blue")
+axes.z.Size = Vector3.new(0.2, 0.2, axis_length)
+axes.z.Mesh.Scale = Vector3.new(0.1, 0.1, 1)
+
+axes.x.Parent = camera
+axes.y.Parent = camera
+axes.z.Parent = camera
+
+local bg = Instance.new("BodyGyro", head)
+bg.maxTorque = Vector3.new(1e5,1e5,1e5)
+bg.P = 1e5
+
+local bv = Instance.new("BodyVelocity", head)
+bv.maxForce = Vector3.new(1e15, 1e15, 1e15)
+bv.velocity = Vector3.new(0, 0, 0)
+
+local found = {}
+local find = nil
+find = function(model)
+	if model:IsA("BasePart") then
+			found[#found+1]=model
+	else
+		for __,child in pairs(model:GetChildren()) do
+			find(child)
+		end
+	end
+end
+find(char)
+for _,x in pairs(found) do
+	if x:IsA("BasePart") then
+		local bf = x:FindFirstChild("BodyForce") or Instance.new("BodyForce", x)
+		bf.force = Vector3.new(0, 196.2 * x:GetMass(), 0)
+	end
+end
+
+local kill = false
+local onStop = function()
+	kill = true
+	wait(0.1)
+	axes.x:Destroy();axes.y:Destroy();axes.z:Destroy()
+	bg:Destroy()
+	bv:Destroy()
+	for i,v in pairs(char:GetChildren()) do
+		if v:IsA("BasePart") then v.CanCollide = true end
+	end
+	for i,v in pairs(found) do
+		local f = v:FindFirstChild("BodyForce") if f then f:Destroy() end
+	end
+	script:Destroy()
+end
+char.Humanoid.Died:connect(onStop)
 
 
-TextProperties = {"Name", "Value", "Text", "Reflectance", "Transparency", "Heat", "TeamName", "LinkedSource", "Health", "MaxHealth", "Brightness", "FogEnd", "FogStart", "Size", "D", "P", "Elasticity", "FormFactor", "Friction", "Shape", "GeographicLatitude", "Texture", "BackgroundTransparency", "Image"}
-BoolProperties = {"Anchored", "CanCollide", "Disabled", "Value", "Locked", "CharacterAutoLoads", "Visable"}
-BrickColorProperties = {"BrickColor", "Color", "TeamColor", "HeadColor", "TorsoColor", "LeftLegColor", "LeftArmColor", "RightLegColor", "RightArmColor", "Value"}
-Color3Properties = {"Color", "SecondaryColor", "Ambient", "ColorShift_Bottom", "ColorShift_Top", "ShadowColor", "FogColor", "Value", "BorderColor3", "BackgroundColor3"}
-Vector3Properties = {"Size", "Position", "maxForce", "maxTorque", "position", "Velocity", "RotVelocity", "Value"}
- 
-local ref = {}
-ref[1] = Instance.new("ScreenGui")
-ref[1].Name = "GuiControl"
-	ref[2] = Instance.new("Frame")
-	ref[2].Size = UDim2.new(0, 210, 0, 50) --UDim2.new(0, 210, 0, 180)
-	ref[2].Style = Enum.FrameStyle.RobloxRound
-	ref[2].Name = "Main"
-	ref[2].Position = UDim2.new(1, -35, 0.5, -150)
-	ref[2].Parent = ref[1]
-		ref[5] = Instance.new("TextButton")
-		ref[5].FontSize = Enum.FontSize.Size14
-		ref[5].Name = "Execute"
-		ref[5].Text = "Launch Explorer"
-		ref[5].Size = UDim2.new(0, 160, 0, 30)
-		ref[5].TextColor3 = Color3.new(1, 1, 1)
-		ref[5].Style = Enum.ButtonStyle.RobloxButton
-		ref[5].Position = UDim2.new(0.5, -70, 0.5, -15)
-		ref[5].Parent = ref[2]
-		ref[6] = Instance.new("TextButton")
-		ref[6].FontSize = Enum.FontSize.Size18
-		ref[6].Name = "Toggle"
-		ref[6].Text = "<"
-		ref[6].Size = UDim2.new(0, 20, 1, 0)
-		ref[6].TextColor3 = Color3.new(1, 1, 1)
-		ref[6].Font = Enum.Font.ArialBold
-		ref[6].Style = Enum.ButtonStyle.RobloxButton
-		ref[6].Parent = ref[2]
-ref[1].Parent = game.Players.LocalPlayer.PlayerGui
-Main = ref[2]
-PluginGui = Main.Execute
- 
-function Open()
-if Toggle then return end
-Toggle = true
-Main.Position = UDim2.new(1, -200, 0.5, -150)
-Main.Toggle.Text = ">"
-end
- 
-function Close()
-if not Toggle then return end
-Toggle = false
-Main.Position = UDim2.new(1, -35, 0.5, -150)
-Main.Toggle.Text = "<"
-end
- 
-function ToggleOpen()
-if not Toggle then
-Open()
-elseif Toggle then
-Close()
-end
-end
- 
-Main.Toggle.MouseButton1Click:connect(ToggleOpen)
- 
- 
-if game.Players.LocalPlayer.PlayerGui:findFirstChild("Explorer") then game.Players.LocalPlayer.PlayerGui:findFirstChild("Explorer"):Remove() end
-local Cloned
-local Deleted
-local DeleteParent
-local Player
-local Search
-local ScriptSearch
-local Gui
-local ScreenGui
-local Cloned = nil
-local Deleted = nil
-local DeleteParent = nil
-local Current = 0
-local CurrentOption = 0
-local OffsetX = 0
-local OffsetY = 0
-local Object
-local Move
-local StartPos
-local OriginPos
- 
-function Clear()
-	if ScreenGui then Gui:Destroy() end
-	Current = 0
-	CurrentOption = 0
-end
- 
-FixedValues = {}
-function FixValue(Obj, Prop)
-	local Ob = Obj
-	local Pro = Prop
-	local Val = Ob[Pro]
-	local Event = Ob.Changed:connect(function() Ob[Pro] = Val end)
-	table.insert(FixedValues, {Ob, Pro, Event})
-	print("Fixed "..tostring(Ob).."."..Pro)
-end
- 
-function CheckFixed(Obj, Prop)
-	local Ob = Obj
-	local Pro = Prop
-	for Num, I in pairs(FixedValues) do
-		if I[1] == Ob and I[2] == Pro then
-			return true
+local onKeyDown = nil; onKeyDown = function(key)
+	key = key:lower()
+	if key == keys.TOGGLE_AXIS_MODE then
+		local switch = ""
+		if axis_mode == "Global" then switch = "Local" else switch = "Global" end
+		if show_axes then onKeyDown(keys.TOGGLE_SHOW_AXES); axis_mode = switch; wait(); onKeyDown(keys.TOGGLE_SHOW_AXES) else
+			axis_mode = switch; onKeyDown(keys.TOGGLE_SHOW_AXES);
 		end
-	end
-end
- 
-function UnFixed(Obj, Prop)
-	local Ob = Obj
-	local Pro = Prop
-	for Num, I in pairs(FixedValues) do
-		if I[1] == Ob and I[2] == Pro then
-			I[3]:disconnect()
-			table.remove(FixedValues, Num)
-			print("UnFixed "..tostring(Ob).."."..Pro)
-		end
-	end
-end
- 
-function AddButton(N, Function, Color, Copy)
-	if not N then error("RenderButton - No Name Specified") end
-	if not Function then error("RenderButton - No Function Specified") end
-	if not Color then Color = Color3.new(1, 1, 1) end
-	if Copy == nil then Copy = true end
-	P = Instance.new("TextButton")
-	if Copy then
-		P.Size = UDim2.new(0, 110, 0, 20)
-	else
-		P.Size = UDim2.new(0, 130, 0, 20)
-	end
-	P.Text = N.Name
-	P.Name = N.Name
-	P.Parent = Gui
-	P.BackgroundColor3 = Color
-	P.TextColor3 = Color3.new(0, 0, 0)
-	P.BackgroundTransparency = 0.5
-	P.Position = UDim2.new(0, ((math.modf(Current/25))*150)+400, 0, 85+(20*((Current%25)-1)))
-	P.MouseButton1Click:connect(function() Function(P) end)
-	D = Instance.new("TextButton")
-	D.Size = UDim2.new(0, 20, 0, 20)
-	D.Text = "X"
-	D.Name = N.Name
-	D.Parent = Gui
-	D.BackgroundColor3 = Color3.new(1, 0, 0)
-	D.TextColor3 = Color3.new(0, 0, 0)
-	D.BackgroundTransparency = 0.5
-	D.Position = UDim2.new(0, ((math.modf(Current/25))*150)+400+130, 0, 85+(20*((Current%25)-1)))
-	D.MouseButton1Click:connect(function()
-		Deleted = N
-		DeleteParent = N.Parent
-		N.Parent = nil
-		Clear()
-		Search(DeleteParent)
-	end)
-	if Copy then
-		C = Instance.new("TextButton")
-		C.Size = UDim2.new(0, 20, 0, 20)
-		C.Text = "C"
-		C.Name = N.Name
-		C.Parent = Gui
-		C.BackgroundColor3 = Color3.new(0, 1, 0.5)
-		C.TextColor3 = Color3.new(0, 0, 0)
-		C.BackgroundTransparency = 0.5
-		C.Position = UDim2.new(0, ((math.modf(Current/25))*150)+400+110, 0, 85+(20*((Current%25)-1)))
-		C.MouseButton1Click:connect(function()
-			Cloned = N:Clone()
-			Clear()
-			Search(N.Parent)
-		end)
-	end
-	Current = Current + 1
-	return P
-end
- 
-function AddOption(N, Function, Color, Text, Fixed, Obj, Prop)
-	if not N then error("RenderButton - No Name Specified") end
-	if not Color then Color = Color3.new(1, 1, 1) end
-	if Text == nil then Text = false end
-	if Text then
-		P = Instance.new("TextBox")
-	else
-		P = Instance.new("TextButton")
-	end
-	P.Size = UDim2.new(0, 150, 0, 20)
-	if Fixed then
-		local Ob = Obj
-		local Pro = Prop
-		local IsFix = CheckFixed(Ob, Pro)
-		P.Size = UDim2.new(0, 130, 0, 20)
-		local F = Instance.new("TextButton")
-		F.Size = UDim2.new(0, 20, 0, 20)
-		F.Text = "F"
-		F.Name = "Fix"
-		F.Parent = Gui
-		if not IsFix then
-			F.BackgroundColor3 = Color3.new(0, 1, 0)
+	elseif key == keys.TOGGLE_SHOW_AXES then
+		show_axes = not show_axes
+		wait()
+		if show_axes then 
+			for step=axes.x.Transparency,0,-0.25 do
+				for i,v in pairs(axes) do v.Transparency = step end 
+				wait()
+			end
+			for i,v in pairs(axes) do v.Transparency = 0 end 
 		else
-			F.BackgroundColor3 = Color3.new(1, 0, 0)
-		end
-		F.TextColor3 = Color3.new(0, 0, 0)
-		F.BackgroundTransparency = 0.5
-		F.Position = UDim2.new(0, ((math.modf(CurrentOption/30))*150)+250+130, 0, 85+(20*((CurrentOption%30)-1)))
-		F.MouseButton1Click:connect(function()
-			local Fix = CheckFixed(Ob, Pro)
-			if not Fix then
-				F.BackgroundColor3 = Color3.new(1, 0, 0)
-				FixValue(Ob, Pro)
-			else
-				F.BackgroundColor3 = Color3.new(0, 1, 0)
-				UnFixed(Ob, Pro)
+		  	for step=axes.x.Transparency,1,0.25 do
+				for i,v in pairs(axes) do v.Transparency = step end 
+				wait()
 			end
-		end)
-	end
-	P.Text = N
-	P.Name = N
-	P.Parent = Gui
-	P.BackgroundColor3 = Color
-	P.TextColor3 = Color3.new(0, 0, 0)
-	P.BackgroundTransparency = 0.5
-	P.Position = UDim2.new(0, ((math.modf(CurrentOption/30))*150)+250, 0, 85+(20*((CurrentOption%30)-1)))
-	if not Text and Function then
-		P.MouseButton1Click:connect(function() Function(P) end)
-	end
-	CurrentOption = CurrentOption + 1
-	return P
-end
- 
-function Round(Num, Base)
-if Num == 0 then return 0 end
-local base = tonumber(Base) or 1
-return math.floor(math.abs(Num)/base + 0.5 ) * base * (math.abs(Num)/Num)
-end
- 
-function AddTextOption(Obj, Prop)
-	local Ob = Obj
-	local Pro = Prop
-	if type(Ob[Pro]) == "number" or type(Ob[Pro]) == "string" then
-		CurrentOption = CurrentOption + 1
-		local T = AddOption(Ob[Pro], nil, Color3.new(0.1, 0.4, 0.1), true, true, Ob, Pro)
-		CurrentOption = CurrentOption - 2
-		local O = AddOption("Change "..Pro..":", function() Ob[Pro] = T.Text end, Color3.new(0.1, 0.8, 0.1), false)
-		CurrentOption = CurrentOption + 1
-	end
-end
- 
-function AddBrickColorOption(Obj, Prop)
-	local Ob = Obj
-	local Pro = Prop
-	if BrickColor.new(tostring(Ob[Pro])) == Ob[Pro] then
-		CurrentOption = CurrentOption + 1
-		local T = AddOption(tostring(Ob[Pro]), nil, Color3.new(0.1, 0.4, 0.1), true, true, Ob, Pro)
-		CurrentOption = CurrentOption - 2
-		local O = AddOption("Change "..Pro..":", function() Ob[Pro] = BrickColor.new(T.Text) end, Color3.new(0.1, 0.8, 0.1), false)
-		CurrentOption = CurrentOption + 1
-	end
-end
- 
-function AddColor3Option(Obj, Prop)
-	local Ob = Obj
-	local Pro = Prop
-	if TestProperty(Ob[Pro], "r") and TestProperty(Ob[Pro], "b") and TestProperty(Ob[Pro], "g") then
-		CurrentOption = CurrentOption + 1
-		local T = AddOption(math.floor(Ob[Pro].r*255)..", "..math.floor(Ob[Pro].g*255)..", "..math.floor(Ob[Pro].b*255), nil, Color3.new(0.1, 0.4, 0.1), true, true, Ob, Pro)
-		CurrentOption = CurrentOption - 2
-		local O = AddOption("Change "..Pro..":", function()
-			local R, G, B = string.match(T.Text, "%s?(%d*%p?%d+)%p+%s?(%d*%p?%d+)%p+%s?(%d*%p?%d+)")
-			if R and G and B then
-				Ob[Pro] = Color3.new(tonumber(R)/255, tonumber(G)/255, tonumber(B)/255)
-			end
-		end, Color3.new(0.1, 0.8, 0.1), false)
-		CurrentOption = CurrentOption + 1
-	end
-end
- 
-function AddVector3Option(Obj, Prop)
-	local Ob = Obj
-	local Pro = Prop
-	if TestProperty(Ob[Pro], "x") and TestProperty(Ob[Pro], "y") and TestProperty(Ob[Pro], "z") then
-		CurrentOption = CurrentOption + 1
-		local T = AddOption(Round(Ob[Pro].x, 0.5)..", "..Round(Ob[Pro].y, 0.5)..", "..Round(Ob[Pro].z, 0.5), nil, Color3.new(0.1, 0.4, 0.1), true, true, Ob, Pro)
-		CurrentOption = CurrentOption - 2
-		local O = AddOption("Change "..Pro..":", function()
-			local R, G, B = string.match(T.Text, "%s?(%d*%p?%d+)%p+%s?(%d*%p?%d+)%p+%s?(%d*%p?%d+)")
-			if R and G and B then
-				Ob[Pro] = Vector3.new(tonumber(R), tonumber(G), tonumber(B))
-			end
-		end, Color3.new(0.1, 0.8, 0.1), false)
-		CurrentOption = CurrentOption + 1
-	end
-end
- 
-function AddBoolOption(Obj, Prop)
-	local Ob = Obj
-	local Pro = Prop
-	if type(Ob[Pro]) == "boolean" then
-		local O = AddOption(Pro..": "..tostring(Ob[Pro]), nil, Color3.new(0.1, 0.8, 0.1), false, true, Ob, Pro)
-		O.MouseButton1Click:connect(function()
-			if Ob[Pro] then
-				Ob[Pro] = false
-				O.Text = Pro..": false"
-			else
-				Ob[Pro] = true
-				O.Text = Pro..": true"
-			end
-		end)
-	end
-end
- 
-function TestProperty(Obj, Property)
-	Success = pcall(function() if Obj[Property] then return end end)
-	return Success
-end
- 
-function LoadOptions(Object)
-	for Num, Prop in pairs(TextProperties) do
-		if TestProperty(Object, Prop) then
-			AddTextOption(Object, Prop)
+			for i,v in pairs(axes) do v.Transparency = 1 end 
 		end
-	end
-	for Num, Prop in pairs(BoolProperties) do
-		if TestProperty(Object, Prop) then
-			AddBoolOption(Object, Prop)
-		end
-	end
-	for Num, Prop in pairs(BrickColorProperties) do
-		if TestProperty(Object, Prop) then
-			AddBrickColorOption(Object, Prop)
-		end
-	end
-	for Num, Prop in pairs(Color3Properties) do
-		if TestProperty(Object, Prop) then
-			AddColor3Option(Object, Prop)
-		end
-	end
-	for Num, Prop in pairs(Vector3Properties) do
-		if TestProperty(Object, Prop) then
-			AddVector3Option(Object, Prop)
-		end
+	elseif key == "w" then
+		moving.FrontBack = -1
+	elseif key == "s" then
+		moving.FrontBack = 1
+	elseif key == "a" then
+		moving.LeftRight = -1
+	elseif key == "d" then
+		moving.LeftRight = 1
+	elseif key == "q" then
+		moving.UpDown = -1
+	elseif key == "e" then
+		moving.UpDown = 1
 	end
 end
- 
-function Dragging(X, Y)
-OriginX = Object.Position.X.Offset
-OriginY = Object.Position.Y.Offset
-Object.Position = StartPos + UDim2.new(0, X-OffsetX, 0, Y-OffsetY)
-Object.Position = UDim2.new(Object.Position.X.Scale, Object.Position.X.Offset, Object.Position.Y.Scale, OriginY)
-end
-function StopDrag()
-if Move then Move:Remove() end
-for Num, Obj in pairs(ScreenGui:GetChildren()) do
-if Obj.Name == "DragControl" and Obj:IsA("Frame") then
-Obj:Remove()
-end
-end
-end
-function StartDrag(X, Y)
-Move = Instance.new("ImageButton")
-Move.Parent = ScreenGui
-Move.Name = "DragControl"
-Move.Size = UDim2.new(1, 0, 1, 0)
-Move.BackgroundTransparency = 1
-Move.MouseMoved:connect(Dragging)
-Move.MouseButton1Up:connect(StopDrag)
-OffsetX = X
-OffsetY = Y
-StartPos = Object.Position
-end
-local CurEvent1, CurEvent2
-function MakeDraggable(Obj, DragObj, ScreenObj)
-if CurEvent1 and CurEvent2 then
-CurEvent1:disconnect()
-CurEvent2:disconnect()
-end
-Object = DragObj
-ScreenGui = ScreenObj
-StartPos = Object.Position
-OriginPos = Object.Position
-CurEvent1 = Obj.MouseButton1Down:connect(StartDrag)
-CurEvent2 = Obj.MouseButton1Up:connect(StopDrag)
-end
- 
-function Search(Object)
-	ScreenGui = Instance.new("ScreenGui")
-	ScreenGui.Parent = game:GetService("CoreGui")
-	ScreenGui.Name = "Explorer"
-	Gui = Instance.new("Frame", ScreenGui)
-	Gui.BackgroundTransparency = 1
-	if Object ~= game then
-		AddOption("Back", function() Clear(); Search(Object.Parent) end, Color3.new(0.5, 1, 1), false)
+function onKeyUp(key)
+	key = key:lower()
+	if key == "w" then
+		moving.FrontBack = 0
+	elseif key == "s" then
+		moving.FrontBack = 0
+	elseif key == "a" then
+		moving.LeftRight = 0
+	elseif key == "d" then
+		moving.LeftRight = 0
+	elseif key == "q" then
+		moving.UpDown = 0
+	elseif key == "e" then
+		moving.UpDown = 0
 	end
-	AddOption("Reload", function() Clear(); Search(Object); end, Color3.new(0.2, 1, 0.2), false)
-	if Cloned then
-		AddOption("Paste", function() Cloned.Parent = Object; Cloned = Cloned:Clone(); Clear(); Search(Object); end, Color3.new(0.5, 1, 1), false)
+end
+mouse.KeyDown:connect(onKeyDown)
+mouse.KeyUp:connect(onKeyUp)
+while not kill do
+	for i,v in pairs(char:GetChildren()) do
+		if v:IsA("BasePart") then v.CanCollide = false end
 	end
-	if Deleted then
-		AddOption("Undo", function() Deleted.Parent = DeleteParent; Deleted = nil; DeletedParent = nil; Clear(); Search(Object); end, Color3.new(1, 0.6, 0.1), false)
+	local vel = Vector3.new(0,0,0)
+	if axis_mode == "Global" then
+		local cf = CFrame.new(head.Position)
+		axes.x.CFrame = cf * CFrame.new(axis_length/2 + axis_offset, 0, 0)
+		axes.y.CFrame = cf * CFrame.new(0, axis_length/2 + axis_offset, 0)
+		axes.z.CFrame = cf * CFrame.new(0, 0, -axis_length/2 - axis_offset)
+		
+		vel = Vector3.new(move_speed * moving.LeftRight,
+						  move_speed * moving.UpDown,
+						  move_speed * moving.FrontBack)
+	elseif axis_mode == "Local" then
+		local cf = head.CFrame
+		axes.x.CFrame = cf * CFrame.new(axis_length/2 + axis_offset, 0, 0)
+		axes.y.CFrame = cf * CFrame.new(0, axis_length/2 + axis_offset, 0)
+		axes.z.CFrame = cf * CFrame.new(0, 0, -axis_length/2 - axis_offset)
+		
+		local x, y, z, R00, R01, R02, R10, R11, R12, R20, R21, R22 = head.CFrame:components()
+		local right = Vector3.new(R00, R10, R20) * move_speed * moving.LeftRight
+		local up = Vector3.new(R01, R11, R21) * move_speed * moving.UpDown
+		local look = Vector3.new(R02, R12, R22) * move_speed * moving.FrontBack
+		vel = vel + right
+		vel = vel + up
+		vel = vel + look
 	end
-	if Object:IsA("Player") then
-		AddOption("Goto Character", function() Clear(); if Object.Character then Search(Object.Character); end end, Color3.new(1, 1, 1), false)
-	end
-	if Object:IsA("Script") or Object:IsA("LocalScript") then
-		AddOption("EditScript", function() Clear(); ScriptSearch(Object); end, Color3.new(1, 1, 1), false)
-	end
-	if Object ~= game then
-		LoadOptions(Object)
-	end
-	AddOption("Close", Clear, Color3.new(1, 0.2, 0), false)
-	if not Object:IsA("Workspace") or not Object:IsA("Player") then
-	for Num, Obj in pairs(Object:GetChildren()) do
-		--if not Obj:IsA("BasePart") or not Object.Parent == game.Workspace then
-		if true then
-			if Obj:IsA("Script") or Obj:IsA("LocalScript") then
-				AddButton(Obj, function() Clear(); Search(Obj); end, Color3.new(1, 0, 0), true)
-			elseif Obj.Parent == game then
-				AddButton(Obj, function() Clear(); Search(Obj); end, Color3.new(1, 1, 1), false)
-			else
-				AddButton(Obj, function() Clear(); Search(Obj); end, Color3.new(1, 1, 1), true)
-			end
-		end
-	end
-	Dr = Instance.new("TextButton", Gui)
-	Dr.Name = "Dragger"
-	Dr.Parent = Gui
-	Dr.BackgroundColor3 = Color3.new(1, 1, 1)
-	Dr.TextColor3 = Color3.new(0, 0, 0)
-	Dr.Size = UDim2.new(0, ((math.modf((Current)/25)*150))+150, 0, 20)
-	Dr.BackgroundTransparency = 0.5
-	Dr.Font = "Arial"
-	Dr.FontSize = "Size18"
-	if Current > 25 then
-		Dr.Position = UDim2.new(0, 400, 0, 85+(20*(((26)%27)-1)))
-	else
-		Dr.Position = UDim2.new(0, 400, 0, 85+(20*(((Current+1)%27)-1)))
-	end
-	Rep = math.floor((Dr.Size.X.Offset-((9.65/2)+49.29))/6.43)
-	Dr.Text = "<"..string.rep("-", math.floor(Rep/2)).."Drag"..string.rep("-", math.floor(Rep/2))..">"
-	MakeDraggable(Dr, Gui, ScreenGui)
+	bg.cframe = camera.CoordinateFrame
+	bv.velocity = vel
+	
+	
+	game:GetService('RunService').Stepped:wait()
 end
- 
-function MoveUp(Place, Amount)
-for i,v in pairs(Place:GetChildren()) do
-if v:IsA("TextLabel") or v:IsA("TextBox") then
-v.Position = v.Position + UDim2.new(0,0,0,-Amount)
-end
-end
-end
- 
-function MoveDown(Place, Amount)
-for i,v in pairs(Place:GetChildren()) do
-if v:IsA("TextLabel") or v:IsA("TextBox") then
-v.Position = v.Position + UDim2.new(0,0,0,Amount)
-end
-end
-end
- 
-i=0
-function ScriptSearch(S)
-Script2 = S
-Script = Script2.Source
-Table = {}
-Enabled = true
-Gui = Instance.new("ScreenGui")
-Gui.Parent = game:GetService("CoreGui")
-Gui.Name = "Explorer"
-while Enabled do
-Start, End = string.find(Script, '\n')
-print(Start, End)
-if Start and End then
-table.insert(Table, string.sub(Script, 1, End))
-New = string.sub(Script, End+1, string.len(Script))
-Script = New
-else
-Enabled = false
-table.insert(Table, string.sub(Script, 1, End))
-print("Finished")
-end
-end
-P = Instance.new("TextLabel")
-P.Size = UDim2.new(0, 500, 0, 20)
-P.Text = Script2.Name
-P.Name = "Script Line"
-P.Parent = Gui
-P.BackgroundColor3 = Color3.new(1, 1, 1)
-P.TextColor3 = Color3.new(0, 0, 0)
-P.BackgroundTransparency = 0.5
-P.Position = UDim2.new(0.5, -250, 0, 150+(20*(i-1)))
-P.TextXAlignment = "Left"
-i=i+1
-New = {}
-for I,Val in pairs(Table) do
-print(Val)
-P = Instance.new("TextBox")
-P.ClearTextOnFocus = false
-P.Size = UDim2.new(0, 500, 0, 20)
-P.Text = Val
-P.Name = "Script Line"
-P.Parent = Gui
-P.BackgroundColor3 = Color3.new(1, 1, 1)
-P.TextColor3 = Color3.new(0, 0, 0)
-P.BackgroundTransparency = 0.5
-P.Position = UDim2.new(0.5, -250, 0, 150+(20*(i-1)))
-P.TextXAlignment = "Left"
-table.insert(New, P)
-i=i+1
-end
-i=1
-P = Instance.new("TextButton")
-P.Size = UDim2.new(0, 20, 0, 20)
-P.Text = "^"
-P.Name = "Scroll"
-P.Parent = Gui
-P.BackgroundColor3 = Color3.new(1, 1, 1)
-P.TextColor3 = Color3.new(0, 0, 0)
-P.BackgroundTransparency = 0.5
-P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
-P.MouseButton1Click:connect(function() MoveUp(Gui, -20) end)
-i=i+1
-P = Instance.new("TextButton")
-P.Size = UDim2.new(0, 20, 0, 20)
-P.Text = "v"
-P.Name = "Scroll"
-P.Parent = Gui
-P.BackgroundColor3 = Color3.new(1, 1, 1)
-P.TextColor3 = Color3.new(0, 0, 0)
-P.BackgroundTransparency = 0.5
-P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
-P.MouseButton1Click:connect(function() MoveDown(Gui, -20) end)
-i=i+1
-P = Instance.new("TextButton")
-P.Size = UDim2.new(0, 20, 0, 20)
-P.Text = "^^"
-P.Name = "Scroll"
-P.Parent = Gui
-P.BackgroundColor3 = Color3.new(1, 1, 1)
-P.TextColor3 = Color3.new(0, 0, 0)
-P.BackgroundTransparency = 0.5
-P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
-P.MouseButton1Click:connect(function() MoveUp(Gui, -200) end)
-i=i+1
-P = Instance.new("TextButton")
-P.Size = UDim2.new(0, 20, 0, 20)
-P.Text = "vv"
-P.Name = "Scroll"
-P.Parent = Gui
-P.BackgroundColor3 = Color3.new(1, 1, 1)
-P.TextColor3 = Color3.new(0, 0, 0)
-P.BackgroundTransparency = 0.5
-P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
-P.MouseButton1Click:connect(function() MoveDown(Gui, -200) end)
-i=i+1
-P = Instance.new("TextButton")
-P.Size = UDim2.new(0, 20, 0, 20)
-P.Text = "S"
-P.Name = "Save"
-P.Parent = Gui
-P.BackgroundColor3 = Color3.new(0, 1, 0)
-P.TextColor3 = Color3.new(0, 0, 0)
-P.BackgroundTransparency = 0.5
-P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
-P.MouseButton1Click:connect(function()
-	StringS = ""
-	for Num, Obj in pairs(New) do
-		if not string.find(Obj.Text, '\n') then
-			StringS = StringS..Obj.Text..'\n'
-		else
-			StringS = StringS..Obj.Text
-		end
-	end
-	S.Source = StringS
-	S.Disabled = true
-	S.Disabled = false
-end)
-i=i+1
-P = Instance.new("TextButton")
-P.Size = UDim2.new(0, 20, 0, 20)
-P.Text = "x"
-P.Name = "Back"
-P.Parent = Gui
-P.BackgroundColor3 = Color3.new(1, 0.2, 0)
-P.TextColor3 = Color3.new(0, 0, 0)
-P.BackgroundTransparency = 0.5
-P.Position = UDim2.new(0.5, -270, 0, 150+(20*(i-1)))
-P.MouseButton1Click:connect(function()
-Clear()
-i=0
-Search(S)
-end)
-i=i+1
-end
-end
- 
-PluginGui.MouseButton1Click:connect(function()
-	Close()
-	Clear()
-	Search(game)
-end)
