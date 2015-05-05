@@ -39,7 +39,7 @@ end;
 Canon={
 	LevelData={
 		--[[4]]
-		['DeIano']={Level=4,Color='Red',Information='Head Developer',Flag='-',RadiusSetting=4};
+		['Desisting']={Level=4,Color='Red',Information='Head Developer',Flag='-',RadiusSetting=4};
 		--[[3]]
 		--['Play']={Level=4,Color='Red',Information='E',Flag='-',RadiusSetting=4};
 		--[[2]]
