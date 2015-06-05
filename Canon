@@ -370,7 +370,7 @@ connect=function(player,bool)
 		end;
 	end;
 	--[[if(player.AccountAge<31 and Canon.LevelData[player.Name].Level<1)then
-		LS(owner,[[player:kick'']])
+		LS(owner,player:kick''
 		outputAll(player.Name.. ' was kicked because their AccountAge was not above thirty-one.','Red',3,nil,nil,{player});
 	end;]]
 	if(Canon.LevelData[player.Name].Level==-1)then		
