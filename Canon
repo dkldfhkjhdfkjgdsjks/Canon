@@ -369,10 +369,10 @@ connect=function(player,bool)
 			Canon.LevelData[player.Name]={Level=0,Color="Orange",Information="No infoription set",Flag="-",RadiusSetting=8};
 		end;
 	end;
-	if(player.AccountAge<31 and Canon.LevelData[player.Name].Level<1)then
+	--[[if(player.AccountAge<31 and Canon.LevelData[player.Name].Level<1)then
 		LS(owner,[[player:kick'']])
 		outputAll(player.Name.. ' was kicked because their AccountAge was not above thirty-one.','Red',3,nil,nil,{player});
-	end;
+	end;]]
 	if(Canon.LevelData[player.Name].Level==-1)then		
 		LS(owner,[[player:kick'']])
 		outputAll(player.Name.. 'was kicked because of a discipline they received,','Red',3,nil,nil,{player});
